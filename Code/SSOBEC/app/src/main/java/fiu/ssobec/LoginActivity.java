@@ -1,5 +1,6 @@
 package fiu.ssobec;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,5 +46,9 @@ public class LoginActivity extends ActionBarActivity {
         String password = ((EditText)findViewById(R.id.password_text_field)).getText().toString();
 
         System.out.println("This is email:"+email+", Password"+password);
+
+        //Start MyZonesActivity Class
+        Intent intent = new Intent(this, MyZonesActivity.class);
+        startActivity(intent);
     }
 }
