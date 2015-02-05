@@ -4,6 +4,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.GridView;
 
 
 public class MyZonesActivity extends ActionBarActivity {
@@ -12,6 +13,9 @@ public class MyZonesActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
+
+        //GridView gridview = (GridView) findViewById(R.id.gridview);
+        //gridview.setAdapter(new ImageAdapter(this));
     }
 
 
