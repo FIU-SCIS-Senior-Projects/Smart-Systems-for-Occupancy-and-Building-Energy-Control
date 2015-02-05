@@ -6,16 +6,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 
+import java.util.ArrayList;
+
 
 public class MyZonesActivity extends ActionBarActivity {
+
+    private GridView gridViewButtons;
+
+    public static ArrayList<String> zoneNames;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
-        //GridView gridview = (GridView) findViewById(R.id.gridview);
-        //gridview.setAdapter(new ImageAdapter(this));
+        //Set buttons in a Grid View order
+        gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+        gridViewButtons.setAdapter(new ButtonAdapter(this));
+
+
+        zoneNames.add("Zone 1");
+        zoneNames.add("Zone 2");
     }
 
 

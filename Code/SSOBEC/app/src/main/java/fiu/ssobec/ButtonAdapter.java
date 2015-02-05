@@ -14,6 +14,7 @@ import android.view.ViewGroup.LayoutParams;
  */
 public class ButtonAdapter extends BaseAdapter {
 
+    String[] numbers = new String[] {"la","lala"};
     private Context mContext;
 
     public ButtonAdapter(Context c) {
@@ -22,7 +23,8 @@ public class ButtonAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+
+        return numbers.length;
     }
 
     @Override
@@ -37,17 +39,25 @@ public class ButtonAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        System.out.println("Create button adapter views");
         Button b;
         if (convertView == null) {
             b = new Button(mContext);
-            b.setLayoutParams(new GridView.LayoutParams(LayoutParams.FILL_PARENT, 100));
+            b.setLayoutParams(new GridView.LayoutParams(100, 100));
             b.setPadding(8, 8, 8, 8);
-            b.setTextSize(25f);
+            b.setTextSize(0xa);
             b.setTextColor(Color.BLACK);
         } else {
             b = (Button) convertView;
         }
+        b.setBackgroundColor(Color.BLUE);
+        b.setText(MyZonesActivity.zoneNames.get(position));
+        //b.setText(numbers[position]);
+        //b.setText("Button " + (position + 1));
+        System.out.println("Button " + (position + 1));
+        b.setId(position);
 
-        return null;
+        return b;
     }
 }
