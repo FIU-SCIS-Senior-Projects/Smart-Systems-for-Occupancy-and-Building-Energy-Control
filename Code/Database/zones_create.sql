@@ -38,6 +38,7 @@ CREATE TABLE `user` (
 CREATE TABLE `zone_description` (
     `region_id` int    NOT NULL  AUTO_INCREMENT,
     CONSTRAINT zone_description_pk PRIMARY KEY (`region_id`)
+	
 );
 
 
