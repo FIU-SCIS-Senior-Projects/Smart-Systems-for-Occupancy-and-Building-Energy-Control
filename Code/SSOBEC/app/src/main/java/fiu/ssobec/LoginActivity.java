@@ -85,13 +85,23 @@ public class LoginActivity extends ActionBarActivity {
         email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
         System.out.println("This is email:" + email + ", Password" + password);
+
+
+        //in PHP:
+        // $email = $_POST['email'];
+        // $password = $_POST['password'];
+        username_pass.add(new BasicNameValuePair("email", email.toString().trim()));
+        username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
+
+        /*
         new Thread(new Runnable() {
 
             public void run() {
                 login_pass();
             }
 
-        }).start();
+        }).start();*/
+
 
     }
 
