@@ -29,6 +29,7 @@ public class Database {
     HttpResponse response;
     HttpClient httpclient;
     String url;
+    String response_str;
 
     /*
 
@@ -37,6 +38,7 @@ public class Database {
 
         this.parameters = parameters;
         this.url = url;
+        response_str = null;
     }
 
 
@@ -48,9 +50,10 @@ public class Database {
             }
 
         });
-        mThread.start();
-        mThread.join();
-        return response.toString();
+        mThread.start(); //start thread
+        mThread.join(); //wait for thread to finish
+
+        return response_str;
     }
 
 
@@ -65,8 +68,8 @@ public class Database {
             //Execute HTTP Post Request
             response = httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            final String response = httpclient.execute(httppost, responseHandler);
-            System.out.println("Response : " + response);
+            response_str = httpclient.execute(httppost, responseHandler);
+            System.out.println("Response : " + response_str);
 
             /*
             runOnUiThread(new Runnable() {

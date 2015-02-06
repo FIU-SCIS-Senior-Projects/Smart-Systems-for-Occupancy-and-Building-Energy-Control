@@ -59,9 +59,7 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
-
     @Override
-
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // Handle action bar item clicks here. The action bar will
@@ -79,13 +77,13 @@ public class LoginActivity extends ActionBarActivity {
 
 
     //login_pass Button onClick event
-
-    public void LoginPost(View view)
-    {
+    public void LoginPost(View view) throws InterruptedException {
         email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
         System.out.println("This is email:" + email + ", Password" + password);
 
+        //add our user name and password to an arraylist
+        username_pass = new ArrayList<NameValuePair>(2);
 
         //in PHP:
         // $email = $_POST['email'];
@@ -93,20 +91,28 @@ public class LoginActivity extends ActionBarActivity {
         username_pass.add(new BasicNameValuePair("email", email.toString().trim()));
         username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
 
-        /*
-        new Thread(new Runnable() {
+        //send the username and password to loginpost.php file
+        String res = new Database((ArrayList<NameValuePair>) username_pass, "http://smartsystems-dev.cs.fiu.edu/loginpost.php").send();
 
-            public void run() {
-                login_pass();
-            }
+        System.out.println("Response is: "+res);
+        if (res.equalsIgnoreCase("User Found")) {
+            runOnUiThread(new Runnable() {
 
-        }).start();*/
+                public void run() {
+                    //
+                }
 
+            });
+
+            Intent intent = new Intent(this, MyZonesActivity.class);
+            startActivity(intent);
+        }
+        else {
+            System.out.println("User Not Found...");
+        }
 
     }
 
-
-    //TODO: Generalize this method
     //TODO: Create an interface for constants and list of links to the database
     void login_pass() {
 

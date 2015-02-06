@@ -21,13 +21,14 @@ public class MyZonesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
+        zoneNames = new ArrayList<>();
+        zoneNames.add("Zone 1");
+        zoneNames.add("Zone 2");
+
         //Set buttons in a Grid View order
         gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
         gridViewButtons.setAdapter(new ButtonAdapter(this));
 
-
-        zoneNames.add("Zone 1");
-        zoneNames.add("Zone 2");
     }
 
 
