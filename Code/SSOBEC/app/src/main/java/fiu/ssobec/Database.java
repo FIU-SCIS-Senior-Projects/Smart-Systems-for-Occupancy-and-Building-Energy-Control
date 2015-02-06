@@ -71,36 +71,6 @@ public class Database {
             response_str = httpclient.execute(httppost, responseHandler);
             System.out.println("Response : " + response_str);
 
-            /*
-            runOnUiThread(new Runnable() {
-
-                public void run() {
-                    System.out.println("Response from PHP : " + response);
-                    //dialog.dismiss();
-                }
-
-            });*/
-
-
-          /*
-            if (response.equalsIgnoreCase("User Found")) {
-                runOnUiThread(new Runnable() {
-
-                    public void run() {
-                        //
-                    }
-
-                });
-                //Intent intent = new Intent(this, MyZonesActivity.class);
-                startActivity(intent);
-            }
-            else {
-                System.out.println("Something happened");
-            }*/
-
-
-            //response.toString();
-
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
