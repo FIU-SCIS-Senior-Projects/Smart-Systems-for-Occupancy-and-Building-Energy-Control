@@ -72,7 +72,6 @@ public class LoginActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-
     }
 
 
@@ -82,7 +81,7 @@ public class LoginActivity extends ActionBarActivity {
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
         System.out.println("This is email:" + email + ", Password" + password);
 
-        //add our user name and password to an arraylist
+        //add our user name and password to an ArrayList
         username_pass = new ArrayList<NameValuePair>(2);
 
         //in PHP:
@@ -113,7 +112,7 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
-    //TODO: Create an interface for constants and list of links to the database
+    /*
     void login_pass() {
 
         try {
@@ -176,7 +175,7 @@ public class LoginActivity extends ActionBarActivity {
 
         }
 
-    }
+    }*/
 
 
 }
