@@ -1,9 +1,12 @@
 package fiu.ssobec;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.util.ArrayList;
@@ -29,6 +32,21 @@ public class MyZonesActivity extends ActionBarActivity {
         gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
         gridViewButtons.setAdapter(new ButtonAdapter(this));
 
+        /*
+        gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+
+                // Send intent to SingleViewActivity
+                Intent intent = new Intent(getApplicationContext(), ZonesDescriptionActivity.class);
+
+                System.out.println("ID: "+position);
+                // Pass image index
+                intent.putExtra("id", position);
+                startActivity(intent);
+            }
+        });*/
+
     }
 
 
@@ -53,4 +71,6 @@ public class MyZonesActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

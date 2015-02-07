@@ -1,6 +1,7 @@
 package fiu.ssobec;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,8 @@ public class ButtonAdapter extends BaseAdapter {
         Button b;
         if (convertView == null) {
             b = new Button(mContext);
-            b.setLayoutParams(new GridView.LayoutParams(100, 100));
-            b.setPadding(8, 8, 8, 8);
+            b.setLayoutParams(new GridView.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+            b.setPadding(5, 5, 5, 5);
             b.setTextSize(0xa);
             b.setTextColor(Color.BLACK);
         } else {
@@ -53,10 +54,19 @@ public class ButtonAdapter extends BaseAdapter {
         }
         b.setBackgroundColor(Color.BLUE);
         b.setText(MyZonesActivity.zoneNames.get(position));
-        //b.setText(numbers[position]);
-        //b.setText("Button " + (position + 1));
         System.out.println("Button " + (position + 1));
         b.setId(position);
+
+        final int iposition = position;
+        b.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //TODO: Handle click
+                System.out.println("Button: "+iposition);
+                Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
+                intent.putExtra("id",iposition);
+                mContext.startActivity(intent);
+            }
+        });
 
         return b;
     }
