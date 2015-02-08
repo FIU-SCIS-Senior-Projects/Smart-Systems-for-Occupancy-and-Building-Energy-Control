@@ -9,7 +9,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class MyZonesActivity extends ActionBarActivity {
@@ -18,34 +23,42 @@ public class MyZonesActivity extends ActionBarActivity {
 
     public static ArrayList<String> zoneNames;
 
+    public final static String USER_ID = "com.fiu.ssobec.ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
+        Intent intent = getIntent();
+
+        int i=0;
+        int user_id = intent.getIntExtra(USER_ID, 0);
+
+        System.out.println("User ID: "+user_id);
+
+        String str_user_id = user_id+"";
+        List<NameValuePair> userId = new ArrayList<NameValuePair>(1);
+
+
+        String res="";
+        userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
+        //send the user_id to zonepost.php
+        try {
+            res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
+
+            System.out.println("Zone Response is: "+res);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
         zoneNames = new ArrayList<>();
-        zoneNames.add("Zone 1");
-        zoneNames.add("Zone 2");
+        zoneDetails(res);
 
         //Set buttons in a Grid View order
         gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
         gridViewButtons.setAdapter(new ButtonAdapter(this));
-
-        /*
-        gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-
-                // Send intent to SingleViewActivity
-                Intent intent = new Intent(getApplicationContext(), ZonesDescriptionActivity.class);
-
-                System.out.println("ID: "+position);
-                // Pass image index
-                intent.putExtra("id", position);
-                startActivity(intent);
-            }
-        });*/
 
     }
 
@@ -77,6 +90,31 @@ public class MyZonesActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void zoneDetails(String response)
+    {
+        String str_before = "";
+       // String zone_id, zone_name;
+        StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
+
+        System.out.println("User Details");
+        while (stringTokenizer.hasMoreElements()) {
+
+            String temp = stringTokenizer.nextElement().toString();
+            if (str_before.equalsIgnoreCase("id"))
+            {
+                System.out.println("id: "+temp);
+            }
+            else if (str_before.equalsIgnoreCase("name"))
+            {
+                System.out.println("name: "+temp);
+                zoneNames.add(temp);
+            }
+
+            str_before = temp;
+        }
+
     }
 
 

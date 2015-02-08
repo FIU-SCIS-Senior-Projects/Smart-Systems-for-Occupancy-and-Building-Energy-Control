@@ -15,7 +15,6 @@ import android.view.ViewGroup.LayoutParams;
  */
 public class ButtonAdapter extends BaseAdapter {
 
-    String[] numbers = new String[] {"la","lala"};
     private Context mContext;
 
     public ButtonAdapter(Context c) {
@@ -25,7 +24,7 @@ public class ButtonAdapter extends BaseAdapter {
     @Override
     public int getCount() {
 
-        return numbers.length;
+        return MyZonesActivity.zoneNames.size();
     }
 
     @Override

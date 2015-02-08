@@ -53,20 +53,23 @@
 
         <activity
             android:name=".MyZonesActivity"
-            android:label="@string/title_activity_my_zones"
-            android:parentActivityName=".LoginActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="fiu.ssobec.LoginActivity" />
-        </activity>
-        <activity
-            android:name=".ZonesDescriptionActivity"
-            android:label="@string/title_activity_zones_description"
-            android:parentActivityName=".MyZonesActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="fiu.ssobec.MyZonesActivity" />
-        </activity>
-    </application>
+            android:label="@string/title_activity_my_zones"></activity>
+
+        <!--
+         android:parentActivityName=".LoginActivity" >
+         <meta-data
+             android:name="android.support.PARENT_ACTIVITY"
+             android:value="fiu.ssobec.LoginActivity" />
+     </activity> -->
+
+     <activity
+         android:name=".ZonesDescriptionActivity"
+         android:label="@string/title_activity_zones_description"
+         android:parentActivityName=".MyZonesActivity" >
+         <meta-data
+             android:name="android.support.PARENT_ACTIVITY"
+             android:value="fiu.ssobec.MyZonesActivity" />
+     </activity>
+ </application>
 
 </manifest>
