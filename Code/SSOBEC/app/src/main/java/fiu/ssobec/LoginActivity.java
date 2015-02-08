@@ -2,44 +2,40 @@ package fiu.ssobec;
 
 
 import android.content.Intent;
-
 import android.support.v7.app.ActionBarActivity;
-
 import android.os.Bundle;
-
 import android.view.Menu;
-
 import android.view.MenuItem;
-
 import android.view.View;
-
 import android.widget.EditText;
 
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class LoginActivity extends ActionBarActivity {
 
 
-    String email, password;
+    String login_email, password;
     HttpPost httppost;
     HttpResponse response;
     HttpClient httpclient;
     List<NameValuePair> username_pass;
+
+    int id=0;
+    String name="", email="";
+
+
 
 
     @Override
@@ -77,24 +73,26 @@ public class LoginActivity extends ActionBarActivity {
 
     //login_pass Button onClick event
     public void LoginPost(View view) throws InterruptedException {
-        email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
+        login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
-        System.out.println("This is email:" + email + ", Password" + password);
+        System.out.println("This is login_email:" + login_email + ", Password" + password);
 
         //add our user name and password to an ArrayList
         username_pass = new ArrayList<NameValuePair>(2);
 
         //in PHP:
-        // $email = $_POST['email'];
+        // $login_email = $_POST['login_email'];
         // $password = $_POST['password'];
-        username_pass.add(new BasicNameValuePair("email", email.toString().trim()));
+        username_pass.add(new BasicNameValuePair("login_email", login_email.toString().trim()));
         username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
 
         //send the username and password to loginpost.php file
         String res = new Database((ArrayList<NameValuePair>) username_pass, "http://smartsystems-dev.cs.fiu.edu/loginpost.php").send();
 
         System.out.println("Response is: "+res);
-        if (res.equalsIgnoreCase("User Found")) {
+
+        //
+        if (userDetails(res)) {
             runOnUiThread(new Runnable() {
 
                 public void run() {
@@ -104,6 +102,7 @@ public class LoginActivity extends ActionBarActivity {
             });
 
             Intent intent = new Intent(this, MyZonesActivity.class);
+            intent.putExtra(MyZonesActivity.USER_ID,id);
             startActivity(intent);
         }
         else {
@@ -112,70 +111,43 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
-    /*
-    void login_pass() {
+    public boolean userDetails(String response)
+    {
+        boolean user_flag = false;
+        String str_before = "";
+        StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
 
-        try {
+        System.out.println("User Details");
+        while (stringTokenizer.hasMoreElements()) {
 
-            httpclient = new DefaultHttpClient();
-            httppost = new HttpPost("http://smartsystems-dev.cs.fiu.edu/loginpost.php"); // make sure the url is correct.
-
-            //add our user name and password to an arraylist
-            username_pass = new ArrayList<NameValuePair>(2);
-
-            //names of variables must be same as in the php file
-            username_pass.add(new BasicNameValuePair("email", email.toString().trim()));
-
-            //in PHP:
-            // $email = $_POST['email'];
-            // $password = $_POST['password'];
-            username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
-
-            httppost.setEntity(new UrlEncodedFormEntity(username_pass));
-
-            //Execute HTTP Post Request
-            response = httpclient.execute(httppost);
-
-            // edited by James from coderzheaven.. from here....
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
-            final String response = httpclient.execute(httppost, responseHandler);
-
-            System.out.println("Response : " + response);
-
-            runOnUiThread(new Runnable() {
-
-                public void run() {
-                    System.out.println("Response from PHP : " + response);
-                    //dialog.dismiss();
-                }
-
-            });
-
-
-            if (response.equalsIgnoreCase("User Found")) {
-                runOnUiThread(new Runnable() {
-
-                    public void run() {
-                        //
-                    }
-
-                });
-                Intent intent = new Intent(this, MyZonesActivity.class);
-                startActivity(intent);
+            String temp = stringTokenizer.nextElement().toString();
+            if (str_before.equalsIgnoreCase("id"))
+            {
+                System.out.println("id: "+temp);
+                user_flag = true;
+                id = Integer.parseInt(temp);
             }
-            else {
-                System.out.println("Something happened");
+            else if (str_before.equalsIgnoreCase("name"))
+            {
+                System.out.println("name: "+temp);
+                name = temp;
+            }
+            else if (str_before.equalsIgnoreCase("login_email"))
+            {
+                System.out.println("login_email: "+temp);
+                email = temp;
             }
 
-
-
-        } catch (Exception e) {
-            System.out.println("Exception : " + e.getMessage());
-
+            str_before = temp;
         }
 
-    }*/
+        if(user_flag)
+        {
+            new User(name, id, email);
+        }
+
+        return user_flag;
+    }
 
 
 }
