@@ -40,7 +40,6 @@ public class ButtonAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        System.out.println("Create button adapter views");
         Button b;
         if (convertView == null) {
             b = new Button(mContext);
@@ -53,14 +52,13 @@ public class ButtonAdapter extends BaseAdapter {
         }
         b.setBackgroundColor(Color.BLUE);
         b.setText(MyZonesActivity.zoneNames.get(position));
-        System.out.println("Button " + (position + 1));
+        //System.out.println("Button " + (position + 1));
         b.setId(position);
 
         final int iposition = position;
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //TODO: Handle click
-                System.out.println("Button: "+iposition);
+                //System.out.println("Button: "+iposition);
                 Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
                 intent.putExtra("id",iposition);
                 mContext.startActivity(intent);

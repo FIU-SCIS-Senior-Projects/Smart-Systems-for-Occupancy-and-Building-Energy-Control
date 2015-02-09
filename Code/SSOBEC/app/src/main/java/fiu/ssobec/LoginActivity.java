@@ -27,15 +27,10 @@ public class LoginActivity extends ActionBarActivity {
 
 
     String login_email, password;
-    HttpPost httppost;
-    HttpResponse response;
-    HttpClient httpclient;
     List<NameValuePair> username_pass;
 
     int id=0;
     String name="", email="";
-
-
 
 
     @Override

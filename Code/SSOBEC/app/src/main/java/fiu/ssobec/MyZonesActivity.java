@@ -5,8 +5,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.apache.http.NameValuePair;
@@ -19,11 +17,13 @@ import java.util.StringTokenizer;
 
 public class MyZonesActivity extends ActionBarActivity {
 
+    static final String STATE_USER_ID = "User's ID";
     private GridView gridViewButtons;
-
     public static ArrayList<String> zoneNames;
 
     public final static String USER_ID = "com.fiu.ssobec.ID";
+
+    int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +33,12 @@ public class MyZonesActivity extends ActionBarActivity {
         Intent intent = getIntent();
 
         int i=0;
-        int user_id = intent.getIntExtra(USER_ID, 0);
+        user_id = intent.getIntExtra(USER_ID, 0);
 
         System.out.println("User ID: "+user_id);
 
         String str_user_id = user_id+"";
-        List<NameValuePair> userId = new ArrayList<NameValuePair>(1);
-
+        List<NameValuePair> userId = new ArrayList<>(1);
 
         String res="";
         userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
@@ -51,7 +50,6 @@ public class MyZonesActivity extends ActionBarActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
 
         zoneNames = new ArrayList<>();
         zoneDetails(res);
@@ -67,7 +65,6 @@ public class MyZonesActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_zones, menu);
-
 
         return true;
     }
@@ -115,6 +112,17 @@ public class MyZonesActivity extends ActionBarActivity {
             str_before = temp;
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        //savedInstanceState.putInt(STATE_SCORE, mCurrentScore);
+        //savedInstanceState.putInt(STATE_LEVEL, mCurrentLevel);
+        savedInstanceState.putInt(STATE_USER_ID, user_id);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 

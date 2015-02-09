@@ -56,7 +56,6 @@ public class Database {
         return response_str;
     }
 
-
     public void db_post(){
 
         try {
