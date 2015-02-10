@@ -116,9 +116,6 @@ public class MyZonesActivity extends ActionBarActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        //savedInstanceState.putInt(STATE_SCORE, mCurrentScore);
-        //savedInstanceState.putInt(STATE_LEVEL, mCurrentLevel);
         savedInstanceState.putInt(STATE_USER_ID, user_id);
 
         // Always call the superclass so it can save the view hierarchy state
