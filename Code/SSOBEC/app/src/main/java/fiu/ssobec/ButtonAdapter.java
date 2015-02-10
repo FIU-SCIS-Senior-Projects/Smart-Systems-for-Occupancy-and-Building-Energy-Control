@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.view.ViewGroup.LayoutParams;
 
+import fiu.ssobec.Activity.MyZonesActivity;
+import fiu.ssobec.Activity.ZonesDescriptionActivity;
+
 /**
  * Created by Maria on 2/4/2015.
  */

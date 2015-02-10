@@ -29,7 +29,7 @@
         <!-- Login Activity -->
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,34 +41,34 @@
         <!-- Setting Activity -->
 
         <activity
-            android:name=".SettingActivity"
+            android:name=".Activity.SettingActivity"
             android:label="@string/title_activity_setting"
-            android:parentActivityName=".LoginActivity" >
+            android:parentActivityName=".Activity.LoginActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fiu.ssobec.LoginActivity" />
+                android:value=".Activity.LoginActivity" />
         </activity>
 
         <!-- My Zones Activity -->
 
         <activity
-            android:name=".MyZonesActivity"
+            android:name=".Activity.MyZonesActivity"
             android:label="@string/title_activity_my_zones"></activity>
 
         <!--
          android:parentActivityName=".LoginActivity" >
          <meta-data
              android:name="android.support.PARENT_ACTIVITY"
-             android:value="fiu.ssobec.LoginActivity" />
+             android:value="fiu.ssobec.Activity.LoginActivity" />
      </activity> -->
 
      <activity
-         android:name=".ZonesDescriptionActivity"
+         android:name=".Activity.ZonesDescriptionActivity"
          android:label="@string/title_activity_zones_description"
-         android:parentActivityName=".MyZonesActivity" >
+         android:parentActivityName=".Activity.MyZonesActivity" >
          <meta-data
              android:name="android.support.PARENT_ACTIVITY"
-             android:value="fiu.ssobec.MyZonesActivity" />
+             android:value=".Activity.MyZonesActivity" />
      </activity>
  </application>
 

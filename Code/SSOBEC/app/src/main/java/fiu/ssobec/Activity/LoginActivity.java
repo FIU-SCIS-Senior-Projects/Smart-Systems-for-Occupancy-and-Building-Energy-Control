@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Activity;
 
 
 import android.content.Intent;
@@ -10,10 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 
@@ -22,6 +19,10 @@ import java.util.ArrayList;
 
 import java.util.List;
 import java.util.StringTokenizer;
+
+import fiu.ssobec.Database;
+import fiu.ssobec.R;
+import fiu.ssobec.Model.User;
 
 
 public class LoginActivity extends ActionBarActivity {
