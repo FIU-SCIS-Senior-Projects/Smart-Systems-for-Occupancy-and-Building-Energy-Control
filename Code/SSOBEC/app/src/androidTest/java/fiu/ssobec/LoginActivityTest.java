@@ -3,6 +3,8 @@ package fiu.ssobec;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.EditText;
 
+import fiu.ssobec.Activity.LoginActivity;
+
 /**
  * Created by Fresa on 2/7/2015.
  */

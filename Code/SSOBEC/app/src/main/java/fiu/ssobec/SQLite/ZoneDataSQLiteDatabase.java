@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.SQLite;
 
 import android.content.Context;
 import android.database.DatabaseErrorHandler;
@@ -31,13 +31,17 @@ public class ZoneDataSQLiteDatabase extends SQLiteOpenHelper {
             + COLUMN_PLUGLOAD + " int NOT NULL, "
             + COLUMN_LIGHTING + " int NOT NULL, "
             + COLUMN_DATETIME + " datetime NOT NULL PRIMARY KEY"
-            + "FOREIGN KEY (" +COLUMN_ID +") REFERENCES "+ZonesSQLiteDatabase.TABLE_ZONES_DESCRIPTION
+            + "FOREIGN KEY (" +COLUMN_ID +") REFERENCES "+ ZonesSQLiteDatabase.TABLE_ZONES_DESCRIPTION
                                                             +" ("+ZonesSQLiteDatabase.COLUMN_ID+")"
             +
             ");";
 
     public ZoneDataSQLiteDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+    }
+
+    public ZoneDataSQLiteDatabase(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public ZoneDataSQLiteDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {

@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +13,11 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import fiu.ssobec.Activity.LoginActivity;
+import fiu.ssobec.ButtonAdapter;
+import fiu.ssobec.Database;
+import fiu.ssobec.R;
 
 
 public class MyZonesActivity extends ActionBarActivity {
