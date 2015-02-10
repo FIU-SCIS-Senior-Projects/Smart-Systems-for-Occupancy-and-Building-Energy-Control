@@ -19,20 +19,20 @@ public class ZoneDataSQLiteDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_LIGHTING = "lighting";
     public static final String COLUMN_DATETIME = "date_time";
 
-    private static final String DATABASE_NAME = "ssobec_internaldb";
+    private static final String DATABASE_NAME = "ssobec_internal.db";
     private static final int DATABASE_VERSION = 1;
 
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
             + TABLE_ZONES + "("
-            + COLUMN_ID  + " int PRIMARY KEY, "
+            + COLUMN_ID  + " int NOT NULL PRIMARY KEY, "
             + COLUMN_OCCUPANCY + " int NOT NULL, "
             + COLUMN_TEMPERATURE + " int NOT NULL, "
             + COLUMN_PLUGLOAD + " int NOT NULL, "
             + COLUMN_LIGHTING + " int NOT NULL, "
             + COLUMN_DATETIME + " datetime NOT NULL PRIMARY KEY"
             + "FOREIGN KEY (" +COLUMN_ID +") REFERENCES "+ZonesSQLiteDatabase.TABLE_ZONES_DESCRIPTION
-                                                            +" ("+ZonesSQLiteDatabase.COLUMN_ID+")"
+                                                            +" ("+ZonesSQLiteDatabase.COLUMN_ID+") "
             +
             ");";
 

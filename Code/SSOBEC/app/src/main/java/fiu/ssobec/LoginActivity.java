@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -32,13 +33,21 @@ public class LoginActivity extends ActionBarActivity {
     int id=0;
     String name="", email="";
 
+    private DataAccessUser data_access;
+
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        data_access = new DataAccessUser(this);
+        try {
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -96,6 +105,8 @@ public class LoginActivity extends ActionBarActivity {
 
             });
 
+            //Save the user information in the user database
+
             Intent intent = new Intent(this, MyZonesActivity.class);
             intent.putExtra(MyZonesActivity.USER_ID,id);
             startActivity(intent);
@@ -111,6 +122,7 @@ public class LoginActivity extends ActionBarActivity {
         boolean user_flag = false;
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
+        User user = null;
 
         System.out.println("User Details");
         while (stringTokenizer.hasMoreElements()) {
@@ -138,7 +150,7 @@ public class LoginActivity extends ActionBarActivity {
 
         if(user_flag)
         {
-            new User(name, id, email);
+            user = data_access.createUser(name, id, email);
         }
 
         return user_flag;
