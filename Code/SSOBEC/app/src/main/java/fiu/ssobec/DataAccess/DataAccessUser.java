@@ -1,9 +1,12 @@
-package fiu.ssobec;
+package fiu.ssobec.DataAccess;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import fiu.ssobec.Model.User;
+import fiu.ssobec.UserSQLiteDatabase;
 
 import java.sql.SQLException;
 
@@ -45,13 +48,14 @@ public class DataAccessUser {
         vals.put(UserSQLiteDatabase.COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
 
+
+        System.out.println("Email in vals: "+vals.getAsString(email));
+
         db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                                 allCols,
                                 UserSQLiteDatabase.COLUMN_ID+" = "+id,
                                 null, null, null, null);
-
-        System.out.println("createUser: New user: "+name+" is inserted");
 
         cursor.moveToFirst();
         User nUser = new User(cursor.getString(0),  //Name

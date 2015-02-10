@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 import fiu.ssobec.Model.ZoneData;
 import fiu.ssobec.SQLite.ZoneDataSQLiteDatabase;
-import fiu.ssobec.SQLite.ZonesSQLiteDatabase;
 
 /**
  * Created by Dalaidis on 2/10/2015.

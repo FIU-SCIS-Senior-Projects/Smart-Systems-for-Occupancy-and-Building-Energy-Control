@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import fiu.ssobec.Database;
+import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
 import fiu.ssobec.Model.User;
 
@@ -32,11 +33,13 @@ public class LoginActivity extends ActionBarActivity {
     List<NameValuePair> username_pass;
 
     int id=0;
-    String name="", email="";
+    String name="";
+    String email="";
 
     private DataAccessUser data_access;
 
 
+    //TODO: If the user is not signing in the first time, take him/her directly to MyZonesActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

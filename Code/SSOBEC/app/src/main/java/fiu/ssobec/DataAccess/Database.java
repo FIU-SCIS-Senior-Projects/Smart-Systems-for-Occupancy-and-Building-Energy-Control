@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.DataAccess;
 
 import android.content.Intent;
 

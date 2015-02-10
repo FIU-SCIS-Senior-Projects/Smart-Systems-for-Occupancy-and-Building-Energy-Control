@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Model;
 
 /**
  * Created by Maria on 2/10/2015.

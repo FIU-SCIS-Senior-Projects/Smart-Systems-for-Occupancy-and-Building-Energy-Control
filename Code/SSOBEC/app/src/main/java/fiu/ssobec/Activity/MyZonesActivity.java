@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import fiu.ssobec.Activity.LoginActivity;
 import fiu.ssobec.ButtonAdapter;
-import fiu.ssobec.Database;
+import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
 
 
@@ -73,6 +72,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
