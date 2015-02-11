@@ -5,26 +5,24 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by Maria on 2/9/2015.
+ * Created by Dalaidis on 2/11/2015.
  */
-public class ZonesSQLiteDatabase extends SQLiteOpenHelper {
-
-
-    public static final String TABLE_ZONES_DESCRIPTION = "zone_description";
-    public static final String COLUMN_ID = "zone_id";
-    public static final String COLUMN_NAME = "zone_name";
+public class TemperatureSQLiteDatabase extends SQLiteOpenHelper {
+    public static final String TABLE_TEMPERATURE_DESCRIPTION = "temperature_description";
+    public static final String COLUMN_ID = "temperature_id";
+    public static final String COLUMN_NAME = "temperature_name";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "ssobec_internal.db";
 
     private static final String DATABASE_CREATE = "create table "
-            + TABLE_ZONES_DESCRIPTION + " ("
+            + TABLE_TEMPERATURE_DESCRIPTION + " ("
             + COLUMN_ID  + " int NOT NULL PRIMARY KEY, "
             + COLUMN_NAME + " varchar(255) NOT NULL "
             +
             ");";
 
-    public ZonesSQLiteDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public TemperatureSQLiteDatabase(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override

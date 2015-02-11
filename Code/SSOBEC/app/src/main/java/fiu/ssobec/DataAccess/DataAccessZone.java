@@ -4,17 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import java.sql.SQLException;
-
 import fiu.ssobec.Model.ZoneData;
 import fiu.ssobec.SQLite.ZoneDataSQLiteDatabase;
 
 /**
- * Created by Dalaidis on 2/10/2015.
+ * Created by Dalaidis on 2/11/2015.
  */
-public class DataAccessZoneData {
-
+public class DataAccessZone {
     //Create Database fields
     private SQLiteDatabase db;
     private ZoneDataSQLiteDatabase dbHelp;
@@ -23,9 +20,10 @@ public class DataAccessZoneData {
             ZoneDataSQLiteDatabase.COLUMN_LIGHTING,
             ZoneDataSQLiteDatabase.COLUMN_OCCUPANCY,
             ZoneDataSQLiteDatabase.COLUMN_PLUGLOAD,
-            ZoneDataSQLiteDatabase.COLUMN_TEMPERATURE} ;
+            ZoneDataSQLiteDatabase.COLUMN_TEMPERATURE}
+            ;
 
-    public DataAccessZoneData(Context context) {
+    public DataAccessZone(Context context) {
         dbHelp = new ZoneDataSQLiteDatabase(context);
     }
 
@@ -57,8 +55,8 @@ public class DataAccessZoneData {
 
         cursor.moveToFirst();
         ZoneData zDate= new ZoneData (cursor.getInt(0), cursor.getString(1),
-                                    cursor.getInt(2), cursor.getInt(3),
-                                    cursor.getInt(4), cursor.getInt(5));
+                cursor.getInt(2), cursor.getInt(3),
+                cursor.getInt(4), cursor.getInt(5));
 
 
         cursor.close();
@@ -69,8 +67,6 @@ public class DataAccessZoneData {
     }
 
 
-    }
-
-
+}
 
 

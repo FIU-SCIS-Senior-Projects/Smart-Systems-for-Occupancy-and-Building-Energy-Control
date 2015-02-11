@@ -8,11 +8,19 @@ public class User {
     private int id;
     private String name;
     private String email;
+    private int loggedIn;
 
-    public User(String name, int id, String email) {
+    public User(String name, int id, String email, int loggedIn) {
         this.name = name;
         this.id = id;
         this.email = email;
+        this.loggedIn = loggedIn;
+    }
+
+    public int getLoggedIn() { return loggedIn; }
+
+    public void setLoggedIn(int loggedIn) {
+        this.loggedIn = loggedIn;
     }
 
 
