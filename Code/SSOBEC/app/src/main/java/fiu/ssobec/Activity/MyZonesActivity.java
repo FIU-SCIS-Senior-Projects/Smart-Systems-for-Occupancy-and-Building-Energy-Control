@@ -10,12 +10,15 @@ import android.widget.GridView;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import fiu.ssobec.ButtonAdapter;
+import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
+import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 
 
@@ -25,45 +28,70 @@ public class MyZonesActivity extends ActionBarActivity {
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
 
+    private DataAccessUser data_access; //data access variable for user
+
     public final static String USER_ID = "com.fiu.ssobec.ID";
 
     int user_id;
 
-    //TODO: If the user is signing in to the system for the first time or has log out, take him/her to loginActivity
+    //TODO: If the user is signing in to the system for the first time or has log out, take him/her
+    // TODO: to loginActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
+        //User user = ;
 
-        Intent intent = getIntent();
-
-
-        int i=0;
-        user_id = intent.getIntExtra(USER_ID, 0);
-
-        System.out.println("User ID: "+user_id);
-
-        String str_user_id = user_id+"";
-        List<NameValuePair> userId = new ArrayList<>(1);
-
-        String res="";
-        userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
-        //send the user_id to zonepost.php
+        //Open the access to the SQLite table for user
+        data_access = new DataAccessUser(this);
         try {
-            res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
-
-            System.out.println("Zone Response is: "+res);
-        } catch (InterruptedException e) {
+            data_access.open();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        zoneNames = new ArrayList<>();
-        zoneDetails(res);
+        User user = data_access.getUser(1); //Get me a User that is currently logged in, into the
+                                            //system: loggedIn == 1.
 
-        //Set buttons in a Grid View order
-        gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-        gridViewButtons.setAdapter(new ButtonAdapter(this));
+        if(user == null)
+        {
+            System.out.println("User NOT Found on Internal DB");
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            System.out.println("User Found on Internal DB Name: "+user.getName().toString()
+                                +"ID: "+user.getId());
+            //Intent intent = getIntent();
+            //int i=0;
+            //user_id = intent.getIntExtra(USER_ID, 0);
+            user_id = user.getId();
+
+            System.out.println("User ID: "+user_id);
+
+            String str_user_id = user_id+"";
+            List<NameValuePair> userId = new ArrayList<>(1);
+
+            String res="";
+            userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
+            //send the user_id to zonepost.php
+            try {
+                res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
+
+                System.out.println("Zone Response is: "+res);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            zoneNames = new ArrayList<>();
+            zoneDetails(res);
+
+            //Set buttons in a Grid View order
+            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            gridViewButtons.setAdapter(new ButtonAdapter(this));
+        }
 
     }
 

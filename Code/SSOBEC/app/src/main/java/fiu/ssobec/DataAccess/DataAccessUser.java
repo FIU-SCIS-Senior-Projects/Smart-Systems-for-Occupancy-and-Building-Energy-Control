@@ -70,6 +70,19 @@ public class DataAccessUser {
         return nUser;
     }
 
+    public User getUser (int loggedIn){
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                        allCols,
+                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn,
+                          null, null, null, null);
+
+        cursor.moveToFirst();
+        User nUser = getUserFromCursor(cursor);
+
+        cursor.close();
+        return nUser;
+    }
+
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<User>();
 
