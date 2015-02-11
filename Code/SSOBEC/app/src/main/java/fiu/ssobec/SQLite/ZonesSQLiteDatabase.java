@@ -13,8 +13,6 @@ public class ZonesSQLiteDatabase extends SQLiteOpenHelper {
     public static final String TABLE_ZONES_DESCRIPTION = "zone_description";
     public static final String COLUMN_ID = "zone_id";
     public static final String COLUMN_NAME = "zone_name";
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "ssobec_internal.db";
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_ZONES_DESCRIPTION + " ("
@@ -24,7 +22,7 @@ public class ZonesSQLiteDatabase extends SQLiteOpenHelper {
             ");";
 
     public ZonesSQLiteDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);
     }
 
     public ZonesSQLiteDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

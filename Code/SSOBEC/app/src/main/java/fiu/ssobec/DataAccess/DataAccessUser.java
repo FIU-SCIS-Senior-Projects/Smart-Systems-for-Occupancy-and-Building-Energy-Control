@@ -30,6 +30,8 @@ public class DataAccessUser {
                                             UserSQLiteDatabase.COLUMN_NAME,
                                             UserSQLiteDatabase.COLUMN_LOGGEDIN};
 
+    private static String[] emailcol = {     UserSQLiteDatabase.COLUMN_EMAIL};
+
     public DataAccessUser(Context context)
     {
         dbHelp = new UserSQLiteDatabase(context);
@@ -53,12 +55,15 @@ public class DataAccessUser {
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
 
-        System.out.println("Email in vals: "+vals.getAsString(email));
 
-        db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);
+        long rowid = db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);
+
+        System.out.println("ROWID: "+rowid);
+        System.out.println("Name: "+name+", logged in"+loggedIn);
+
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                                 allCols,
-                                UserSQLiteDatabase.COLUMN_ID+" =? "+id,
+                                UserSQLiteDatabase.COLUMN_ID+" = "+id,
                                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -69,16 +74,25 @@ public class DataAccessUser {
     }
 
     public User getUser (int loggedIn){
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
-                        allCols,
-                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" =? "+ loggedIn,
-                          null, null, null, null);
 
-        cursor.moveToFirst();
-        User nUser = getUserFromCursor(cursor);
+      /*  Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                         allCols,
+                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
+                          null, null, null, null);*/
 
-        cursor.close();
-        return nUser;
+        Cursor cursor = db.rawQuery("select * from "+UserSQLiteDatabase.TABLE_USER, null);
+
+        if (cursor.moveToFirst()) {
+            User nUser = getUserFromCursor(cursor);
+
+            cursor.close();
+            return nUser;
+        }
+        else
+        {
+            return null;
+        }
+
     }
 
     public List<User> getAllUsers() {
@@ -87,7 +101,7 @@ public class DataAccessUser {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                 allCols, null, null, null, null, null);
 
-        cursor.moveToFirst();
+
         while (!cursor.isAfterLast()) {
             User user = getUserFromCursor(cursor);
             userList.add(user);
@@ -100,9 +114,9 @@ public class DataAccessUser {
 
     private static User getUserFromCursor(Cursor cursor) {
         User user = new User(cursor.getString(0),  //Name
-                cursor.getInt(1),     //ID
-                cursor.getString(2),  //Email
-                cursor.getInt(3));    //LoggedIn
+                             cursor.getInt(1),     //ID
+                             cursor.getString(2),  //Email
+                             cursor.getInt(3));    //LoggedIn
         return user;
     }
 

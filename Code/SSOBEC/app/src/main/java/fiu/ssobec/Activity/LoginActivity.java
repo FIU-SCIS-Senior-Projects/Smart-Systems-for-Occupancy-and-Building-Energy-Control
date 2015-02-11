@@ -42,12 +42,6 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        data_access = new DataAccessUser(this);
-        try {
-            data_access.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -77,6 +71,16 @@ public class LoginActivity extends ActionBarActivity {
 
     //login_pass Button onClick event
     public void LoginPost(View view) throws InterruptedException {
+
+        data_access = new DataAccessUser(this);
+
+        try {
+            System.out.println("Open data access");
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
         System.out.println("This is login_email:" + login_email + ", Password" + password);
@@ -152,6 +156,7 @@ public class LoginActivity extends ActionBarActivity {
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
         if(user_flag)
         {
+            System.out.println("Create User");
             user = data_access.createUser(name, id, email, 1);
 
         }

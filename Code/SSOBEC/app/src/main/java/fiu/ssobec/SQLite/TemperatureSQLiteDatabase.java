@@ -11,8 +11,6 @@ public class TemperatureSQLiteDatabase extends SQLiteOpenHelper {
     public static final String TABLE_TEMPERATURE_DESCRIPTION = "temperature_description";
     public static final String COLUMN_ID = "temperature_id";
     public static final String COLUMN_NAME = "temperature_name";
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "ssobec_internal.db";
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_TEMPERATURE_DESCRIPTION + " ("
@@ -22,7 +20,7 @@ public class TemperatureSQLiteDatabase extends SQLiteOpenHelper {
             ");";
 
     public TemperatureSQLiteDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);
     }
 
     @Override

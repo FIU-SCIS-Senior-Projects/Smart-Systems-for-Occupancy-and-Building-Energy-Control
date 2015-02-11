@@ -41,10 +41,10 @@ public class MyZonesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
-        //User user = ;
-
         //Open the access to the SQLite table for user
         data_access = new DataAccessUser(this);
+
+
         try {
             data_access.open();
         } catch (SQLException e) {
@@ -70,9 +70,6 @@ public class MyZonesActivity extends ActionBarActivity {
         {
             System.out.println("User Found on Internal DB Name: "+user.getName().toString()
                                 +"ID: "+user.getId());
-            //Intent intent = getIntent();
-            //int i=0;
-            //user_id = intent.getIntExtra(USER_ID, 0);
             user_id = user.getId();
 
             System.out.println("User ID: "+user_id);
