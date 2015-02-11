@@ -58,8 +58,21 @@ public class DataAccessUser {
         db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                                 allCols,
-                                UserSQLiteDatabase.COLUMN_ID+" = "+id,
+                                UserSQLiteDatabase.COLUMN_ID+" =? "+id,
                                 null, null, null, null);
+
+        cursor.moveToFirst();
+        User nUser = getUserFromCursor(cursor);
+
+        cursor.close();
+        return nUser;
+    }
+
+    public User getUser (int loggedIn){
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                        allCols,
+                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" =? "+ loggedIn,
+                          null, null, null, null);
 
         cursor.moveToFirst();
         User nUser = getUserFromCursor(cursor);
@@ -91,6 +104,19 @@ public class DataAccessUser {
                 cursor.getString(2),  //Email
                 cursor.getInt(3));    //LoggedIn
         return user;
+    }
+
+    public boolean doesTableExists()
+    {
+        if(dbHelp == null)
+        {
+            System.out.println("Table does not exist");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
 }
