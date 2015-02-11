@@ -1,7 +1,7 @@
 package fiu.ssobec.Model;
 
 /**
- * Created by Maria on 2/7/2015.
+ * Created by Dalaidis on 2/7/2015.
  */
 public class User {
 
@@ -14,6 +14,7 @@ public class User {
         this.id = id;
         this.email = email;
     }
+
 
     public int getId() {
         return id;

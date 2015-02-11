@@ -9,9 +9,11 @@ import fiu.ssobec.Model.User;
 import fiu.ssobec.UserSQLiteDatabase;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Maria on 2/10/2015.
+ * Created by Dalaidis on 2/10/2015.
  *
  *  This class is useful to maintain our User database
  *  and support adding new users and updating the
@@ -23,9 +25,9 @@ public class DataAccessUser {
     private static SQLiteDatabase db;
     private UserSQLiteDatabase dbHelp;
 
-    private static String[] allCols = {    UserSQLiteDatabase.COLUMN_EMAIL,
-                                    UserSQLiteDatabase.COLUMN_ID,
-                                    UserSQLiteDatabase.COLUMN_NAME};
+    private static String[] allCols = {     UserSQLiteDatabase.COLUMN_EMAIL,
+                                            UserSQLiteDatabase.COLUMN_ID,
+                                            UserSQLiteDatabase.COLUMN_NAME};
 
     public DataAccessUser(Context context)
     {
@@ -40,7 +42,7 @@ public class DataAccessUser {
         dbHelp.close();
     }
 
-    public static User createUser(String name,  int id, String email)
+    public User createUser(String name, int id, String email)
     {
         System.out.println("createUser: Creating new user on my database!!!");
         ContentValues vals = new ContentValues();
@@ -58,11 +60,34 @@ public class DataAccessUser {
                                 null, null, null, null);
 
         cursor.moveToFirst();
-        User nUser = new User(cursor.getString(0),  //Name
-                              cursor.getInt(1),     //ID
-                              cursor.getString(2)); //Email
+        User nUser = getUserFromCursor(cursor);
 
         cursor.close();
         return nUser;
     }
+
+    public List<User> getAllUsers() {
+        List<User> userList = new ArrayList<User>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                allCols, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            User user = getUserFromCursor(cursor);
+            userList.add(user);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return userList;
+    }
+
+    private User getUserFromCursor(Cursor cursor) {
+        User user = new User(cursor.getString(0),   //Name
+                cursor.getInt(1),                   //ID
+                cursor.getString(2));               //Email
+        return user;
+    }
+
 }

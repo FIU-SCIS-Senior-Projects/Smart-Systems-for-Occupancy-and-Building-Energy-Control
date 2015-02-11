@@ -31,15 +31,11 @@ public class LoginActivity extends ActionBarActivity {
 
     String login_email, password;
     List<NameValuePair> username_pass;
-
     int id=0;
     String name="";
     String email="";
-
     private DataAccessUser data_access;
 
-
-    //TODO: If the user is not signing in the first time, take him/her directly to MyZonesActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

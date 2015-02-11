@@ -29,12 +29,15 @@ public class MyZonesActivity extends ActionBarActivity {
 
     int user_id;
 
+    //TODO: If the user is signing in to the system for the first time or has log out, take him/her to loginActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
+
         Intent intent = getIntent();
+
 
         int i=0;
         user_id = intent.getIntExtra(USER_ID, 0);
