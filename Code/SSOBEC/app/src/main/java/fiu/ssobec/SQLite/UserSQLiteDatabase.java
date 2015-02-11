@@ -14,6 +14,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "user_id";
     public static final String COLUMN_NAME = "user_name";
     public static final String COLUMN_EMAIL = "user_email";
+    public static final String COLUMN_LOGGEDIN = "user_loggedin";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "ssobec_internal.db";
 
@@ -21,7 +22,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + TABLE_USER + " ("
             + COLUMN_ID  + " int NOT NULL PRIMARY KEY, "
             + COLUMN_NAME + " varchar(50) NOT NULL, "
-            + COLUMN_EMAIL + " varchar(100) NOT NULL "
+            + COLUMN_EMAIL + " varchar(100) NOT NULL, "
+            + COLUMN_LOGGEDIN + "int NOT NULL"
             +
             " );";
 

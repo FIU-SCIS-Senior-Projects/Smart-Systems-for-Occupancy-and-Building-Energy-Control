@@ -23,9 +23,11 @@ public class DataAccessUser {
     private static SQLiteDatabase db;
     private UserSQLiteDatabase dbHelp;
 
-    private static String[] allCols = {    UserSQLiteDatabase.COLUMN_EMAIL,
-                                    UserSQLiteDatabase.COLUMN_ID,
-                                    UserSQLiteDatabase.COLUMN_NAME};
+    private static String[] allCols = {     UserSQLiteDatabase.COLUMN_EMAIL,
+                                            UserSQLiteDatabase.COLUMN_ID,
+                                            UserSQLiteDatabase.COLUMN_NAME,
+                                            UserSQLiteDatabase.COLUMN_LOGGEDIN
+    };
 
     public DataAccessUser(Context context)
     {
@@ -40,13 +42,15 @@ public class DataAccessUser {
         dbHelp.close();
     }
 
-    public static User createUser(String name,  int id, String email)
+    public static User createUser(String name,  int id, String email, int loggedIn)
     {
         System.out.println("createUser: Creating new user on my database!!!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.COLUMN_NAME, name);
         vals.put(UserSQLiteDatabase.COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
+        vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
+
 
 
         System.out.println("Email in vals: "+vals.getAsString(email));
@@ -60,7 +64,9 @@ public class DataAccessUser {
         cursor.moveToFirst();
         User nUser = new User(cursor.getString(0),  //Name
                               cursor.getInt(1),     //ID
-                              cursor.getString(2)); //Email
+                              cursor.getString(2),  //Email
+                              cursor.getInt(3));    //LoggedIn
+
 
         cursor.close();
         return nUser;
