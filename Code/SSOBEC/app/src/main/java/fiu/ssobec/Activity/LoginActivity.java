@@ -115,6 +115,7 @@ public class LoginActivity extends ActionBarActivity {
             System.out.println("User Not Found...");
         }
 
+        data_access.close();
     }
 
     public boolean userDetails(String response)

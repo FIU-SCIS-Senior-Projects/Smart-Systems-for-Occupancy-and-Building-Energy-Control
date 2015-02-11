@@ -51,9 +51,15 @@ public class MyZonesActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
-        User user = data_access.getUser(1); //Get me a User that is currently logged in, into the
-                                            //system: loggedIn == 1.
+        User user = null;
 
+        if(data_access.doesTableExists())
+        {
+            user = data_access.getUser(1); //Get me a User that is currently logged in, into the
+                                            //system: loggedIn == 1.
+        }
+
+        //
         if(user == null)
         {
             System.out.println("User NOT Found on Internal DB");
@@ -93,6 +99,7 @@ public class MyZonesActivity extends ActionBarActivity {
             gridViewButtons.setAdapter(new ButtonAdapter(this));
         }
 
+        data_access.close();
     }
 
 
