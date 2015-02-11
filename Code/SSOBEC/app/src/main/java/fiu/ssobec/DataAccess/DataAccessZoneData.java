@@ -11,7 +11,7 @@ import fiu.ssobec.SQLite.ZoneDataSQLiteDatabase;
 /**
  * Created by Dalaidis on 2/11/2015.
  */
-public class DataAccessZone {
+public class DataAccessZoneData {
     //Create Database fields
     private SQLiteDatabase db;
     private ZoneDataSQLiteDatabase dbHelp;
@@ -23,7 +23,7 @@ public class DataAccessZone {
             ZoneDataSQLiteDatabase.COLUMN_TEMPERATURE}
             ;
 
-    public DataAccessZone(Context context) {
+    public DataAccessZoneData(Context context) {
         dbHelp = new ZoneDataSQLiteDatabase(context);
     }
 

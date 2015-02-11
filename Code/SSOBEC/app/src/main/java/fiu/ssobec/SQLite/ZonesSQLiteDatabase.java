@@ -23,6 +23,10 @@ public class ZonesSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
+    public ZonesSQLiteDatabase(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
     public ZonesSQLiteDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }

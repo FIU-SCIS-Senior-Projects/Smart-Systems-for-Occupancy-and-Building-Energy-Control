@@ -53,8 +53,6 @@ public class DataAccessUser {
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
 
-
-
         System.out.println("Email in vals: "+vals.getAsString(email));
 
         db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);

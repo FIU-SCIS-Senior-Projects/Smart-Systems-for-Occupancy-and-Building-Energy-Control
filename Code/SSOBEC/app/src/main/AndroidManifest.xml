@@ -44,7 +44,7 @@
                 android:value=".Activity.LoginActivity" />
         </activity>
 
-        <!-- My Zones Activity -->
+        <!-- My User Activity -->
 
         <activity
             android:name=".Activity.MyZonesActivity"
