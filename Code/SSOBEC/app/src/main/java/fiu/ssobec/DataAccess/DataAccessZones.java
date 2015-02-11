@@ -41,7 +41,7 @@ public class DataAccessZones {
         System.out.println("createUser: Creating new user on my database!!!");
         ContentValues vals = new ContentValues();
         vals.put(ZonesSQLiteDatabase.COLUMN_ID, id);
-        vals.put(ZonesSQLiteDatabase.COLUMN_NAME, name);
+        vals.put(ZonesSQLiteDatabase.COLUMN_NAME, zone_name);
 
         System.out.println("Name in vals: "+vals.getAsString(zone_name));
 
@@ -52,15 +52,15 @@ public class DataAccessZones {
                 null, null, null, null);
 
         cursor.moveToFirst();
-        User nUser = getZoneFromCursor(cursor);
+        Zones zones = getZoneFromCursor(cursor);
 
         cursor.close();
-        return nUser;
+        return zones;
     }
 
-    private static User getZoneFromCursor(Cursor cursor) {
-        User user = new User(cursor.getInt(0),         //ID
+    private static Zones getZoneFromCursor(Cursor cursor) {
+        Zones zones = new Zones(cursor.getInt(0),         //ID
                                 cursor.getString(1));     //Name
-        return user;
+        return zones;
     }
 }
