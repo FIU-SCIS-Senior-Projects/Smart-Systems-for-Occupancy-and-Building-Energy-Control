@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import fiu.ssobec.Model.User;
-import fiu.ssobec.UserSQLiteDatabase;
+import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
