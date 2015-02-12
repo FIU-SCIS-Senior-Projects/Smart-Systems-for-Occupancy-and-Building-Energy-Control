@@ -23,7 +23,6 @@ import fiu.ssobec.R;
 
 public class MyZonesActivity extends ActionBarActivity {
 
-    static final String STATE_USER_ID = "User's ID";
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;

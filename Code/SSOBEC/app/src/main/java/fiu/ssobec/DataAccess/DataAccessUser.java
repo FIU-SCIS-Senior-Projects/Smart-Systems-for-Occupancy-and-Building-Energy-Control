@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import fiu.ssobec.Model.User;
-import fiu.ssobec.UserSQLiteDatabase;
+import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,8 +29,6 @@ public class DataAccessUser {
                                             UserSQLiteDatabase.COLUMN_ID,
                                             UserSQLiteDatabase.COLUMN_NAME,
                                             UserSQLiteDatabase.COLUMN_LOGGEDIN};
-
-    private static String[] emailcol = {     UserSQLiteDatabase.COLUMN_EMAIL};
 
     public DataAccessUser(Context context)
     {
