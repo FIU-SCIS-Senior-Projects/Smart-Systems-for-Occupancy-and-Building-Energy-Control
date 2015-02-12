@@ -48,7 +48,7 @@
 
         <activity
             android:name=".Activity.MyZonesActivity"
-            android:label="@string/title_activity_my_zones"></activity>
+            android:label="@string/title_activity_my_zones" />
 
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -61,16 +61,25 @@
          <meta-data
              android:name="android.support.PARENT_ACTIVITY"
              android:value="fiu.ssobec.Activity.LoginActivity" />
-     </activity> -->
-
-     <activity
-         android:name=".Activity.ZonesDescriptionActivity"
-         android:label="@string/title_activity_zones_description"
-         android:parentActivityName=".Activity.MyZonesActivity" >
-         <meta-data
-             android:name="android.support.PARENT_ACTIVITY"
-             android:value=".Activity.MyZonesActivity" />
      </activity>
- </application>
+        -->
+
+        <activity
+            android:name=".Activity.ZonesDescriptionActivity"
+            android:label="@string/title_activity_zones_description"
+            android:parentActivityName=".Activity.MyZonesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.MyZonesActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.TemperatureActivity"
+            android:label="@string/title_activity_temperature"
+            android:parentActivityName=".Activity.ZonesDescriptionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
+        </activity>
+    </application>
 
 </manifest>
