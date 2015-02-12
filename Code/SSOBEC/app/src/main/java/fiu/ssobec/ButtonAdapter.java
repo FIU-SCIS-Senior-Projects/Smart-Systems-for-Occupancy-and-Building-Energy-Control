@@ -64,7 +64,7 @@ public class ButtonAdapter extends BaseAdapter {
         } else {
             b = (Button) convertView;
         }
-        b.setBackgroundColor(Color.BLUE);
+        b.setBackgroundColor(Color.parseColor("#ff6bb3ff"));
 
         //b.setText(MyZonesActivity.zoneNames.get(position)); //set name of the button as name of the region
         //b.setId(position); //set id of the button as region_id
