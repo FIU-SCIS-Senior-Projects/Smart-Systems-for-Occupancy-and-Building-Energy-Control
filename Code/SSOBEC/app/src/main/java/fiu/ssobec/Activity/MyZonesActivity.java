@@ -6,17 +6,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.DataAccess.DataAccessZones;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
@@ -27,15 +26,17 @@ public class MyZonesActivity extends ActionBarActivity {
     static final String STATE_USER_ID = "User's ID";
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
+    public static ArrayList<Integer> zoneIDs;
+
+    private HashMap<Integer, String> zone_names;
 
     private DataAccessUser data_access; //data access variable for user
+    private DataAccessZones data_access_zones;
 
     public final static String USER_ID = "com.fiu.ssobec.ID";
 
     int user_id;
 
-    //TODO: If the user is signing in to the system for the first time or has log out, take him/her
-    // TODO: to loginActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +44,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
         //Open the access to the SQLite table for user
         data_access = new DataAccessUser(this);
-
+        data_access_zones = new DataAccessZones(this);
 
         try {
             data_access.open();
@@ -54,11 +55,8 @@ public class MyZonesActivity extends ActionBarActivity {
         User user = null;
 
         if(data_access.doesTableExists())
-        {
             user = data_access.getUser(1); //Get me a User that is currently logged in, into the
                                             //system: loggedIn == 1.
-        }
-
         //
         if(user == null)
         {
@@ -80,20 +78,24 @@ public class MyZonesActivity extends ActionBarActivity {
             String res="";
             userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
             //send the user_id to zonepost.php
-            try {
-                res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
-
-                System.out.println("Zone Response is: "+res);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                try {
+                    res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
+                    System.out.println("Zone Response is: "+res);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             zoneNames = new ArrayList<>();
+            zoneIDs = new ArrayList<>();
+            zone_names = new HashMap<>();
+
             zoneDetails(res);
 
             //Set buttons in a Grid View order
             gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-            gridViewButtons.setAdapter(new ButtonAdapter(this));
+            ButtonAdapter m_badapter = new ButtonAdapter(this);
+            m_badapter.setListData(zoneNames, zoneIDs);
+            gridViewButtons.setAdapter(m_badapter);
         }
 
         data_access.close();
@@ -122,45 +124,58 @@ public class MyZonesActivity extends ActionBarActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    //TODO: Save zone details in the database
     public void zoneDetails(String response)
     {
+
+        int id = 0;
+        String name="";
+        try {
+            data_access_zones.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         String str_before = "";
-       // String zone_id, zone_name;
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
 
-        System.out.println("User Details");
         while (stringTokenizer.hasMoreElements()) {
 
             String temp = stringTokenizer.nextElement().toString();
+
             if (str_before.equalsIgnoreCase("id"))
             {
+                id = Integer.parseInt(temp);
                 System.out.println("id: "+temp);
             }
             else if (str_before.equalsIgnoreCase("name"))
             {
+                name = temp;
                 System.out.println("name: "+temp);
                 zoneNames.add(temp);
-            }
+                zoneIDs.add(id);
 
+                //add zone if the zone is not found in the internal database
+                /*if (data_access_zones.getZone(id) == null)
+                {
+                    data_access_zones.createZones(name, id);
+                }*/
+            }
             str_before = temp;
+
         }
 
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putInt(STATE_USER_ID, user_id);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
+    protected void onDestroy() {
+        super.onDestroy();
+        data_access_zones.close();
     }
-
-
 }

@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import fiu.ssobec.Model.User;
-import fiu.ssobec.UserSQLiteDatabase;
+import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -75,12 +75,10 @@ public class DataAccessUser {
 
     public User getUser (int loggedIn){
 
-      /*  Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+       Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                          allCols,
-                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
-                          null, null, null, null);*/
-
-        Cursor cursor = db.rawQuery("select * from "+UserSQLiteDatabase.TABLE_USER, null);
+                         UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn,
+                          null, null, null, null);
 
         if (cursor.moveToFirst()) {
             User nUser = getUserFromCursor(cursor);

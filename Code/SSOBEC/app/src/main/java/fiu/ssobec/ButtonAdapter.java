@@ -10,6 +10,11 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.view.ViewGroup.LayoutParams;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.Activity.ZonesDescriptionActivity;
 
@@ -19,9 +24,15 @@ import fiu.ssobec.Activity.ZonesDescriptionActivity;
 public class ButtonAdapter extends BaseAdapter {
 
     private Context mContext;
+    //private HashMap<Integer, String> data;
+
+    private ArrayList zone_names;
+    private ArrayList zone_id;
 
     public ButtonAdapter(Context c) {
         mContext = c;
+        zone_names = new ArrayList();
+        zone_id = new ArrayList();
     }
 
     @Override
@@ -54,14 +65,18 @@ public class ButtonAdapter extends BaseAdapter {
             b = (Button) convertView;
         }
         b.setBackgroundColor(Color.BLUE);
-        b.setText(MyZonesActivity.zoneNames.get(position));
-        //System.out.println("Button " + (position + 1));
-        b.setId(position);
+
+        //b.setText(MyZonesActivity.zoneNames.get(position)); //set name of the button as name of the region
+        //b.setId(position); //set id of the button as region_id
+        b.setText((String) zone_names.get(position));
+        b.setId((int) zone_id.get(position));
+
+        System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
+        System.out.println("Adding name: "+zone_names.get(position).toString());
 
         final int iposition = position;
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //System.out.println("Button: "+iposition);
                 Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
                 intent.putExtra("id",iposition);
                 mContext.startActivity(intent);
@@ -69,5 +84,13 @@ public class ButtonAdapter extends BaseAdapter {
         });
 
         return b;
+    }
+
+    //pass the data
+    public void setListData(ArrayList<String> zone_n, ArrayList<Integer> zone_i)
+    {
+        System.out.println("setListData");
+        zone_names = zone_n;
+        zone_id = zone_i;
     }
 }

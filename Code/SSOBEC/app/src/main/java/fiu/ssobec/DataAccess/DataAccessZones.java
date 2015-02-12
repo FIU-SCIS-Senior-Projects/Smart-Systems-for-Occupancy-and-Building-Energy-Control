@@ -38,7 +38,7 @@ public class DataAccessZones {
 
     public static Zones createZones(String zone_name,  int id)
     {
-        System.out.println("createUser: Creating new user on my database!!!");
+        System.out.println("create zone: Creating new zone on my database!");
         ContentValues vals = new ContentValues();
         vals.put(ZonesSQLiteDatabase.COLUMN_ID, id);
         vals.put(ZonesSQLiteDatabase.COLUMN_NAME, zone_name);
@@ -56,6 +56,25 @@ public class DataAccessZones {
 
         cursor.close();
         return zones;
+    }
+
+    public Zones getZone (int zone_id){
+
+        Cursor cursor = db.query(ZonesSQLiteDatabase.TABLE_ZONES_DESCRIPTION,
+                allCols,
+                ZonesSQLiteDatabase.COLUMN_ID+" = "+ zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            Zones zone = getZoneFromCursor(cursor);
+            cursor.close();
+            return zone;
+        }
+        else
+        {
+            return null;
+        }
+
     }
 
     private static Zones getZoneFromCursor(Cursor cursor) {
