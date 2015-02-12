@@ -95,8 +95,6 @@ public class MyZonesActivity extends ActionBarActivity {
             gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
             gridViewButtons.setAdapter(new ButtonAdapter(this));
         }
-
-        data_access.close();
     }
 
 
@@ -119,6 +117,8 @@ public class MyZonesActivity extends ActionBarActivity {
                 Intent intent = new Intent(this,LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ;
+                data_access.userLogout(user_id); //Letting know the system that the user has logout
+
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
@@ -163,4 +163,9 @@ public class MyZonesActivity extends ActionBarActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        data_access.close();
+    }
 }

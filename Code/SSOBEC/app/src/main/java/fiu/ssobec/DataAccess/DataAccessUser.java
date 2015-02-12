@@ -75,12 +75,11 @@ public class DataAccessUser {
 
     public User getUser (int loggedIn){
 
-      /*  Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                          allCols,
                          UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
-                          null, null, null, null);*/
+                          null, null, null, null);
 
-        Cursor cursor = db.rawQuery("select * from "+UserSQLiteDatabase.TABLE_USER, null);
 
         if (cursor.moveToFirst()) {
             User nUser = getUserFromCursor(cursor);
@@ -92,7 +91,24 @@ public class DataAccessUser {
         {
             return null;
         }
+    }
 
+    public boolean userExist (int userId){
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                allCols,
+                UserSQLiteDatabase.COLUMN_ID+" = "+ userId+"",
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            //User nUser = getUserFromCursor(cursor);
+            cursor.close();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public List<User> getAllUsers() {
@@ -120,7 +136,28 @@ public class DataAccessUser {
         return user;
     }
 
-    public boolean doesTableExists()
+    //Table column updated user login
+    public static void userLogin (int UserId){
+        ContentValues args = new ContentValues();
+        args.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, 1);
+        db.update(UserSQLiteDatabase.TABLE_USER, args, UserSQLiteDatabase.COLUMN_ID+" = "+UserId,
+                null);
+        System.out.println("Table column updated, user login");
+    }
+
+    // Table column updated user logout
+    public static void userLogout (int UserId){
+        String strFilter = "_id=" + UserId;
+        ContentValues args = new ContentValues();
+        args.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, 0);
+        db.update(UserSQLiteDatabase.TABLE_USER, args, UserSQLiteDatabase.COLUMN_ID+" = "+UserId,
+                null);
+        System.out.println("Table column updated, user logout");
+    }
+
+
+
+      public boolean doesTableExists()
     {
         if(dbHelp == null)
         {
