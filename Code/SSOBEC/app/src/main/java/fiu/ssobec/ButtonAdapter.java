@@ -11,9 +11,6 @@ import android.widget.GridView;
 import android.view.ViewGroup.LayoutParams;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.Activity.ZonesDescriptionActivity;
@@ -70,6 +67,7 @@ public class ButtonAdapter extends BaseAdapter {
         //b.setId(position); //set id of the button as region_id
         b.setText((String) zone_names.get(position));
         b.setId((int) zone_id.get(position));
+        b.setTextSize(10);
 
         System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
         System.out.println("Adding name: "+zone_names.get(position).toString());

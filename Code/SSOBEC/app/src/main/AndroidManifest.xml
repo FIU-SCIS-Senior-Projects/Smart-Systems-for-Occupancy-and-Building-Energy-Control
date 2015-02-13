@@ -73,7 +73,7 @@
                 android:value=".Activity.MyZonesActivity" />
         </activity>
         <activity
-            android:name=".Activity.TemperatureActivity"
+            android:name=".Activity.EnergyActivity"
             android:label="@string/title_activity_temperature"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data

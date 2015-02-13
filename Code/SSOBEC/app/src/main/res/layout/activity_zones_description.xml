@@ -26,7 +26,8 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="46dp"
         android:layout_alignEnd="@+id/TemperatureButton"
-        android:background="#ff6bb3ff" />
+        android:background="#ff6bb3ff"
+        android:onClick="getOccupancy" />
 
     <Button
         android:layout_width="wrap_content"

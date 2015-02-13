@@ -5,21 +5,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.sql.SQLException;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.DataAccessZones;
-import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 
-
-public class ZonesDescriptionActivity extends ActionBarActivity {
+public class EnergyActivity extends ActionBarActivity {
 
 
     private DataAccessUser data_access;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +22,17 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         data_access = new DataAccessUser(this);
 
         try {
+            System.out.println("Open data access");
             data_access.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        setContentView(R.layout.activity_zones_description);
+        setContentView(R.layout.activity_energy);
+
+        Intent intent = getIntent();
+        System.out.println("Activity Intent: "+intent.toString());
+        this.setTitle("Hi");
     }
 
 
@@ -41,18 +41,6 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_zones, menu);
         return true;
-    }
-
-    //open energy activity for temperature view
-    public void getTemperature(View view) {
-        Intent intent = new Intent(this,EnergyActivity.class);
-        startActivity(intent);
-    }
-
-    //TODO: open energy activity for occupancy view
-    public void getOccupancy(View view) {
-        Intent intent = new Intent(this,EnergyActivity.class);
-        startActivity(intent);
     }
 
     @Override

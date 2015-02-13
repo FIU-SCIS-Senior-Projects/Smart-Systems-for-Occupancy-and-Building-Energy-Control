@@ -26,15 +26,11 @@ public class MyZonesActivity extends ActionBarActivity {
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;
-
-    private HashMap<Integer, String> zone_names;
-
-    private DataAccessUser data_access; //data access variable for user
-    private DataAccessZones data_access_zones;
+    private static DataAccessUser data_access; //data access variable for user
+    private static DataAccessZones data_access_zones;
 
     public final static String USER_ID = "com.fiu.ssobec.ID";
-
-    int user_id;
+    public static int user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +82,6 @@ public class MyZonesActivity extends ActionBarActivity {
 
             zoneNames = new ArrayList<>();
             zoneIDs = new ArrayList<>();
-            zone_names = new HashMap<>();
 
             zoneDetails(res);
 
@@ -118,8 +113,7 @@ public class MyZonesActivity extends ActionBarActivity {
                 Intent intent = new Intent(this,LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ;
-                data_access.userLogout(user_id); //Letting know the system that the user has logout
-
+                data_access.userLogout(user_id);
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
@@ -128,6 +122,7 @@ public class MyZonesActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     //TODO: Save zone details in the database
     public void zoneDetails(String response)
@@ -167,16 +162,27 @@ public class MyZonesActivity extends ActionBarActivity {
                 }*/
             }
             str_before = temp;
-
         }
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            data_access.open();
+            data_access_zones.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         data_access.close();
         data_access_zones.close();
     }
+
+
 }
+

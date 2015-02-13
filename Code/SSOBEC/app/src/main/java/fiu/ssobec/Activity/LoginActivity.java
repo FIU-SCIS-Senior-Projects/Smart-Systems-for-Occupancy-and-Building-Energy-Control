@@ -39,6 +39,15 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        data_access = new DataAccessUser(this);
+
+        try {
+            System.out.println("Open data access");
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -72,14 +81,6 @@ public class LoginActivity extends ActionBarActivity {
     //login_pass Button onClick event
     public void LoginPost(View view) throws InterruptedException {
 
-        data_access = new DataAccessUser(this);
-
-        try {
-            System.out.println("Open data access");
-            data_access.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
@@ -118,8 +119,6 @@ public class LoginActivity extends ActionBarActivity {
         else {
             System.out.println("User Not Found...");
         }
-
-        data_access.close();
     }
 
     public boolean userDetails(String response)
@@ -167,5 +166,19 @@ public class LoginActivity extends ActionBarActivity {
         return user_flag;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        data_access.close();
+    }
 }
