@@ -31,6 +31,7 @@ public class EnergyActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_energy);
 
         data_access = new DataAccessUser(this);
 
@@ -47,19 +48,20 @@ public class EnergyActivity extends ActionBarActivity {
         app_title = getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME);
         this.setTitle(app_title);
 
+        mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+
         switch (app_title)
         {
             case "Temperature":
+                getTemperature();
+                mTextView.setText("Current temperature: "+energy_val);
                 break;
             case "Occupancy":
                 getOccupancy();
+                mTextView.setText("Current occupancy: "+energy_val);
                 break;
         }
 
-        setContentView(R.layout.activity_energy);
-        mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
-
-        mTextView.setText("Current occupancy: "+energy_val);
     }
 
     private void getOccupancy()
@@ -78,8 +80,26 @@ public class EnergyActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
-        parseDatabaseResponse(res);
+        parseDatabaseResponseOcc(res);
         System.out.println("Current occupancy: "+energy_val);
+    }
+
+    private void getTemperature()
+    {
+
+        //Add the region id to the NameValuePair ArrayList;
+        List<NameValuePair> regionId = new ArrayList<>(1);
+        regionId.add(new BasicNameValuePair("region_id",(ZonesDescriptionActivity.regionID+"").toString().trim()));
+        String result = "";
+        try {
+            result = new Database((ArrayList<NameValuePair>) regionId, "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php").send();
+            System.out.println("Temperature Database: "+result);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        parseDatabaseResponseTemp(result);
+        System.out.println("Current temperature: "+energy_val);
     }
 
     @Override
@@ -109,7 +129,7 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
-    private void parseDatabaseResponse(String response)
+    private void parseDatabaseResponseOcc(String response)
     {
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, "|");
@@ -127,6 +147,29 @@ public class EnergyActivity extends ActionBarActivity {
             {
                 energy_val = Integer.parseInt(temp);
                 System.out.println("Occupancy: "+temp);
+            }
+            str_before = temp;
+        }
+    }
+
+    private void parseDatabaseResponseTemp(String response)
+    {
+        String str_before = "";
+        StringTokenizer stringTokenizer = new StringTokenizer(response, "|");
+
+        while (stringTokenizer.hasMoreElements()) {
+
+            String temp = stringTokenizer.nextElement().toString();
+
+            if (str_before.equalsIgnoreCase("time_stamp"))
+            {
+                time_stamp = temp;
+                System.out.println("Time: "+temp);
+            }
+            else if (str_before.equalsIgnoreCase("temperature"))
+            {
+                energy_val = Integer.parseInt(temp);
+                System.out.println("Temperature: "+temp);
             }
             str_before = temp;
         }

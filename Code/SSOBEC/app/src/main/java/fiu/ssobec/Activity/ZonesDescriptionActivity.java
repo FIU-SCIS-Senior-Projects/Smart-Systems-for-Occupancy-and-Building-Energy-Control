@@ -1,6 +1,8 @@
 package fiu.ssobec.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -25,7 +27,6 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         data_access = new DataAccessUser(this);
 
         try {
@@ -35,6 +36,7 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         }
 
         Intent intent = getIntent();
+
         regionID = intent.getIntExtra("button_id", 0);
         System.out.println("Region ID: "+regionID);
 
