@@ -37,12 +37,16 @@ public class MyZonesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_zones);
 
-        //Open the access to the SQLite table for user
+        //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
+
+        //Declare the access to the SQLite table for zones
         data_access_zones = new DataAccessZones(this);
 
+        //Open the data access to the tables
         try {
             data_access.open();
+            data_access_zones.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -52,7 +56,8 @@ public class MyZonesActivity extends ActionBarActivity {
         if(data_access.doesTableExists())
             user = data_access.getUser(1); //Get me a User that is currently logged in, into the
                                             //system: loggedIn == 1.
-        //
+        //If a user that is logged in into the system is
+        //not found then start a new LoginActivity
         if(user == null)
         {
             System.out.println("User NOT Found on Internal DB");
@@ -63,15 +68,13 @@ public class MyZonesActivity extends ActionBarActivity {
         {
             System.out.println("User Found on Internal DB Name: "+user.getName().toString()
                                 +"ID: "+user.getId());
-            user_id = user.getId();
+            user_id = user.getId(); //Get the ID of the user
 
-            System.out.println("User ID: "+user_id);
-
-            String str_user_id = user_id+"";
+            //String str_user_id = user_id+"";
             List<NameValuePair> userId = new ArrayList<>(1);
 
             String res="";
-            userId.add(new BasicNameValuePair("user_id",str_user_id.toString().trim()));
+            userId.add(new BasicNameValuePair("user_id",(user_id+"").toString().trim()));
             //send the user_id to zonepost.php
                 try {
                     res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
@@ -111,9 +114,16 @@ public class MyZonesActivity extends ActionBarActivity {
         switch(item.getItemId()) {
             case R.id.action_logout:
                 Intent intent = new Intent(this,LoginActivity.class);
+
+                //Clean the Activity Stack
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ;
+
+                //Logout the user from the system by declaring the
+                //loggedIn column as '0'.
                 data_access.userLogout(user_id);
+
+                //when the user logs out, take him/her to the login activity
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
@@ -123,18 +133,11 @@ public class MyZonesActivity extends ActionBarActivity {
         }
     }
 
-
-    //TODO: Save zone details in the database
     public void zoneDetails(String response)
     {
 
         int id = 0;
         String name="";
-        try {
-            data_access_zones.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");

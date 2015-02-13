@@ -11,7 +11,7 @@ import fiu.ssobec.Activity.MyZonesActivity;
 public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZonesActivity> {
 
     private MyZonesActivity mActivity;
-    private GridView mGridViewButtons;
+    private GridView mGridView;
 
     public MyZonesActivityTest() {
         super(MyZonesActivity.class);
@@ -24,7 +24,9 @@ public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZon
         super.setUp();
 
         setActivityInitialTouchMode(false); //turns off touch mode in the device or emulator
-        mActivity = getActivity();
+        mActivity = getActivity(); //calls the activity if it's no already running
+
+        //findViewById(fiu.ssobec.Activity.MyZonesActivity.R.id.grid_view_buttons);
 
     } // end of setUp() method definition
 

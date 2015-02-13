@@ -17,12 +17,14 @@ import fiu.ssobec.R;
 
 public class ZonesDescriptionActivity extends ActionBarActivity {
 
-
     private DataAccessUser data_access;
+    public static int regionID;
+    public static String ACTIVITY_NAME = "activity_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         data_access = new DataAccessUser(this);
 
@@ -31,6 +33,10 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Intent intent = getIntent();
+        regionID = intent.getIntExtra("button_id", 0);
+        System.out.println("Region ID: "+regionID);
 
         setContentView(R.layout.activity_zones_description);
     }
@@ -46,12 +52,14 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
     //open energy activity for temperature view
     public void getTemperature(View view) {
         Intent intent = new Intent(this,EnergyActivity.class);
+        intent.putExtra(ACTIVITY_NAME,"Temperature");
         startActivity(intent);
     }
 
     //TODO: open energy activity for occupancy view
     public void getOccupancy(View view) {
         Intent intent = new Intent(this,EnergyActivity.class);
+        intent.putExtra(ACTIVITY_NAME,"Occupancy");
         startActivity(intent);
     }
 

@@ -21,10 +21,9 @@ import fiu.ssobec.Activity.ZonesDescriptionActivity;
 public class ButtonAdapter extends BaseAdapter {
 
     private Context mContext;
-    //private HashMap<Integer, String> data;
 
-    private ArrayList zone_names;
-    private ArrayList zone_id;
+    private ArrayList zone_names; //Each button will display the name of each zone
+    private ArrayList zone_id; //Each button will have an id according to each zone
 
     public ButtonAdapter(Context c) {
         mContext = c;
@@ -34,7 +33,6 @@ public class ButtonAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-
         return MyZonesActivity.zoneNames.size();
     }
 
@@ -63,20 +61,24 @@ public class ButtonAdapter extends BaseAdapter {
         }
         b.setBackgroundColor(Color.parseColor("#ff6bb3ff"));
 
-        //b.setText(MyZonesActivity.zoneNames.get(position)); //set name of the button as name of the region
-        //b.setId(position); //set id of the button as region_id
+        //set name of the button as name of the region
         b.setText((String) zone_names.get(position));
+
+        //set id of the button as region_id
         b.setId((int) zone_id.get(position));
         b.setTextSize(10);
 
         System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
         System.out.println("Adding name: "+zone_names.get(position).toString());
 
-        final int iposition = position;
+        final int button_id = b.getId();
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //When a button is clicked start ZonesDescriptionActivity
                 Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
-                intent.putExtra("id",iposition);
+
+                //send the region_id or button_id to the ZonesDescriptionActivity
+                intent.putExtra("button_id",button_id);
                 mContext.startActivity(intent);
             }
         });
@@ -84,10 +86,9 @@ public class ButtonAdapter extends BaseAdapter {
         return b;
     }
 
-    //pass the data
+    //Here we get the data we need to generate the buttons and their button id
     public void setListData(ArrayList<String> zone_n, ArrayList<Integer> zone_i)
     {
-        System.out.println("setListData");
         zone_names = zone_n;
         zone_id = zone_i;
     }
