@@ -37,7 +37,11 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
 
-        regionID = intent.getIntExtra("button_id", 0);
+        if(intent.getExtras() != null)
+        {
+            regionID = intent.getIntExtra("button_id", 0);
+        }
+
         System.out.println("Region ID: "+regionID);
 
         setContentView(R.layout.activity_zones_description);
