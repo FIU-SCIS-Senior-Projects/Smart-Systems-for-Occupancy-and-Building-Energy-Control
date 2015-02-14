@@ -62,7 +62,7 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
-    //TODO: open energy activity for occupancy view
+    //open energy activity for occupancy view
     public void getOccupancy(View view) {
         Intent intent = new Intent(this,EnergyActivity.class);
         intent.putExtra(ACTIVITY_NAME,"Occupancy");
