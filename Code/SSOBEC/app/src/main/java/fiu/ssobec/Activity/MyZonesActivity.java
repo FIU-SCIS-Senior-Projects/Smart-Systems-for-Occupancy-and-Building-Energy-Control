@@ -21,6 +21,13 @@ import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 
 
+/*
+    MyZonesActivity is our Main and Launcher Activity
+    Our application will only need that the user log in once.
+    A column in the UserSQLiteDatabase 'loggedIn'
+* */
+
+
 public class MyZonesActivity extends ActionBarActivity {
 
     private GridView gridViewButtons;
@@ -51,11 +58,14 @@ public class MyZonesActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        //Declare the object user
         User user = null;
+
 
         if(data_access.doesTableExists())
             user = data_access.getUser(1); //Get me a User that is currently logged in, into the
                                             //system: loggedIn == 1.
+
         //If a user that is logged in into the system is
         //not found then start a new LoginActivity
         if(user == null)
@@ -64,8 +74,10 @@ public class MyZonesActivity extends ActionBarActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+        //User that is currently logged in is found
         else
         {
+
             System.out.println("User Found on Internal DB Name: "+user.getName().toString()
                                 +"ID: "+user.getId());
             user_id = user.getId(); //Get the ID of the user
@@ -75,6 +87,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
             String res="";
             userId.add(new BasicNameValuePair("user_id",(user_id+"").toString().trim()));
+
             //send the user_id to zonepost.php
                 try {
                     res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
@@ -168,6 +181,8 @@ public class MyZonesActivity extends ActionBarActivity {
         }
     }
 
+    //When an Activity is resumed, open the SQLite
+    //connection
     @Override
     protected void onResume() {
         super.onResume();
@@ -179,6 +194,8 @@ public class MyZonesActivity extends ActionBarActivity {
         }
     }
 
+    //When an Activity is left, close the
+    //SQLite connection
     @Override
     protected void onPause() {
         super.onPause();

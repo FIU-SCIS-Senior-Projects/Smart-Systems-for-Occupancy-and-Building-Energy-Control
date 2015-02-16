@@ -78,29 +78,33 @@ public class LoginActivity extends ActionBarActivity {
     }
 
 
-    //login_pass Button onClick event
+    //Login Button has been clicked
     public void LoginPost(View view) throws InterruptedException {
 
-
+        //get the email and password from the text fields
         login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
         System.out.println("This is login_email:" + login_email + ", Password" + password);
 
-        //add our user name and password to an ArrayList
+       //declare an arraylist that holds email and password
         username_pass = new ArrayList<NameValuePair>(2);
 
-        //in PHP:
+        //add our  email and password to a NameValuePair ArrayList
+
+        //the PHP file will recieve the information as follows:
         // $login_email = $_POST['login_email'];
         // $password = $_POST['password'];
         username_pass.add(new BasicNameValuePair("login_email", login_email.toString().trim()));
         username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
 
         //send the username and password to loginpost.php file
+        //save the response from the database in a string
         String res = new Database((ArrayList<NameValuePair>) username_pass, "http://smartsystems-dev.cs.fiu.edu/loginpost.php").send();
 
         System.out.println("Response is: "+res);
 
-        //
+        //in user Details, check that the response were user details and save those
+        //details in our internal SQLite database
         if (userDetails(res)) {
             runOnUiThread(new Runnable() {
 
@@ -110,8 +114,7 @@ public class LoginActivity extends ActionBarActivity {
 
             });
 
-            //Save the user information in the user database
-
+            //Start MyZonesActivity
             Intent intent = new Intent(this, MyZonesActivity.class);
             intent.putExtra(MyZonesActivity.USER_ID,id);
             startActivity(intent);
@@ -157,7 +160,9 @@ public class LoginActivity extends ActionBarActivity {
         {
             System.out.println("Create User, ID is: "+id);
             user = data_access.createUser(name, id, email, 1);
-        }else if (data_access.userExist(id))
+        }
+        //If the user exists, declare that the user has logged in, into the system.
+        else if (data_access.userExist(id))
         {
             data_access.userLogin(id);
 
