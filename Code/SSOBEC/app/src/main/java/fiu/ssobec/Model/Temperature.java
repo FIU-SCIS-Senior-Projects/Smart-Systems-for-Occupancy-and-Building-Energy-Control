@@ -15,6 +15,7 @@ public class Temperature {
 
     }
 
+
     public int getZone_id() {
         return zone_id;
     }
