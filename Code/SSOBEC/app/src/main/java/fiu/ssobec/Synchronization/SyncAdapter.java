@@ -3,10 +3,10 @@ package fiu.ssobec.Synchronization;
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -14,14 +14,10 @@ import android.os.Bundle;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 
+    public static final String LOG_TAG = "SyncAdapter";
+
     /**
      * Creates an {@link android.content.AbstractThreadedSyncAdapter}.
-     *
-     * @param context        the {@link android.content.Context} that this is running within.
-     * @param autoInitialize if true then sync requests that have
-     *                       {@link ContentResolver#SYNC_EXTRAS_INITIALIZE} set will be internally handled by
-     *                       {@link android.content.AbstractThreadedSyncAdapter} by calling
-     *                       {@link ContentResolver#setIsSyncable(android.accounts.Account, String, int)} with 1 if it
      */
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -42,5 +38,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         //TODO: Put the data transfer code here.
+
+        Log.i(LOG_TAG, "Beginning network synchronization");
+
+
     }
 }

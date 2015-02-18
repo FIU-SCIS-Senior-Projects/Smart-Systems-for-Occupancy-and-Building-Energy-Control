@@ -1,8 +1,14 @@
 package fiu.ssobec.Activity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -19,6 +25,8 @@ import fiu.ssobec.DataAccess.DataAccessZones;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
+import fiu.ssobec.Synchronization.SyncUtils;
 
 
 /*
@@ -30,6 +38,25 @@ import fiu.ssobec.R;
 
 public class MyZonesActivity extends ActionBarActivity {
 
+
+    // Sync interval constants
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 1L;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+
+    // Constants
+    // The authority for the sync adapter's content provider
+    public static final String AUTHORITY = "fiu.ssobec.Synchronization.DataSync";
+    // An account type, in the form of a domain name
+    public static final String ACCOUNT_TYPE = "ssobec.fiu";
+    // The account name
+    public static final String ACCOUNT = "myaccount";
+
+    private static final String PREF_SETUP_COMPLETE = "setup_complete";
+
+    // My account
+    Account mAccount;
+
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;
@@ -39,9 +66,24 @@ public class MyZonesActivity extends ActionBarActivity {
     public final static String USER_ID = "com.fiu.ssobec.ID";
     public static int user_id;
 
+    // Global variables
+    // A content resolver for accessing the provider
+    ContentResolver mResolver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+// Get the content resolver for your app
+        //mResolver = getContentResolver();
+
+
+        // Create the dummy Synchronization account
+        //CreateSyncAccount(this);
+        Log.i("sync","CreateSyncAccount");
+
+        SyncUtils.CreateSyncAccount(this);
+
         setContentView(R.layout.activity_my_zones);
 
         //Declare the access to the SQLite table for user
@@ -61,7 +103,6 @@ public class MyZonesActivity extends ActionBarActivity {
         //Declare the object user
         User user = null;
 
-
         if(data_access.doesTableExists())
             user = data_access.getUser(1); //Get me a User that is currently logged in, into the
                                             //system: loggedIn == 1.
@@ -70,19 +111,14 @@ public class MyZonesActivity extends ActionBarActivity {
         //not found then start a new LoginActivity
         if(user == null)
         {
-            System.out.println("User NOT Found on Internal DB");
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
         //User that is currently logged in is found
         else
         {
-
-            System.out.println("User Found on Internal DB Name: "+user.getName().toString()
-                                +"ID: "+user.getId());
             user_id = user.getId(); //Get the ID of the user
 
-            //String str_user_id = user_id+"";
             List<NameValuePair> userId = new ArrayList<>(1);
 
             String res="";
@@ -109,6 +145,37 @@ public class MyZonesActivity extends ActionBarActivity {
         }
     }
 
+    public static void CreateSyncAccount(Context context) {
+        boolean newAccount = false;
+        boolean setupComplete = PreferenceManager
+                .getDefaultSharedPreferences(context).getBoolean(PREF_SETUP_COMPLETE, false);
+
+        // Create account, if it's missing. (Either first run, or user has deleted account.)
+        Account account = AuthenticatorService.GetAccount(ACCOUNT_TYPE);
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        if (accountManager.addAccountExplicitly(account, null, null)) {
+            // Inform the system that this account supports sync
+            ContentResolver.setIsSyncable(account, AUTHORITY, 1);
+            // Inform the system that this account is eligible for auto sync when the network is up
+            ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
+            // Recommend a schedule for automatic synchronization. The system may modify this based
+            // on other scheduled syncs and network utilization.
+            ContentResolver.addPeriodicSync(
+                    account, AUTHORITY, new Bundle(),SYNC_INTERVAL);
+            newAccount = true;
+        }
+
+        // Schedule an initial sync if we detect problems with either our account or our local
+        // data has been deleted. (Note that it's possible to clear app data WITHOUT affecting
+        // the account list, so wee need to check both.)
+        if (newAccount || !setupComplete) {
+            //TriggerRefresh();
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putBoolean(PREF_SETUP_COMPLETE, true).commit();
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,10 +215,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
     public void zoneDetails(String response)
     {
-
         int id = 0;
-        String name="";
-
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
 
@@ -162,20 +226,11 @@ public class MyZonesActivity extends ActionBarActivity {
             if (str_before.equalsIgnoreCase("id"))
             {
                 id = Integer.parseInt(temp);
-                System.out.println("id: "+temp);
             }
             else if (str_before.equalsIgnoreCase("name"))
             {
-                name = temp;
-                System.out.println("name: "+temp);
                 zoneNames.add(temp);
                 zoneIDs.add(id);
-
-                //add zone if the zone is not found in the internal database
-                /*if (data_access_zones.getZone(id) == null)
-                {
-                    data_access_zones.createZones(name, id);
-                }*/
             }
             str_before = temp;
         }
