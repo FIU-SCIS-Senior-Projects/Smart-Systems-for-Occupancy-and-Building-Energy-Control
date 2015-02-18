@@ -27,11 +27,12 @@ public class EnergyActivity extends ActionBarActivity {
     int energy_val = 0;
     String time_stamp="";
     TextView mTextView;
+    TextView mTextView1;
+    TextView mTextView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_energy);
 
         data_access = new DataAccessUser(this);
 
@@ -45,23 +46,36 @@ public class EnergyActivity extends ActionBarActivity {
         Intent intent = getIntent();
         System.out.println("Activity Intent: "+intent.toString());
 
+        //Get the title of the activity
         app_title = getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME);
-        this.setTitle(app_title);
 
-        mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+        this.setTitle(app_title);
 
         switch (app_title)
         {
             case "Temperature":
+                setContentView(R.layout.activity_temperature);
+
                 getTemperature();
-                mTextView.setText("Current temperature: "+energy_val);
+                mTextView1 = (TextView) findViewById( R.id.Fahrenheit);
+                mTextView2 = (TextView) findViewById( R.id.Celsius);
+                mTextView1.setText("Fahrenheit: "+energy_val+"* F");
+                mTextView2.setText("Celsius: "+convertFahrenheitToCelsius((float) energy_val)+"* C");
+
                 break;
             case "Occupancy":
+                setContentView(R.layout.activity_energy);
+                mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getOccupancy();
                 mTextView.setText("Current occupancy: "+energy_val);
                 break;
         }
 
+    }
+
+    // Convert to Celsius
+    private float convertFahrenheitToCelsius(float fahrenheit) {
+        return ((fahrenheit - 32) * 5 / 9);
     }
 
     private void getOccupancy()
