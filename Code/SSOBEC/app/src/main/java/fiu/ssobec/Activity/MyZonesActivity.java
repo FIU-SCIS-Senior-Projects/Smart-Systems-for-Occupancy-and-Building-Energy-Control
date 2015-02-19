@@ -1,14 +1,9 @@
 package fiu.ssobec.Activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -16,18 +11,13 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.DataAccessZones;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
-import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
-import fiu.ssobec.Synchronization.SyncConstants;
-import fiu.ssobec.Synchronization.SyncUtils;
 
 
 /*
@@ -44,7 +34,6 @@ public class MyZonesActivity extends ActionBarActivity {
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;
     private static DataAccessUser data_access; //data access variable for user
-    private static DataAccessZones data_access_zones;
 
     public final static String USER_ID = "com.fiu.ssobec.ID";
     public static int user_id;
@@ -63,12 +52,11 @@ public class MyZonesActivity extends ActionBarActivity {
         data_access = new DataAccessUser(this);
 
         //Declare the access to the SQLite table for zones
-        data_access_zones = new DataAccessZones(this);
+        //data_access_zones = new DataAccessZones(this);
 
         //Open the data access to the tables
         try {
             data_access.open();
-            data_access_zones.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -98,12 +86,12 @@ public class MyZonesActivity extends ActionBarActivity {
             userId.add(new BasicNameValuePair("user_id",(user_id+"").toString().trim()));
 
             //send the user_id to zonepost.php
-                try {
-                    res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
-                    System.out.println("Zone Response is: "+res);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
+                System.out.println("Zone Response is: "+res);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             zoneNames = new ArrayList<>();
             zoneIDs = new ArrayList<>();
@@ -176,10 +164,11 @@ public class MyZonesActivity extends ActionBarActivity {
                 zoneNames.add(temp);
                 zoneIDs.add(id);
 
-                System.out.println("If zone is not in the DB, add new zone");
-                if (data_access_zones.getZone(id) == null)
+               System.out.println("If zone is not in the DB, add new zone");
+                if (data_access.getZone(id) == null)
                 {
-                    data_access_zones.createZones(temp, id);
+                    System.out.println("Create Zone!");
+                    data_access.createZones(temp, id);
                 }
             }
             str_before = temp;
@@ -193,7 +182,6 @@ public class MyZonesActivity extends ActionBarActivity {
         super.onResume();
         try {
             data_access.open();
-            data_access_zones.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -205,7 +193,6 @@ public class MyZonesActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         data_access.close();
-        data_access_zones.close();
     }
 
 

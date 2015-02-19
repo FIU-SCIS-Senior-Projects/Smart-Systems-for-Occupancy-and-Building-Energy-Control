@@ -1,8 +1,6 @@
 package fiu.ssobec.Activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,8 +10,6 @@ import android.view.View;
 import java.sql.SQLException;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.DataAccessZones;
-import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 
 

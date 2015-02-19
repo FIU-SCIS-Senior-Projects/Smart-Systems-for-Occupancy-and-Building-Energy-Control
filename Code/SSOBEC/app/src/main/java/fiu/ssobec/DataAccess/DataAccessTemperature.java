@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.sql.SQLException;
 
 import fiu.ssobec.Model.Temperature;
-import fiu.ssobec.Model.ZoneData;
 import fiu.ssobec.SQLite.TemperatureSQLiteDatabase;
 
 /**
