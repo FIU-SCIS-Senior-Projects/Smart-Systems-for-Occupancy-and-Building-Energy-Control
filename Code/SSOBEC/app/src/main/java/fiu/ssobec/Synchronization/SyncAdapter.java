@@ -41,6 +41,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Log.i(LOG_TAG, "Beginning network synchronization");
 
-
     }
 }

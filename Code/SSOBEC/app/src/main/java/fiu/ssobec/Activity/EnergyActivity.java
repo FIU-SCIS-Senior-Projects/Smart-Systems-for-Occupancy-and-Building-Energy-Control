@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import fiu.ssobec.DataAccess.DataAccessTemperature;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
@@ -23,6 +24,7 @@ public class EnergyActivity extends ActionBarActivity {
 
 
     private DataAccessUser data_access;
+    private DataAccessTemperature data_access_temperature;
     private String app_title="";
     int energy_val = 0;
     String time_stamp="";
@@ -34,11 +36,16 @@ public class EnergyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         data_access = new DataAccessUser(this);
+        data_access_temperature = new DataAccessTemperature(this);
+
 
         try {
             System.out.println("Open data access");
             data_access.open();
+            System.out.println("Open data access of Temperature");
+            data_access_temperature.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -203,5 +210,6 @@ public class EnergyActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         data_access.close();
+        data_access_temperature.close();
     }
 }

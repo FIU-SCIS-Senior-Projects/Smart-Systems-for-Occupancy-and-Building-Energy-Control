@@ -208,6 +208,12 @@ public class MyZonesActivity extends ActionBarActivity {
                 return true;
             case R.id.action_settings:
                 return true;
+
+            case R.id.menu_refresh:
+                System.out.println("Refresh!");
+                SyncUtils.TriggerRefresh();
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -3,6 +3,7 @@ package fiu.ssobec.SQLite;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Dalaidis on 2/11/2015.
@@ -26,10 +27,19 @@ public class TemperatureSQLiteDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        System.out.println("onCreate: Create my User Database!");
+        db.execSQL(DATABASE_CREATE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        System.out.println("onUpgrade: Upgrade my Temperature Database!");
+        Log.w(UserSQLiteDatabase.class.getName(),
+                "Upgrading database from version"
+                        + oldVersion + "to" + newVersion);
+        db.execSQL("DROP TABLE IF EXISTS" +TABLE_TEMPERATURE_DESCRIPTION);
+        onCreate(db);
 
     }
 }
