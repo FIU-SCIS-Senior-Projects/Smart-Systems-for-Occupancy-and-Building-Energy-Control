@@ -17,7 +17,7 @@ public class SyncService extends Service {
 
     public void onCreate(){
 
-        Log.i(LOG_TAG, "Service created");
+        Log.i(LOG_TAG, "Service created woo");
         synchronized (sSyncAdapterLock){
 
         if (sSyncAdapter == null){

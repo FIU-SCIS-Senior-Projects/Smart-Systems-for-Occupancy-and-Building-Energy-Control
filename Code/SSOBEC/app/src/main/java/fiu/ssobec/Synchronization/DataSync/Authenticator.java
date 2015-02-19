@@ -9,15 +9,17 @@ import android.os.Bundle;
 
 /**
  * Created by Maria on 2/18/2015.
- *
- *
+ *  Implement AbstractAccountAuthenticator and stub out all
+ *  its method
  */
 
-public class StubAuthenticator extends AbstractAccountAuthenticator {
+public class Authenticator extends AbstractAccountAuthenticator {
+
     // Simple constructor
-    public StubAuthenticator(Context context) {
+    public Authenticator(Context context) {
         super(context);
     }
+
     // Editing properties is not supported
     @Override
     public Bundle editProperties(

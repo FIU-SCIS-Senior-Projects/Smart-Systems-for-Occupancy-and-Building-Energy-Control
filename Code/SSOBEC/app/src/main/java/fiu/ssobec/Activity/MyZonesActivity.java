@@ -26,6 +26,7 @@ import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
+import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
 
 
@@ -38,24 +39,6 @@ import fiu.ssobec.Synchronization.SyncUtils;
 
 public class MyZonesActivity extends ActionBarActivity {
 
-
-    // Sync interval constants
-    public static final long SECONDS_PER_MINUTE = 60L;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 1L;
-    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
-
-    // Constants
-    // The authority for the sync adapter's content provider
-    public static final String AUTHORITY = "fiu.ssobec.Synchronization.DataSync";
-    // An account type, in the form of a domain name
-    public static final String ACCOUNT_TYPE = "ssobec.fiu";
-    // The account name
-    public static final String ACCOUNT = "myaccount";
-
-    private static final String PREF_SETUP_COMPLETE = "setup_complete";
-
-    // My account
-    Account mAccount;
 
     private GridView gridViewButtons;
     public static ArrayList<String> zoneNames;
@@ -73,16 +56,6 @@ public class MyZonesActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-// Get the content resolver for your app
-        //mResolver = getContentResolver();
-
-
-        // Create the dummy Synchronization account
-        //CreateSyncAccount(this);
-        Log.i("sync","CreateSyncAccount");
-
-        SyncUtils.CreateSyncAccount(this);
 
         setContentView(R.layout.activity_my_zones);
 
@@ -135,7 +108,8 @@ public class MyZonesActivity extends ActionBarActivity {
             zoneNames = new ArrayList<>();
             zoneIDs = new ArrayList<>();
 
-            zoneDetails(res);
+            if(res != null)
+                zoneDetails(res);
 
             //Set buttons in a Grid View order
             gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
@@ -143,38 +117,6 @@ public class MyZonesActivity extends ActionBarActivity {
             m_badapter.setListData(zoneNames, zoneIDs);
             gridViewButtons.setAdapter(m_badapter);
         }
-    }
-
-    public static void CreateSyncAccount(Context context) {
-        boolean newAccount = false;
-        boolean setupComplete = PreferenceManager
-                .getDefaultSharedPreferences(context).getBoolean(PREF_SETUP_COMPLETE, false);
-
-        // Create account, if it's missing. (Either first run, or user has deleted account.)
-        Account account = AuthenticatorService.GetAccount(ACCOUNT_TYPE);
-        AccountManager accountManager =
-                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-        if (accountManager.addAccountExplicitly(account, null, null)) {
-            // Inform the system that this account supports sync
-            ContentResolver.setIsSyncable(account, AUTHORITY, 1);
-            // Inform the system that this account is eligible for auto sync when the network is up
-            ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
-            // Recommend a schedule for automatic synchronization. The system may modify this based
-            // on other scheduled syncs and network utilization.
-            ContentResolver.addPeriodicSync(
-                    account, AUTHORITY, new Bundle(),SYNC_INTERVAL);
-            newAccount = true;
-        }
-
-        // Schedule an initial sync if we detect problems with either our account or our local
-        // data has been deleted. (Note that it's possible to clear app data WITHOUT affecting
-        // the account list, so wee need to check both.)
-        if (newAccount || !setupComplete) {
-            //TriggerRefresh();
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putBoolean(PREF_SETUP_COMPLETE, true).commit();
-        }
-
     }
 
     @Override
@@ -209,11 +151,7 @@ public class MyZonesActivity extends ActionBarActivity {
             case R.id.action_settings:
                 return true;
 
-            case R.id.menu_refresh:
-                System.out.println("Refresh!");
-                SyncUtils.TriggerRefresh();
 
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -237,6 +175,12 @@ public class MyZonesActivity extends ActionBarActivity {
             {
                 zoneNames.add(temp);
                 zoneIDs.add(id);
+
+                System.out.println("If zone is not in the DB, add new zone");
+                if (data_access_zones.getZone(id) == null)
+                {
+                    data_access_zones.createZones(temp, id);
+                }
             }
             str_before = temp;
         }

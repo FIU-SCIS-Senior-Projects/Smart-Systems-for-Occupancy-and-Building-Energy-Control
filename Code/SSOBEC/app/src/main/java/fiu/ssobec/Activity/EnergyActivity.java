@@ -3,6 +3,7 @@ package fiu.ssobec.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import fiu.ssobec.DataAccess.DataAccessTemperature;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.SyncUtils;
 
 public class EnergyActivity extends ActionBarActivity {
 
@@ -36,6 +38,12 @@ public class EnergyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        // Create the dummy Synchronization account
+        //CreateSyncAccount(this);
+        Log.i("EnergyActivity", "CreateSyncAccount! wooh");
+
+        SyncUtils.CreateSyncAccount(this);
 
         data_access = new DataAccessUser(this);
         data_access_temperature = new DataAccessTemperature(this);
@@ -144,6 +152,12 @@ public class EnergyActivity extends ActionBarActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
+                return true;
+
+            case R.id.menu_refresh:
+                System.out.println("Refresh!");
+                SyncUtils.TriggerRefresh();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

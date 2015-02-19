@@ -27,6 +27,7 @@ public class SyncUtils {
 
     private static final String CONTENT_AUTHORITY = SyncConstants.AUTHORITY;
     private static final String ACCOUNT_TYPE = SyncConstants.ACCOUNT_TYPE;
+    private static final String MY_ACCOUNT = SyncConstants.ACCOUNT;
 
     private static final String PREF_SETUP_COMPLETE = SyncConstants.PREF_SETUP_COMPLETE;
 
@@ -35,6 +36,30 @@ public class SyncUtils {
      *
      * @param context Context
      */
+
+    /*
+    public static void CreateSyncAccount(Context context) {
+
+        //Create account type and default account
+        Account newAccount = new Account(MY_ACCOUNT, ACCOUNT_TYPE);
+        //
+        AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+
+        Log.i(LOG_TAG, "Add Periodic Sync");
+        ContentResolver.addPeriodicSync(
+                newAccount,
+                CONTENT_AUTHORITY,
+                Bundle.EMPTY,
+                SYNC_INTERVAL);
+
+        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
+
+        }
+        else
+        {
+            Log.i(LOG_TAG, "The account exists");
+        }
+    }*/
 
     public static void CreateSyncAccount(Context context) {
         boolean newAccount = false;
@@ -56,6 +81,8 @@ public class SyncUtils {
             ContentResolver.addPeriodicSync(
                     account, CONTENT_AUTHORITY, new Bundle(),SYNC_INTERVAL);
             newAccount = true;
+
+            Log.i(LOG_TAG,"CreateSyncAccount: add Account Explicitly");
         }
 
         // Schedule an initial sync if we detect problems with either our account or our local
