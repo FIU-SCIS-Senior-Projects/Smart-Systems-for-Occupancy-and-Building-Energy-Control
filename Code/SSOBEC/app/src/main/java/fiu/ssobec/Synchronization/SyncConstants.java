@@ -8,7 +8,8 @@ public interface SyncConstants {
 
     // Constants
     // The authority for the sync adapter's content provider
-    static final String AUTHORITY = "fiu.ssobec.Synchronization.DataSync";
+    static final String AUTHORITY = "fiu.ssobec.provider";
+
     // An account type, in the form of a domain name
     static final String ACCOUNT_TYPE = "ssobec.fiu";
     // The account name

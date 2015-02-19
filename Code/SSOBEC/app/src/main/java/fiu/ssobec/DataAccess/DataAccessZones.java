@@ -38,6 +38,7 @@ public class DataAccessZones {
 
     public static Zones createZones(String zone_name,  int id)
     {
+
         System.out.println("create zone: Creating new zone on my database!");
         ContentValues vals = new ContentValues();
         vals.put(ZonesSQLiteDatabase.COLUMN_ID, id);
@@ -74,7 +75,6 @@ public class DataAccessZones {
         {
             return null;
         }
-
     }
 
     private static Zones getZoneFromCursor(Cursor cursor) {

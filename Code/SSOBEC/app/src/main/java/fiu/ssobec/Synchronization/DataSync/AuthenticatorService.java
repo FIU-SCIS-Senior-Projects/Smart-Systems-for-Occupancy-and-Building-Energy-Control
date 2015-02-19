@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import fiu.ssobec.Synchronization.SyncConstants;
 
@@ -19,14 +20,22 @@ public class AuthenticatorService extends Service {
 
 
     public static final String ACCOUNT = SyncConstants.ACCOUNT;
+    public static final String LOG_TAG = "AuthenticatorService";
 
     // Instance field that stores the authenticator object
-    private StubAuthenticator mAuthenticator;
+    private Authenticator mAuthenticator;
     @Override
     public void onCreate() {
         // Create a new authenticator object
-        mAuthenticator = new StubAuthenticator(this);
+        Log.i(LOG_TAG, "Service created");
+        mAuthenticator = new Authenticator(this);
     }
+
+    @Override
+    public void onDestroy() {
+        Log.i(LOG_TAG, "Service destroyed");
+    }
+
     /*
      * When the system binds to this Service to make the RPC call
      * return the authenticator's IBinder.

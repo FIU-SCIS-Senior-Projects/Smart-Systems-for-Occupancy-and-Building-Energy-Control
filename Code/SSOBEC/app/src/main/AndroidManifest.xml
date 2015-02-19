@@ -64,13 +64,7 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
 
-        <!--
-         android:parentActivityName=".LoginActivity" >
-         <meta-data
-             android:name="android.support.PARENT_ACTIVITY"
-             android:value="fiu.ssobec.Activity.LoginActivity" />
-     </activity>
-        -->
+        <!-- Zones Description Activity -->
 
         <activity
             android:name=".Activity.ZonesDescriptionActivity"
@@ -80,6 +74,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activity.MyZonesActivity" />
         </activity>
+
+        <!-- Energy Activity -->
         <activity
             android:name=".Activity.EnergyActivity"
             android:label="@string/title_activity_temperature"
@@ -105,7 +101,7 @@
         <!--Stub provider-->
         <provider
             android:name="fiu.ssobec.Synchronization.DataSync.StubProvider"
-            android:authorities="fiu.ssobec.Synchronization.DataSync"
+            android:authorities="fiu.ssobec.provider"
             android:exported="false"
             android:syncable="true"/>
 

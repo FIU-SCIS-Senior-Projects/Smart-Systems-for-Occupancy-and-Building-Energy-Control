@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.ZoneData;
 import fiu.ssobec.SQLite.TemperatureSQLiteDatabase;
-import fiu.ssobec.SQLite.ZoneDataSQLiteDatabase;
 
 /**
  * Created by Dalaidis on 2/10/2015.
@@ -19,14 +18,14 @@ public class DataAccessTemperature {
 
     //Create Database fields
     private SQLiteDatabase db;
-    private ZoneDataSQLiteDatabase dbHelp;
-    private String[]allCol = {ZoneDataSQLiteDatabase.COLUMN_ID,
-            ZoneDataSQLiteDatabase.COLUMN_DATETIME,
-            ZoneDataSQLiteDatabase.COLUMN_TEMPERATURE}
+    private TemperatureSQLiteDatabase dbHelp;
+    private String[]allCol = {TemperatureSQLiteDatabase.COLUMN_ID,
+            TemperatureSQLiteDatabase.COLUMN_NAME,
+            TemperatureSQLiteDatabase.TABLE_TEMPERATURE_DESCRIPTION}
             ;
 
     public DataAccessTemperature(Context context) {
-        dbHelp = new ZoneDataSQLiteDatabase(context);
+        dbHelp = new TemperatureSQLiteDatabase(context);
     }
 
     public void open() throws SQLException {
@@ -41,9 +40,9 @@ public class DataAccessTemperature {
                                    int plugLoad, int temperature) {
 
         ContentValues vals = new ContentValues();
-        vals.put(ZoneDataSQLiteDatabase.COLUMN_ID, id); //0
-        vals.put(ZoneDataSQLiteDatabase.COLUMN_DATETIME, dateTime); //1
-        vals.put(ZoneDataSQLiteDatabase.COLUMN_TEMPERATURE, temperature); //2
+        vals.put(TemperatureSQLiteDatabase.COLUMN_ID, id); //0
+        vals.put(TemperatureSQLiteDatabase.COLUMN_NAME, dateTime); //1
+        vals.put(TemperatureSQLiteDatabase.TABLE_TEMPERATURE_DESCRIPTION, temperature); //2
 
 
         db.insert(TemperatureSQLiteDatabase.TABLE_TEMPERATURE_DESCRIPTION, null, vals);

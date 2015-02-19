@@ -34,7 +34,6 @@ public class ZonesSQLiteDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         System.out.println("onCreate: Create my Zone Database!: "+DATABASE_CREATE);
         db.execSQL(DATABASE_CREATE);
     }

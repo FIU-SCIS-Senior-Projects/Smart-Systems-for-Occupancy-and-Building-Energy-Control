@@ -8,6 +8,15 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import fiu.ssobec.Activity.ZonesDescriptionActivity;
+import fiu.ssobec.DataAccess.Database;
+
 /**
  * Created by Dalaidis on 2/17/2015.
  */
@@ -40,6 +49,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         //TODO: Put the data transfer code here.
 
         Log.i(LOG_TAG, "Beginning network synchronization");
+
+        //put a small database code
+        //Add the region id to the NameValuePair ArrayList;
+        List<NameValuePair> regionId = new ArrayList<>(1);
+        regionId.add(new BasicNameValuePair("region_id",(ZonesDescriptionActivity.regionID+"").toString().trim()));
+
+        String res = "";
+        try {
+            res = new Database((ArrayList<NameValuePair>) regionId, "http://smartsystems-dev.cs.fiu.edu/occupancypost.php").send();
+            System.out.println("Occupancy Response is: "+res);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Log.i(LOG_TAG, "Finishing network synchronization");
 
     }
 }
