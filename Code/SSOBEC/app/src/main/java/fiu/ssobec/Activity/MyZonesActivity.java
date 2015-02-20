@@ -35,7 +35,6 @@ public class MyZonesActivity extends ActionBarActivity {
     public static ArrayList<Integer> zoneIDs;
     private static DataAccessUser data_access; //data access variable for user
 
-    public final static String USER_ID = "com.fiu.ssobec.ID";
     public static int user_id;
 
     // Global variables

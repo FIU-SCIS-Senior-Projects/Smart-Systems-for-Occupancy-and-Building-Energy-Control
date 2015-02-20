@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import fiu.ssobec.SQLite.SQLiteCommon;
-
 /**
  * Created by Dalaidis on 2/7/2015.
  */
@@ -29,12 +27,12 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +"); ";
 
     //Table Zones
-    public static final String TABLE_ZONES_DESCRIPTION = "zone_description";
+    public static final String TABLE_ZONES = "zone_description";
     public static final String ZONES_COLUMN_ID = "zone_id";
     public static final String ZONES_COLUMN_NAME = "zone_name";
 
     private static final String ZONE_TABLE_CREATE = "create table "
-            + TABLE_ZONES_DESCRIPTION + "("
+            + TABLE_ZONES + "("
             + ZONES_COLUMN_ID  + " int NOT NULL PRIMARY KEY, "
             + ZONES_COLUMN_NAME + " varchar(255) NOT NULL "
             +
@@ -52,6 +50,21 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
+    //Table Occupancy
+    public static final String TABLE_OCCUPANCY = "zone_occupancy";
+    public static final String OCC_COLUMN_ID = "zone_description_id";
+    public static final String OCC_COLUMN_DATETIME = "occupancy_datetime";
+    public static final String OCC_COLUMN_OCCUPANCY = "occupancy";
+
+    private static final String OCC_TABLE_CREATE = "create table "
+            + TABLE_OCCUPANCY + " ("
+            + OCC_COLUMN_ID + " int NOT NULL, "
+            + OCC_COLUMN_DATETIME + " datetime NOT NULL, "
+            + OCC_COLUMN_OCCUPANCY + " int NOT NULL, "
+            + "CONSTRAINT zone_occupancy_pk PRIMARY KEY (" + OCC_COLUMN_ID+" , "+OCC_COLUMN_DATETIME+"), "
+            + "FOREIGN KEY ("+OCC_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
+            ");";
+
     public UserSQLiteDatabase(Context context) {
 
         super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);
@@ -61,6 +74,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(USER_TABLE_CREATE);
         db.execSQL(ZONE_TABLE_CREATE);
+        db.execSQL(OCC_TABLE_CREATE);
     }
 
     @Override
@@ -72,7 +86,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
                 + oldVersion + " to " + newVersion
                 );
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER);
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_ZONES_DESCRIPTION);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ZONES);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OCCUPANCY);
         onCreate(db);
     }
 }

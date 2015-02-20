@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import fiu.ssobec.Model.Occupancy;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
@@ -33,6 +34,10 @@ public class DataAccessUser {
 
     private static String[] ZONE_COLS = {   UserSQLiteDatabase.ZONES_COLUMN_ID,
                                             UserSQLiteDatabase.ZONES_COLUMN_NAME};
+
+    private static String[] OCC_COLS = {    UserSQLiteDatabase.OCC_COLUMN_ID,
+                                            UserSQLiteDatabase.OCC_COLUMN_DATETIME,
+                                            UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY};
 
     public DataAccessUser(Context context)
     {
@@ -153,8 +158,8 @@ public class DataAccessUser {
 
         System.out.println("Zone Name in vals: "+vals.getAsString(zone_name));
 
-        db.insert(UserSQLiteDatabase.TABLE_ZONES_DESCRIPTION ,null ,vals);
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES_DESCRIPTION,
+        db.insert(UserSQLiteDatabase.TABLE_ZONES,null ,vals);
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
                 ZONE_COLS,
                 UserSQLiteDatabase.ZONES_COLUMN_ID+" = "+id,
                 null, null, null, null);
@@ -169,7 +174,7 @@ public class DataAccessUser {
     //Get me a zone that has the zone_id
     public Zones getZone (int zone_id){
 
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES_DESCRIPTION,
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
                 ZONE_COLS,
                 UserSQLiteDatabase.ZONES_COLUMN_ID+" = "+ zone_id,
                 null, null, null, null);
@@ -185,14 +190,30 @@ public class DataAccessUser {
         }
     }
 
+    public List<Integer> getAllZoneID() {
+        List<Integer> zones_id = new ArrayList<Integer>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
+                ZONE_COLS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Zones zone = getZoneFromCursor(cursor);
+            zones_id.add(zone.getZone_id());
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return zones_id;
+    }
 
     private static Zones getZoneFromCursor(Cursor cursor) {
         Zones zones = new Zones(cursor.getInt(0),       //ID
-                cursor.getString(1));                   //Name
+                                cursor.getString(1));   //Name
         return zones;
     }
 
-      public boolean doesTableExists()
+     public boolean doesTableExists()
     {
         if(dbHelp == null)
         {
@@ -207,4 +228,43 @@ public class DataAccessUser {
 
     /****************************** TEMPERATURE ************************************/
 
+
+    /****************************** OCCUPANCY ************************************/
+
+    public static void createOccupancy(int zone_id,  String date_time, int occupancy)
+    {
+        System.out.println("create my occupancy data!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.OCC_COLUMN_DATETIME, date_time);
+        vals.put(UserSQLiteDatabase.OCC_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY, occupancy);
+
+        db.insert(UserSQLiteDatabase.TABLE_OCCUPANCY,null ,vals);
+    }
+
+    public String getLastTimeStamp(int zone_id) {
+        String last_time_stamp = "0000-00-00 00:00:00";
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            last_time_stamp = occupancy.getDate_time();
+        }
+
+        System.out.println("Last Time Stamp is: "+last_time_stamp);
+        cursor.close();
+        return last_time_stamp;
+    }
+
+    private static Occupancy getOccupancyFromCursor(Cursor cursor) {
+        Occupancy occp = new Occupancy( cursor.getString(0),    //Datetime
+                                        cursor.getInt(1),       //ID
+                                        cursor.getInt(2));      //Occupancy
+        return occp;
+    }
 }

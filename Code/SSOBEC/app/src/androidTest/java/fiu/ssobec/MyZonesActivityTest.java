@@ -11,7 +11,6 @@ import fiu.ssobec.Activity.MyZonesActivity;
 public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZonesActivity> {
 
     private MyZonesActivity mActivity;
-    private GridView mGridView;
 
     public MyZonesActivityTest() {
         super(MyZonesActivity.class);

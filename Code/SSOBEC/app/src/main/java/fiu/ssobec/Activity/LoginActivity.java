@@ -116,7 +116,6 @@ public class LoginActivity extends ActionBarActivity {
 
             //Start MyZonesActivity
             Intent intent = new Intent(this, MyZonesActivity.class);
-            intent.putExtra(MyZonesActivity.USER_ID,id);
             startActivity(intent);
         }
         else {
