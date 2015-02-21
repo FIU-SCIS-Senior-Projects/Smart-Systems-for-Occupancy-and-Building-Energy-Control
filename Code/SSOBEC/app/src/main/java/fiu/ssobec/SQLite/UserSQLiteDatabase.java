@@ -40,14 +40,17 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     //Table Temperature
     public static final String TABLE_TEMPERATURE = "zone_temperature";
-    public static final String TEMP_COLUMN_ID = "temperature_id";
-    public static final String TEMP_COLUMN_NAME = "temperature_name";
+    public static final String TEMP_COLUMN_ID = "zone_description_id";
+    public static final String TEMP_COLUMN_DATETIME = "temperature_datetime";
+    public static final String TEMP_COLUMN_TEMPERATURE = "temperature";
 
     private static final String TEMP_TABLE_CREATE = "create table "
             + TABLE_TEMPERATURE + " ("
-            + TEMP_COLUMN_ID  + " int NOT NULL PRIMARY KEY, "
-            + TEMP_COLUMN_NAME + " varchar(255) NOT NULL "
-            +
+            + TEMP_COLUMN_ID + " int NOT NULL, "
+            + TEMP_COLUMN_DATETIME + " datetime NOT NULL, "
+            + TEMP_COLUMN_TEMPERATURE + " int NOT NULL, "
+            + "CONSTRAINT zone_temperature_pk PRIMARY KEY (" + TEMP_COLUMN_ID+" , "+TEMP_COLUMN_DATETIME+"), "
+            + "FOREIGN KEY ("+TEMP_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
 
     //Table Occupancy
@@ -75,6 +78,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL(USER_TABLE_CREATE);
         db.execSQL(ZONE_TABLE_CREATE);
         db.execSQL(OCC_TABLE_CREATE);
+        db.execSQL(TEMP_TABLE_CREATE);
     }
 
     @Override
@@ -88,6 +92,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ZONES);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OCCUPANCY);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_TEMPERATURE);
         onCreate(db);
     }
 }
