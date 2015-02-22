@@ -82,7 +82,7 @@ public class EnergyActivity extends ActionBarActivity {
                 setContentView(R.layout.activity_energy);
                 mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getOccupancy();
-                mTextView.setText("Current occupancy: "+energy_val);
+                //mTextView.setText("Current occupancy: "+energy_val);
                 break;
         }
 
@@ -97,20 +97,18 @@ public class EnergyActivity extends ActionBarActivity {
     {
         System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
 
-        //Add the region id to the NameValuePair ArrayList;
-        List<NameValuePair> regionId = new ArrayList<>(1);
-        regionId.add(new BasicNameValuePair("region_id",(ZonesDescriptionActivity.regionID+"").toString().trim()));
+        int zone_id = ZonesDescriptionActivity.regionID;
 
-        String res = "";
-        try {
-            res = new Database((ArrayList<NameValuePair>) regionId, "http://smartsystems-dev.cs.fiu.edu/occupancypost.php").send();
-            System.out.println("Occupancy Response is: "+res);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        ArrayList<String> info = data_access.getLatestOccupancy(zone_id);
+
+        if(info == null)
+        {
+            mTextView.setText("No Data");
         }
-
-        parseDatabaseResponseOcc(res);
-        System.out.println("Current occupancy: "+energy_val);
+        else
+        {
+            mTextView.setText("Current Occupancy: "+info.get(1)+"\nTime:"+info.get(0));
+        }
     }
 
     private void getTemperature()
@@ -224,6 +222,5 @@ public class EnergyActivity extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         data_access.close();
-        data_access_temperature.close();
     }
 }
