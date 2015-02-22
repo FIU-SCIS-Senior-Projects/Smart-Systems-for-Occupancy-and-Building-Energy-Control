@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import fiu.ssobec.Model.Occupancy;
+import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
@@ -34,6 +35,10 @@ public class DataAccessUser {
 
     private static String[] ZONE_COLS = {   UserSQLiteDatabase.ZONES_COLUMN_ID,
                                             UserSQLiteDatabase.ZONES_COLUMN_NAME};
+
+    private static String[] TEMP_COLS = {   UserSQLiteDatabase.TEMP_COLUMN_ID,
+                                            UserSQLiteDatabase.TEMP_COLUMN_DATETIME,
+                                            UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE};
 
     private static String[] OCC_COLS = {    UserSQLiteDatabase.OCC_COLUMN_ID,
                                             UserSQLiteDatabase.OCC_COLUMN_DATETIME,
@@ -228,6 +233,46 @@ public class DataAccessUser {
 
     /****************************** TEMPERATURE ************************************/
 
+    public static void createTemperature(int zone_id,  String date_time, int temperature)
+    {
+        System.out.println("create my temperature data!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, date_time);
+        vals.put(UserSQLiteDatabase.TEMP_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE, temperature);
+
+        db.insert(UserSQLiteDatabase.TABLE_TEMPERATURE,null ,vals);
+    }
+
+    public String getLastTimeStamp_temp(int zone_id) {
+        String last_time_stamp = "0000-00-00 00:00:00";
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                TEMP_COLS,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            Temperature temperature = getTemperatureFromCursor(cursor);
+            last_time_stamp = temperature.getDatetime();
+        }
+
+        System.out.println("Last Time Stamp is: "+last_time_stamp);
+        cursor.close();
+        return last_time_stamp;
+    }
+
+    /*  zone_id
+        datetime
+        temperature
+    * */
+    private static Temperature getTemperatureFromCursor(Cursor cursor) {
+        Temperature temp = new Temperature( cursor.getInt(0),    //zone_id
+                                            cursor.getString(1),       //datetime
+                                            cursor.getInt(2));      //temperature
+        return temp;
+    }
 
     /****************************** OCCUPANCY ************************************/
 
