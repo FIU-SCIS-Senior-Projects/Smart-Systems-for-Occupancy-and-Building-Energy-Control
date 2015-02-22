@@ -235,11 +235,32 @@ public class DataAccessUser {
     {
         System.out.println("create my occupancy data!");
         ContentValues vals = new ContentValues();
-        vals.put(UserSQLiteDatabase.OCC_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.OCC_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.OCC_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY, occupancy);
 
         db.insert(UserSQLiteDatabase.TABLE_OCCUPANCY,null ,vals);
+    }
+
+    public ArrayList<String> getLatestOccupancy(int zone_id)
+    {
+        ArrayList<String> occup_info = new ArrayList<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            //cursor.move(-2);
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            occup_info.add(occupancy.getDate_time());
+            occup_info.add(occupancy.getOccupancy()+"");
+
+            return occup_info;
+        }
+        else
+            return null;
     }
 
     public String getLastTimeStamp(int zone_id) {
@@ -252,6 +273,7 @@ public class DataAccessUser {
 
         if (cursor.moveToLast())
         {
+            //cursor.move(-2);
             Occupancy occupancy = getOccupancyFromCursor(cursor);
             last_time_stamp = occupancy.getDate_time();
         }
@@ -262,8 +284,8 @@ public class DataAccessUser {
     }
 
     private static Occupancy getOccupancyFromCursor(Cursor cursor) {
-        Occupancy occp = new Occupancy( cursor.getString(0),    //Datetime
-                                        cursor.getInt(1),       //ID
+        Occupancy occp = new Occupancy( cursor.getString(1),    //Datetime
+                                        cursor.getInt(0),       //Zone_ID
                                         cursor.getInt(2));      //Occupancy
         return occp;
     }
