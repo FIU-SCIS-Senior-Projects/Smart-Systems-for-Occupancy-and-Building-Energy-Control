@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
+import fiu.ssobec.Model.PlugLoad;
 import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
@@ -48,6 +49,10 @@ public class DataAccessUser {
     private static String[] LIGHT_COLS = {  UserSQLiteDatabase.LIGHT_COLUMN_ID,
                                             UserSQLiteDatabase.LIGHT_COLUMN_DATETIME,
                                             UserSQLiteDatabase.LIGHT_COLUMN_STATE};
+
+    private static String[] PLUG_COLS = {   UserSQLiteDatabase.PLUG_COLUMN_ID,
+                                            UserSQLiteDatabase.PLUG_COLUMN_DATETIME,
+                                            UserSQLiteDatabase.PLUG_COLUMN_PLUGLOAD};
 
     public DataAccessUser(Context context)
     {
@@ -278,7 +283,7 @@ public class DataAccessUser {
 
         if (cursor.moveToLast())
         {
-            Temperature temperature = getTemperatureFromCursor(cursor);
+            Temperature temperature= getTemperatureFromCursor(cursor);
             temp_info.add(temperature.getDatetime());
             temp_info.add(temperature.getTemperature()+"");
 
@@ -290,13 +295,77 @@ public class DataAccessUser {
 
     /*  zone_id
         datetime
-        temperature
+       temperature
     * */
     private static Temperature getTemperatureFromCursor(Cursor cursor) {
         Temperature temp = new Temperature( cursor.getInt(0),    //zone_id
-                                            cursor.getString(1),       //datetime
-                                            cursor.getInt(2));      //temperature
+                cursor.getString(1),       //datetime
+                cursor.getInt(2));      //temperature
         return temp;
+    }
+
+    /****************************** PLUGLOAD ************************************/
+
+    public static void createPlugLoad(int zone_id,  String date_time, int plugLoad)
+    {
+        System.out.println("create my plugLoad data!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_DATETIME, date_time);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_PLUGLOAD, plugLoad);
+
+        db.insert(UserSQLiteDatabase.TABLE_PLUGLOAD,null ,vals);
+    }
+
+    public String getLastTimeStamp_plugLoad(int zone_id) {
+        String last_time_stamp = "0000-00-00 00:00:00";
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
+            last_time_stamp = plugLoad.getDatetime();
+        }
+
+        System.out.println("Last Time Stamp is: "+last_time_stamp);
+        cursor.close();
+        return last_time_stamp;
+    }
+
+    public ArrayList<String> getLatestPlugLoad(int zone_id)
+    {
+        ArrayList<String> plugLoad_info = new ArrayList<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            //cursor.move(-2);
+            PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
+            plugLoad_info.add(plugLoad.getDatetime());
+            plugLoad_info.add(plugLoad.getPlugLoad()+"");
+
+            return plugLoad_info;
+        }
+        else
+            return null;
+    }
+
+    /*  zone_id
+        datetime
+        plugLoad
+    * */
+    private static PlugLoad getPlugLoadFromCursor(Cursor cursor) {
+        PlugLoad plug = new PlugLoad( cursor.getInt(0),    //zone_id
+                cursor.getString(1),       //datetime
+                cursor.getInt(2));      //plugLoad
+        return plug;
     }
 
     /****************************** OCCUPANCY ************************************/

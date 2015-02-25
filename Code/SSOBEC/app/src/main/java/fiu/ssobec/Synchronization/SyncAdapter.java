@@ -36,6 +36,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TEMPERATURE_PHP = "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php";
 
     public static final String LIGHTING_PHP = "http://smartsystems-dev.cs.fiu.edu/lightingpost.php";
+    public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost.php";
 
     private DataAccessUser data_access;
 
@@ -73,6 +74,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             int id = region_id_itr.next();
             getOccupancyData(id);
             getTemperatureData(id);
+            getPlugLoadData(id);
         }
 
         Log.i(LOG_TAG, "Finishing network synchronization");
@@ -154,10 +156,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void getLightingData(int RegionID)
+    private void getPlugLoadData(int RegionID)
     {
-        System.out.println("Get Temperature from ID: "+RegionID);
-        String last_time_stamp = data_access.getLastLightTimeStamp(RegionID);
+        System.out.println("Get PlugLoad from ID: "+RegionID);
+        String last_time_stamp = data_access.getLastTimeStamp_plugLoad(RegionID);
 
         //put a small database code
         //Add the region id to the NameValuePair ArrayList;
@@ -167,20 +169,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).toString().trim()));
 
         try {
-            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, LIGHTING_PHP).send();
-            System.out.println("Sync Lighting Response is: "+res);
+
+            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, PLUGLOAD_PHP).send();
+            System.out.println("Sync Plug Load Response is: "+res);
 
             JSONObject obj = new JSONObject(res);
-            JSONArray arr = obj.getJSONArray("lighting_obj");
+            JSONArray arr = obj.getJSONArray("plugLoad_obj");
 
             for (int i = 0; i < arr.length(); i++)
             {
-                String temp = arr.getJSONObject(i).getString("lighting");
+                int plugLoad = arr.getJSONObject(i).getInt("plugLoad");
                 String time_stamp = arr.getJSONObject(i).getString("time_stamp");
-                System.out.println("Lighting: "+temp+", Time Stamp: "+time_stamp);
+                System.out.println("Plug Load: "+plugLoad+", Time Stamp: "+time_stamp);
 
                 if(!time_stamp.equalsIgnoreCase("null"))
-                    data_access.createLighting(RegionID, time_stamp, temp);
+                    data_access.createPlugLoad(RegionID, time_stamp, plugLoad);
             }
 
         } catch (InterruptedException e) {

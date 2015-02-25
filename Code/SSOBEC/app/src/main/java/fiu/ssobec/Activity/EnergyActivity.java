@@ -67,14 +67,20 @@ public class EnergyActivity extends ActionBarActivity {
                 mTextView2 = (TextView) findViewById( R.id.Celsius);
 
                 getTemperature();
-
-
                 break;
+
             case "Occupancy":
                 setContentView(R.layout.activity_energy);
                 mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getOccupancy();
                 break;
+
+            case "PlugLoad":
+                setContentView(R.layout.activity_energy);
+                mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+                getPlugLoad();
+                break;
+
         }
 
     }
@@ -123,6 +129,24 @@ public class EnergyActivity extends ActionBarActivity {
         }
 
 
+    }
+
+    private void getPlugLoad()
+    {
+        System.out.println("Get plug load from region_id: "+ZonesDescriptionActivity.regionID);
+
+        int zone_id = ZonesDescriptionActivity.regionID;
+
+        ArrayList<String> info = data_access.getLatestPlugLoad(zone_id);
+
+        if(info == null)
+        {
+            mTextView.setText("No Data");
+        }
+        else
+        {
+            mTextView.setText("Current PlugLoad: "+info.get(1)+"\nTime:"+info.get(0));
+        }
     }
 
     @Override

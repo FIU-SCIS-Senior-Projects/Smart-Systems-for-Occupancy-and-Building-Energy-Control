@@ -65,6 +65,13 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    //open energy activity for plugLoad view
+    public void getPlugLoad(View view) {
+        Intent intent = new Intent(this,EnergyActivity.class);
+        intent.putExtra(ACTIVITY_NAME,"PlugLoad");
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
