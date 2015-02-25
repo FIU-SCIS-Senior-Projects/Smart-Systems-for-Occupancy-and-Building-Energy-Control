@@ -95,7 +95,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL(ZONE_TABLE_CREATE);
         db.execSQL(OCC_TABLE_CREATE);
         db.execSQL(TEMP_TABLE_CREATE);
-        //db.execSQL(LIGHT_TABLE_CREATE);
+        db.execSQL(LIGHT_TABLE_CREATE);
     }
 
     @Override
@@ -110,6 +110,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ZONES);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OCCUPANCY);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_TEMPERATURE);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_LIGHTING);
         onCreate(db);
     }
 }

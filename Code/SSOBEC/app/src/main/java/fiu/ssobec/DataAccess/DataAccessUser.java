@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
 import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.User;
@@ -43,6 +44,10 @@ public class DataAccessUser {
     private static String[] OCC_COLS = {    UserSQLiteDatabase.OCC_COLUMN_ID,
                                             UserSQLiteDatabase.OCC_COLUMN_DATETIME,
                                             UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY};
+
+    private static String[] LIGHT_COLS = {  UserSQLiteDatabase.LIGHT_COLUMN_ID,
+                                            UserSQLiteDatabase.LIGHT_COLUMN_DATETIME,
+                                            UserSQLiteDatabase.LIGHT_COLUMN_STATE};
 
     public DataAccessUser(Context context)
     {
@@ -273,7 +278,6 @@ public class DataAccessUser {
 
         if (cursor.moveToLast())
         {
-            //cursor.move(-2);
             Temperature temperature = getTemperatureFromCursor(cursor);
             temp_info.add(temperature.getDatetime());
             temp_info.add(temperature.getTemperature()+"");
@@ -355,4 +359,67 @@ public class DataAccessUser {
                                         cursor.getInt(2));      //Occupancy
         return occp;
     }
+
+    /****************************** LIGHTING ************************************/
+
+    public static void createLighting(int zone_id,  String date_time, String lighting)
+    {
+        System.out.println("create my lighting data!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.LIGHT_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.LIGHT_COLUMN_DATETIME, date_time);
+        vals.put(UserSQLiteDatabase.LIGHT_COLUMN_STATE, lighting);
+
+        db.insert(UserSQLiteDatabase.TABLE_LIGHTING,null ,vals);
+    }
+
+    public ArrayList<String> getLatestLighting(int zone_id)
+    {
+        ArrayList<String> light_info = new ArrayList<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                LIGHT_COLS,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            Lighting light = getLightingFromCursor(cursor);
+            light_info.add(light.getDatetime());
+            light_info.add(light.getLighting_state()+"");
+
+            return light_info;
+        }
+        else
+            return null;
+    }
+
+    public String getLastLightTimeStamp(int zone_id) {
+        String last_time_stamp = "0000-00-00 00:00:00";
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                LIGHT_COLS,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            Lighting lighting = getLightingFromCursor(cursor);
+            last_time_stamp = lighting.getDatetime();
+        }
+
+        System.out.println("Last Time Stamp is: "+last_time_stamp);
+        cursor.close();
+        return last_time_stamp;
+    }
+
+    //ID
+    //STATE
+    //Datetime
+    private static Lighting getLightingFromCursor(Cursor cursor) {
+        Lighting light = new Lighting( cursor.getInt(0),    //Datetime
+                                        cursor.getString(1),       //Zone_ID
+                                        cursor.getString(2));      //Occupancy
+        return light;
+    }
+
 }

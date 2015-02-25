@@ -7,10 +7,10 @@ public class Lighting {
 
 
     private int zone_id;
-    private int lighting_state;
+    private String lighting_state; //'ON' - 'OFF'
     private String datetime;
 
-    public Lighting(int zone_id, int lighting_state, String datetime) {
+    public Lighting(int zone_id, String datetime, String lighting_state) {
         this.zone_id = zone_id;
         this.lighting_state = lighting_state;
         this.datetime = datetime;
@@ -24,11 +24,11 @@ public class Lighting {
         this.zone_id = zone_id;
     }
 
-    public int getLighting_state() {
+    public String getLighting_state() {
         return lighting_state;
     }
 
-    public void setLighting_state(int lighting_state) {
+    public void setLighting_state(String lighting_state) {
         this.lighting_state = lighting_state;
     }
 
