@@ -237,8 +237,8 @@ public class DataAccessUser {
     {
         System.out.println("create my temperature data!");
         ContentValues vals = new ContentValues();
-        vals.put(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_ID, zone_id);
+        vals.put(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE, temperature);
 
         db.insert(UserSQLiteDatabase.TABLE_TEMPERATURE,null ,vals);
@@ -261,6 +261,27 @@ public class DataAccessUser {
         System.out.println("Last Time Stamp is: "+last_time_stamp);
         cursor.close();
         return last_time_stamp;
+    }
+
+    public ArrayList<String> getLatestTemperature(int zone_id)
+    {
+        ArrayList<String> temp_info = new ArrayList<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                TEMP_COLS,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            //cursor.move(-2);
+            Temperature temperature = getTemperatureFromCursor(cursor);
+            temp_info.add(temperature.getDatetime());
+            temp_info.add(temperature.getTemperature()+"");
+
+            return temp_info;
+        }
+        else
+            return null;
     }
 
     /*  zone_id

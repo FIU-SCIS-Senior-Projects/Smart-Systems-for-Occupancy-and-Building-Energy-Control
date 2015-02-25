@@ -62,18 +62,18 @@ public class EnergyActivity extends ActionBarActivity {
             case "Temperature":
                 setContentView(R.layout.activity_temperature);
 
-                getTemperature();
+
                 mTextView1 = (TextView) findViewById( R.id.Fahrenheit);
                 mTextView2 = (TextView) findViewById( R.id.Celsius);
-                mTextView1.setText("Fahrenheit: "+energy_val+"* F");
-                mTextView2.setText("Celsius: "+convertFahrenheitToCelsius((float) energy_val)+"* C");
+
+                getTemperature();
+
 
                 break;
             case "Occupancy":
                 setContentView(R.layout.activity_energy);
                 mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getOccupancy();
-                //mTextView.setText("Current occupancy: "+energy_val);
                 break;
         }
 
@@ -104,20 +104,25 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getTemperature()
     {
+        System.out.println("Get temperature from region_id: "+ZonesDescriptionActivity.regionID);
 
-        //Add the region id to the NameValuePair ArrayList;
-        List<NameValuePair> regionId = new ArrayList<>(1);
-        regionId.add(new BasicNameValuePair("region_id",(ZonesDescriptionActivity.regionID+"").toString().trim()));
-        String result = "";
-        try {
-            result = new Database((ArrayList<NameValuePair>) regionId, "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php").send();
-            System.out.println("Temperature Database: "+result);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        int zone_id = ZonesDescriptionActivity.regionID;
+
+        ArrayList<String> info = data_access.getLatestTemperature(zone_id);
+
+        if(info == null)
+        {
+            mTextView1.setText("No Data");
+        }
+        else
+        {
+            TextView time_stamp = (TextView) findViewById(R.id.temperatureTimeStamp);
+            mTextView1.setText("Fahrenheit: "+info.get(1)+(char) 0x00B0+"F");
+            mTextView2.setText("Celsius: "+convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+(char) 0x00B0+"C");
+            time_stamp.setText(info.get(0)); //set time stamp
         }
 
-        parseDatabaseResponseTemp(result);
-        System.out.println("Current temperature: "+energy_val);
+
     }
 
     @Override

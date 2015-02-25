@@ -6,20 +6,30 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fahrenheitf"
         android:id="@+id/Fahrenheit"
         android:layout_marginTop="96dp"
         android:textSize="@dimen/login_textfield_size"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/fahrenheit" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Celsious"
         android:id="@+id/Celsius"
         android:textIsSelectable="true"
         android:textSize="@dimen/login_textfield_size"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/Fahrenheit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="72dp"
+        android:text="@string/celsius" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/temperatureTimeStamp"
+        android:layout_marginBottom="77dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/Fahrenheit" />
 </RelativeLayout>
