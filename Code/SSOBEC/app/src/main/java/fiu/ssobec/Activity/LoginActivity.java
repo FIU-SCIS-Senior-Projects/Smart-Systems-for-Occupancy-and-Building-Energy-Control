@@ -77,7 +77,6 @@ public class LoginActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     //Login Button has been clicked
     public void LoginPost(View view) throws InterruptedException {
 
@@ -91,7 +90,7 @@ public class LoginActivity extends ActionBarActivity {
 
         //add our  email and password to a NameValuePair ArrayList
 
-        //the PHP file will recieve the information as follows:
+        //the PHP file will receive the information as follows:
         // $login_email = $_POST['login_email'];
         // $password = $_POST['password'];
         username_pass.add(new BasicNameValuePair("login_email", login_email.toString().trim()));
