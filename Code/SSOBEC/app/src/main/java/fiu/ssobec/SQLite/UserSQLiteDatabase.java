@@ -68,6 +68,21 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + "FOREIGN KEY ("+OCC_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
 
+    //Table Plug Load
+    public static final String TABLE_PLUGLOAD = "zone_plugLoad";
+    public static final String PLUG_COLUMN_ID = "zone_description_id";
+    public static final String PLUG_COLUMN_DATETIME = "plugLoad_datetime";
+    public static final String PLUG_COLUMN_PLUGLOAD = "plugLoad";
+
+    private static final String PLUG_TABLE_CREATE = "create table "
+            + TABLE_PLUGLOAD + " ("
+            + PLUG_COLUMN_ID + " int NOT NULL, "
+            + PLUG_COLUMN_DATETIME + " datetime NOT NULL, "
+            + PLUG_COLUMN_PLUGLOAD + " int NOT NULL, "
+            + "CONSTRAINT zone_plugLoad_pk PRIMARY KEY (" + PLUG_COLUMN_ID+" , "+PLUG_COLUMN_DATETIME+"), "
+            + "FOREIGN KEY ("+PLUG_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
+            ");";
+
     public UserSQLiteDatabase(Context context) {
 
         super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);
@@ -79,6 +94,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL(ZONE_TABLE_CREATE);
         db.execSQL(OCC_TABLE_CREATE);
         db.execSQL(TEMP_TABLE_CREATE);
+        db.execSQL(PLUG_TABLE_CREATE);
     }
 
     @Override
@@ -93,6 +109,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_ZONES);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OCCUPANCY);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_TEMPERATURE);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PLUGLOAD);
         onCreate(db);
     }
 }
