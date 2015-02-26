@@ -13,12 +13,15 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
     <!-- Required to enable our SyncAdapter after it's created. -->
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <!-- Required because we're manually creating a new account. -->
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"

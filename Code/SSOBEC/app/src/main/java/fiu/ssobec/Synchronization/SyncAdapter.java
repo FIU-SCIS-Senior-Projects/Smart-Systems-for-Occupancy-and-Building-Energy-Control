@@ -5,6 +5,8 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import fiu.ssobec.DataAccess.DataAccessOwm;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
 
@@ -28,17 +31,21 @@ import fiu.ssobec.DataAccess.Database;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 
+    private LocationManager mlocManager;
+    private LocationListener mlocListener;
+    private float longitude=0;
+    private float latitude=0;
+
     public static final String LOG_TAG = "SyncAdapter";
 
     public static final String OCCUPANCY_PHP = "http://smartsystems-dev.cs.fiu.edu/occupancypost.php";
     public static final String TEMPERATURE_PHP = "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php";
     public static final String LIGHTING_PHP = "http://smartsystems-dev.cs.fiu.edu/lightingpost.php";
     public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost.php";
-
     public static final String DB_NODATA = "No Data";
 
+    private Context mcontext;
     private DataAccessUser data_access;
-
 
     /**
      * Creates an {@link android.content.AbstractThreadedSyncAdapter}.
@@ -46,6 +53,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         data_access = new DataAccessUser(context);
+        mcontext = context;
+
     }
 
     /**
@@ -75,6 +84,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             getTemperatureData(id);
             getPlugLoadData(id);
             getLightingData(id);
+
+            Log.i(LOG_TAG, "Access Data of Owm Coordinates ("+latitude+", "+longitude+")");
+            try {
+                DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
 
         Log.i(LOG_TAG, "Finishing network synchronization");

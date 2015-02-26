@@ -1,6 +1,6 @@
 package fiu.ssobec;
 
-import android.test.ActivityUnitTestCase;
+import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.widget.EditText;
 
@@ -9,7 +9,7 @@ import fiu.ssobec.Activity.LoginActivity;
 /**
  * Created by Fresa on 2/7/2015.
  */
-public class LoginActivityTest extends ActivityUnitTestCase<LoginActivity> {
+public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
 
     private LoginActivity mLoginActivity;
     private EditText mEmailField;
