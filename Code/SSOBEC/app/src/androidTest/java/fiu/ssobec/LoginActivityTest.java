@@ -1,6 +1,7 @@
 package fiu.ssobec;
 
-import android.test.ActivityInstrumentationTestCase2;
+import android.test.ActivityUnitTestCase;
+import android.test.suitebuilder.annotation.MediumTest;
 import android.widget.EditText;
 
 import fiu.ssobec.Activity.LoginActivity;
@@ -8,17 +9,11 @@ import fiu.ssobec.Activity.LoginActivity;
 /**
  * Created by Fresa on 2/7/2015.
  */
-public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
-    /**
-     * Creates an {@link android.test.ActivityInstrumentationTestCase2}.
-     *
-     * @param pkg           ignored - no longer in use.
-     * @param activityClass The activity to test. This must be a class in the instrumentation
-     *                      targetPackage specified in the AndroidManifest.xml
-     */
+public class LoginActivityTest extends ActivityUnitTestCase<LoginActivity> {
 
     private LoginActivity mLoginActivity;
-    private EditText mLoginActivityEdit;
+    private EditText mEmailField;
+    private EditText mPasswordField;
 
     public LoginActivityTest() {
         super(LoginActivity.class);
@@ -28,19 +23,27 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     protected void setUp() throws Exception {
         super.setUp();
         mLoginActivity = getActivity();
-        mLoginActivityEdit = (EditText) mLoginActivity.findViewById(R.id.email_text_field);
+        mEmailField = (EditText) mLoginActivity.findViewById(R.id.email_text_field);
+        mPasswordField = (EditText) mLoginActivity.findViewById(R.id.password_text_field);
     }
 
     public void testPreconditions() {
-        assertNotNull("mLoginActivity is null", mLoginActivity);
-        assertNotNull("mFirstTestText is null", mLoginActivityEdit);
+        assertNotNull(mEmailField);
+        assertNotNull(mPasswordField);
     }
 
-    public void testmLoginActivityEmailEdit() {
+    @MediumTest
+    public void testText() {
+        // simulate user action to input some value into EditText:
+        mLoginActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                mEmailField.setText("hello");
+                mPasswordField.setText("hello123");
+            }
+        });
 
-        //final String expected = mLoginActivity.getString(R.id.email_text_field);
-        final String actual = mLoginActivityEdit.getText().toString();
-        //assertEquals("mLoginActivityEdit", expected, actual);
-
+        // Check if the EditText is properly set:
+        assertEquals("hello", mEmailField.getText());
+        assertEquals("hello123", mPasswordField.getText());
     }
 }

@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
 import fiu.ssobec.Model.PlugLoad;
@@ -12,10 +16,6 @@ import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Dalaidis on 2/10/2015.
@@ -346,7 +346,6 @@ public class DataAccessUser {
 
         if (cursor.moveToLast())
         {
-            //cursor.move(-2);
             PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
             plugLoad_info.add(plugLoad.getDatetime());
             plugLoad_info.add(plugLoad.getPlugLoad()+"");
@@ -362,9 +361,9 @@ public class DataAccessUser {
         plugLoad
     * */
     private static PlugLoad getPlugLoadFromCursor(Cursor cursor) {
-        PlugLoad plug = new PlugLoad( cursor.getInt(0),    //zone_id
-                cursor.getString(1),       //datetime
-                cursor.getInt(2));      //plugLoad
+        PlugLoad plug = new PlugLoad( cursor.getInt(0),          //zone_id
+                                      cursor.getString(1),       //datetime
+                                      cursor.getInt(2));        //plugLoad
         return plug;
     }
 

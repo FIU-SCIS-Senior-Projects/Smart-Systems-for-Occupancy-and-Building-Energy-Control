@@ -72,6 +72,13 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    //open energy activity for lighting view
+    public void getLighting(View view) {
+        Intent intent = new Intent(this,EnergyActivity.class);
+        intent.putExtra(ACTIVITY_NAME,"Lighting");
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

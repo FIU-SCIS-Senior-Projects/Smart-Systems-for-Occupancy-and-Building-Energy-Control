@@ -1,22 +1,17 @@
 package fiu.ssobec.Activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.SyncUtils;
 
@@ -57,12 +52,13 @@ public class EnergyActivity extends ActionBarActivity {
 
         this.setTitle(app_title);
 
+        setContentView(R.layout.activity_energy);
+        mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+
         switch (app_title)
         {
             case "Temperature":
                 setContentView(R.layout.activity_temperature);
-
-
                 mTextView1 = (TextView) findViewById( R.id.Fahrenheit);
                 mTextView2 = (TextView) findViewById( R.id.Celsius);
 
@@ -70,15 +66,15 @@ public class EnergyActivity extends ActionBarActivity {
                 break;
 
             case "Occupancy":
-                setContentView(R.layout.activity_energy);
-                mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getOccupancy();
                 break;
 
             case "PlugLoad":
-                setContentView(R.layout.activity_energy);
-                mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
                 getPlugLoad();
+                break;
+
+            case "Lighting":
+                getLighting();
                 break;
 
         }
@@ -146,6 +142,24 @@ public class EnergyActivity extends ActionBarActivity {
         else
         {
             mTextView.setText("Current PlugLoad: "+info.get(1)+"\nTime:"+info.get(0));
+        }
+    }
+
+    private void getLighting()
+    {
+        System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
+
+        int zone_id = ZonesDescriptionActivity.regionID;
+
+        ArrayList<String> info = data_access.getLatestLighting(zone_id);
+
+        if(info == null)
+        {
+            mTextView.setText("No Data");
+        }
+        else
+        {
+            mTextView.setText("The Lighting in the room is: "+info.get(1)+"\nTime:"+info.get(0));
         }
     }
 

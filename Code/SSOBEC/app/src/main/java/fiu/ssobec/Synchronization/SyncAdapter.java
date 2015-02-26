@@ -19,10 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import fiu.ssobec.Activity.ZonesDescriptionActivity;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
-import fiu.ssobec.Model.Temperature;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -34,9 +32,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static final String OCCUPANCY_PHP = "http://smartsystems-dev.cs.fiu.edu/occupancypost.php";
     public static final String TEMPERATURE_PHP = "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php";
-
     public static final String LIGHTING_PHP = "http://smartsystems-dev.cs.fiu.edu/lightingpost.php";
     public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost.php";
+
+    public static final String DB_NODATA = "No Data";
 
     private DataAccessUser data_access;
 
@@ -75,6 +74,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             getOccupancyData(id);
             getTemperatureData(id);
             getPlugLoadData(id);
+            getLightingData(id);
         }
 
         Log.i(LOG_TAG, "Finishing network synchronization");
@@ -98,17 +98,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, OCCUPANCY_PHP).send();
             System.out.println("Sync Occupancy Response is: "+res);
 
-            JSONObject obj = new JSONObject(res);
-            JSONArray arr = obj.getJSONArray("occupancy_obj");
+            if(!res.equalsIgnoreCase(DB_NODATA)) {
+                JSONObject obj = new JSONObject(res);
+                JSONArray arr = obj.getJSONArray("occupancy_obj");
 
-            for (int i = 0; i < arr.length(); i++)
-            {
-                int occup = arr.getJSONObject(i).getInt("occupancy");
-                String time_stamp = arr.getJSONObject(i).getString("time_stamp");
-                System.out.println("Occupancy: "+occup+", Time Stamp: "+time_stamp);
+                for (int i = 0; i < arr.length(); i++) {
+                    int occup = arr.getJSONObject(i).getInt("occupancy");
+                    String time_stamp = arr.getJSONObject(i).getString("time_stamp");
+                    System.out.println("Occupancy: " + occup + ", Time Stamp: " + time_stamp);
 
-                if(!time_stamp.equalsIgnoreCase("null"))
-                    data_access.createOccupancy(RegionID, time_stamp, occup);
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createOccupancy(RegionID, time_stamp, occup);
+                }
             }
 
         } catch (InterruptedException e) {
@@ -122,30 +123,31 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private void getTemperatureData(int RegionID)
     {
         System.out.println("Get Temperature from ID: "+RegionID);
-        String last_time_stamp = data_access.getLastTimeStamp(RegionID);
+        String last_time_stamp = data_access.getLastTimeStamp_temp(RegionID);
 
         //put a small database code
         //Add the region id to the NameValuePair ArrayList;
         List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
 
-        id_and_timestamp.add(new BasicNameValuePair("region_id", (RegionID + "").toString().trim()));
-        id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).toString().trim()));
+        id_and_timestamp.add(new BasicNameValuePair("region_id", (RegionID + "").trim()));
+        id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).trim()));
 
         try {
             String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, TEMPERATURE_PHP).send();
             System.out.println("Sync Temperature Response is: "+res);
 
-            JSONObject obj = new JSONObject(res);
-            JSONArray arr = obj.getJSONArray("temperature_arr");
+            if(!res.equalsIgnoreCase(DB_NODATA)) {
+                JSONObject obj = new JSONObject(res);
+                JSONArray arr = obj.getJSONArray("temperature_arr");
 
-            for (int i = 0; i < arr.length(); i++)
-            {
-                int temp = arr.getJSONObject(i).getInt("temperature");
-                String time_stamp = arr.getJSONObject(i).getString("time_stamp");
-                System.out.println("Temperature: "+temp+", Time Stamp: "+time_stamp);
+                for (int i = 0; i < arr.length(); i++) {
+                    int temp = arr.getJSONObject(i).getInt("temperature");
+                    String time_stamp = arr.getJSONObject(i).getString("time_stamp");
+                    System.out.println("Temperature: " + temp + ", Time Stamp: " + time_stamp);
 
-                if(!time_stamp.equalsIgnoreCase("null"))
-                    data_access.createTemperature(RegionID, time_stamp, temp);
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createTemperature(RegionID, time_stamp, temp);
+                }
             }
 
         } catch (InterruptedException e) {
@@ -173,17 +175,57 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, PLUGLOAD_PHP).send();
             System.out.println("Sync Plug Load Response is: "+res);
 
-            JSONObject obj = new JSONObject(res);
-            JSONArray arr = obj.getJSONArray("plugLoad_obj");
+            if(!res.equalsIgnoreCase(DB_NODATA)) {
+                JSONObject obj = new JSONObject(res);
+                JSONArray arr = obj.getJSONArray("plugLoad_obj");
 
-            for (int i = 0; i < arr.length(); i++)
-            {
-                int plugLoad = arr.getJSONObject(i).getInt("plugLoad");
-                String time_stamp = arr.getJSONObject(i).getString("time_stamp");
-                System.out.println("Plug Load: "+plugLoad+", Time Stamp: "+time_stamp);
+                for (int i = 0; i < arr.length(); i++) {
+                    int plugLoad = arr.getJSONObject(i).getInt("plugLoad");
+                    String time_stamp = arr.getJSONObject(i).getString("time_stamp");
+                    System.out.println("Plug Load: " + plugLoad + ", Time Stamp: " + time_stamp);
 
-                if(!time_stamp.equalsIgnoreCase("null"))
-                    data_access.createPlugLoad(RegionID, time_stamp, plugLoad);
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createPlugLoad(RegionID, time_stamp, plugLoad);
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getLightingData(int RegionID)
+    {
+        System.out.println("Get PlugLoad from ID: "+RegionID);
+        String last_time_stamp = data_access.getLastLightTimeStamp(RegionID);
+
+        //put a small database code
+        //Add the region id to the NameValuePair ArrayList;
+        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
+
+        id_and_timestamp.add(new BasicNameValuePair("region_id", (RegionID + "").trim()));
+        id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).trim()));
+
+        try {
+
+            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, LIGHTING_PHP).send();
+            System.out.println("Sync Lighting Response is: "+res);
+
+            if(!res.equalsIgnoreCase(DB_NODATA)) {
+                JSONObject obj = new JSONObject(res);
+                JSONArray arr = obj.getJSONArray("lighting_obj");
+
+                for (int i = 0; i < arr.length(); i++) {
+                    String lighting = arr.getJSONObject(i).getString("lighting");
+                    String time_stamp = arr.getJSONObject(i).getString("time_stamp");
+                    System.out.println("Lighting: " + lighting + ", Time Stamp: " + time_stamp);
+
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createLighting(RegionID, time_stamp, lighting);
+                }
             }
 
         } catch (InterruptedException e) {

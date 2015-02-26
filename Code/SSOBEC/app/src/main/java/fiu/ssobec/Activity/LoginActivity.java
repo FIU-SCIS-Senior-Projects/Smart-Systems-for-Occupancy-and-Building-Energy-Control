@@ -31,9 +31,6 @@ public class LoginActivity extends ActionBarActivity {
 
     String login_email, password;
     List<NameValuePair> username_pass;
-    int id=0;
-    String name="";
-    String email="";
     private DataAccessUser data_access;
 
     @Override
@@ -83,6 +80,7 @@ public class LoginActivity extends ActionBarActivity {
         //get the email and password from the text fields
         login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
+
         System.out.println("This is login_email:" + login_email + ", Password" + password);
 
        //declare an arraylist that holds email and password
@@ -93,8 +91,8 @@ public class LoginActivity extends ActionBarActivity {
         //the PHP file will receive the information as follows:
         // $login_email = $_POST['login_email'];
         // $password = $_POST['password'];
-        username_pass.add(new BasicNameValuePair("login_email", login_email.toString().trim()));
-        username_pass.add(new BasicNameValuePair("password", password.toString().trim()));
+        username_pass.add(new BasicNameValuePair("login_email", login_email.trim()));
+        username_pass.add(new BasicNameValuePair("password", password.trim()));
 
         //send the username and password to loginpost.php file
         //save the response from the database in a string
@@ -124,10 +122,13 @@ public class LoginActivity extends ActionBarActivity {
 
     public boolean userDetails(String response)
     {
+        String name="";
+        String email="";
         boolean user_flag = false;
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
         User user = null;
+        int id=0;
 
         System.out.println("User Details");
         while (stringTokenizer.hasMoreElements()) {
@@ -161,10 +162,7 @@ public class LoginActivity extends ActionBarActivity {
         }
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id))
-        {
             data_access.userLogin(id);
-
-        }
 
         return user_flag;
     }
