@@ -7,11 +7,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/Fahrenheit"
-        android:layout_marginTop="96dp"
         android:textSize="@dimen/login_textfield_size"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/fahrenheit" />
+        android:text="@string/fahrenheit"
+        android:layout_below="@+id/building_temperature_textview"
+        android:layout_alignStart="@+id/building_temperature_textview" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,17 +18,76 @@
         android:id="@+id/Celsius"
         android:textIsSelectable="true"
         android:textSize="@dimen/login_textfield_size"
-        android:layout_below="@+id/Fahrenheit"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="72dp"
-        android:text="@string/celsius" />
+        android:text="@string/celsius"
+        android:layout_marginEnd="40dp"
+        android:layout_alignTop="@+id/Fahrenheit"
+        android:layout_alignEnd="@+id/building_temperature_textview" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:id="@+id/temperatureTimeStamp"
-        android:layout_marginBottom="77dp"
+        android:layout_marginBottom="53dp"
+        android:text="time_stamp"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/Fahrenheit" />
+        android:layout_alignStart="@+id/Celsius" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/zone_temperature"
+        android:id="@+id/building_temperature_textview"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#b6616161"
+        android:layout_alignStart="@+id/Fahrenheit"
+        android:layout_below="@+id/Fahrenheit"
+        android:layout_alignEnd="@+id/Celsius"
+        android:id="@+id/divider1" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#000000"
+        android:id="@+id/divider2"
+        android:singleLine="true"
+        android:layout_alignStart="@+id/max_outside_temp_f"
+        android:layout_below="@+id/max_outside_temp_f"
+        android:layout_alignEnd="@+id/divider1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/outside_temperature"
+        android:id="@+id/outside_temperature_textview"
+        android:layout_below="@id/divider1"
+        android:layout_alignStart="@id/divider1"
+        android:layout_marginTop="46dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Max F"
+        android:id="@+id/max_outside_temp_f"
+        android:layout_below="@+id/outside_temperature_textview"
+        android:layout_alignStart="@+id/outside_temperature_textview" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Max C"
+        android:id="@+id/max_outside_temp_c"
+        android:layout_above="@+id/divider2"
+        android:layout_alignEnd="@+id/Celsius" />
 </RelativeLayout>

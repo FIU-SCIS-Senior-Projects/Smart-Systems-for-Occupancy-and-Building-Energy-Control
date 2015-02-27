@@ -26,6 +26,8 @@ public class EnergyActivity extends ActionBarActivity {
     TextView mTextView1;
     TextView mTextView2;
 
+    TextView time_stamp_text;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,7 @@ public class EnergyActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_energy);
         mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+        time_stamp_text = (TextView) findViewById(R.id.time_stamp_view);
 
         switch (app_title)
         {
@@ -82,8 +85,8 @@ public class EnergyActivity extends ActionBarActivity {
     }
 
     // Convert to Celsius
-    private float convertFahrenheitToCelsius(float fahrenheit) {
-        return ((fahrenheit - 32) * 5 / 9);
+    private int convertFahrenheitToCelsius(float fahrenheit) {
+        return (int) ((fahrenheit - 32) * 5 / 9);
     }
 
     private void getOccupancy()
@@ -100,7 +103,8 @@ public class EnergyActivity extends ActionBarActivity {
         }
         else
         {
-            mTextView.setText("Current Occupancy: "+info.get(1)+"\nTime:"+info.get(0));
+            mTextView.setText("Current Occupancy: "+info.get(1));
+            time_stamp_text.setText("Time:"+info.get(0));
         }
     }
 
@@ -119,8 +123,14 @@ public class EnergyActivity extends ActionBarActivity {
         else
         {
             TextView time_stamp = (TextView) findViewById(R.id.temperatureTimeStamp);
-            mTextView1.setText("Fahrenheit: "+info.get(1)+(char) 0x00B0+"F");
-            mTextView2.setText("Celsius: "+convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+(char) 0x00B0+"C");
+
+            ((TextView) findViewById(R.id.Fahrenheit)).setText(info.get(1)+""+(char) 0x00B0+"F");
+            ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+""+(char) 0x00B0+"C");
+
+            ((TextView) findViewById(R.id.max_outside_temp_f)).setText(data_access.getMaxTemperature()+(char) 0x00B0+"F");
+            ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(data_access.getMaxTemperature()))
+                                                                        +""+(char) 0x00B0+"C");
+
             time_stamp.setText(info.get(0)); //set time stamp
         }
 
@@ -141,7 +151,8 @@ public class EnergyActivity extends ActionBarActivity {
         }
         else
         {
-            mTextView.setText("Current PlugLoad: "+info.get(1)+"\nTime:"+info.get(0));
+            mTextView.setText("Current PlugLoad: "+info.get(1));
+            time_stamp_text.setText("Time:"+info.get(0));
         }
     }
 
@@ -159,7 +170,9 @@ public class EnergyActivity extends ActionBarActivity {
         }
         else
         {
-            mTextView.setText("The Lighting in the room is: "+info.get(1)+"\nTime:"+info.get(0));
+            mTextView.setText("The Lighting in the room is: "+info.get(1)
+                                +"\nCloud Percentage: "+data_access.getCloudPercentage()+"%");
+            time_stamp_text.setText("Time:"+info.get(0));
         }
     }
 

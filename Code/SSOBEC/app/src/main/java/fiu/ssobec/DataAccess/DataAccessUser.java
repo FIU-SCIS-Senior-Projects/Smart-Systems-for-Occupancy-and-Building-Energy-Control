@@ -532,12 +532,59 @@ public class DataAccessUser {
     }
 
     //String dataTime, int cloudPercentage, int maxTemperature, int minTemperature
-
     private static OutsideWeather getOWFromCursor(Cursor cursor) {
         OutsideWeather ow = new OutsideWeather( cursor.getString(0),    //Datetime
                                                 cursor.getInt(1),       //cloud
                                                 cursor.getInt(2),       //max_temp
                                                 cursor.getInt(3));      //min_temp
         return ow;
+    }
+
+    public String getCloudPercentage() {
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
+                OW_COLS,
+                null,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            OutsideWeather ow = getOWFromCursor(cursor);
+            return ow.getCloudPercentage()+"";
+        }
+        else
+            return "No Data";
+    }
+
+    public String getMinTemperature() {
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
+                OW_COLS,
+                null,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            OutsideWeather ow = getOWFromCursor(cursor);
+            return ow.getMinTemperature()+"";
+        }
+        else
+            return "No Data";
+    }
+
+    public String getMaxTemperature() {
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
+                OW_COLS,
+                null,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            OutsideWeather ow = getOWFromCursor(cursor);
+            return ow.getMaxTemperature()+"";
+        }
+        else
+            return "No Data";
     }
 }

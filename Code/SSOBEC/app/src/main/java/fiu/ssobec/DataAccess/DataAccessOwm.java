@@ -49,15 +49,15 @@ public class DataAccessOwm {
             public void onProviderDisabled(String provider) {}
         };
 
-        // Register the listener with the Location Manager to receive location updates
-        //mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
         owm = new OpenWeatherMap("");
         try {
             cwd = owm.currentWeatherByCityName("Miami");
+            Log.i(LOG_TAG, "Min Temperature: "+cwd.getMainInstance().getMinTemperature());
+            Log.i(LOG_TAG, "Max Temperature: "+cwd.getMainInstance().getMaxTemperature());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void saveWeatherData()
@@ -79,12 +79,9 @@ public class DataAccessOwm {
         }
         Log.i(LOG_TAG, "Clouds: "+cwd.getCloudsInstance().getPercentageOfClouds());
 
-        cwd.getMainInstance().getMaxTemperature();
-        cwd.getMainInstance().getMinTemperature();
-
         data_access.createOutsideWeather((int) cwd.getCloudsInstance().getPercentageOfClouds(),
                                          (int) cwd.getMainInstance().getMinTemperature(),
-                                         (int) cwd.getMainInstance().getMaxTemperature());
+                                         (int) cwd.getMainInstance().getTemperature());
 
         System.out.println("Weather Data");
         data_access.getAllWeatherData();

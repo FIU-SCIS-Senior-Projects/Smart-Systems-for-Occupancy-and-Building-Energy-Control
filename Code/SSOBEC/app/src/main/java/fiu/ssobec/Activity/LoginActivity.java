@@ -110,7 +110,7 @@ public class LoginActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
 
                 public void run() {
-                    //
+                    warning_msg.setText("");
                 }
 
             });

@@ -13,6 +13,11 @@
     <string name="plugLoad">Plug Load</string>
     <string name="artificialLighting">Artificial Lighting</string>
     <string name="action_logout">Logout</string>
+    <string name="celsius">Celsius</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="outside_temperature">Temperature Outside the Building:</string>
+    <string name="zone_temperature">Temperature in Current Zone:</string>
+    <string name="min_outside_temp_f">Min F</string>
 
     <!-- Activity titles -->
     <string name="title_activity_setting">SettingActivity</string>
@@ -20,7 +25,6 @@
     <string name="title_activity_my_zones">MyZonesActivity</string>
     <string name="title_activity_zones_description">ZonesDescriptionActivity</string>
     <string name="title_activity_temperature">Temperature</string>
-    <string name="celsius">Celsius</string>
-    <string name="fahrenheit">Fahrenheit</string>
+
 
 </resources>

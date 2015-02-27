@@ -108,10 +108,11 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     private static final String OW_TABLE_CREATE = "create table "
             + TABLE_OW + " ("
-            + OW_DATETIME + " datetime NOT NULL PRIMARY KEY DEFAULT CURRENT_TIMESTAMP, "
+            + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + OW_CLOUDPERCENTAGE + " int NOT NULL, "
             + OW_MAXTEMPERATURE + " int NOT NULL, "
-            + OW_MINTEMPERATURE + " int NOT NULL "
+            + OW_MINTEMPERATURE + " int NOT NULL, "
+            + "CONSTRAINT cloud_temp_pk PRIMARY KEY (" + OW_CLOUDPERCENTAGE+" , "+OW_MAXTEMPERATURE+" , "+OW_MINTEMPERATURE+ ") "
             +
             ");";
 
