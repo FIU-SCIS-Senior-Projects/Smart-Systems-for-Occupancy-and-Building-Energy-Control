@@ -11,6 +11,7 @@ import java.util.List;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
+import fiu.ssobec.Model.OutsideWeather;
 import fiu.ssobec.Model.PlugLoad;
 import fiu.ssobec.Model.Temperature;
 import fiu.ssobec.Model.User;
@@ -53,6 +54,11 @@ public class DataAccessUser {
     private static String[] PLUG_COLS = {   UserSQLiteDatabase.PLUG_COLUMN_ID,
                                             UserSQLiteDatabase.PLUG_COLUMN_DATETIME,
                                             UserSQLiteDatabase.PLUG_COLUMN_PLUGLOAD};
+
+    private static String[] OW_COLS = {     UserSQLiteDatabase.OW_DATETIME,
+                                            UserSQLiteDatabase.OW_CLOUDPERCENTAGE,
+                                            UserSQLiteDatabase.OW_MAXTEMPERATURE,
+                                            UserSQLiteDatabase.OW_MINTEMPERATURE};
 
     public DataAccessUser(Context context)
     {
@@ -490,4 +496,48 @@ public class DataAccessUser {
         return light;
     }
 
+
+    /****************************** OUTSIDE_WEATHER ************************************/
+
+    public static void createOutsideWeather(int cloudP, int minTemp, int maxTemp)
+    {
+        System.out.println("create my outside weather data!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.OW_CLOUDPERCENTAGE, cloudP);
+        vals.put(UserSQLiteDatabase.OW_MINTEMPERATURE, minTemp);
+        vals.put(UserSQLiteDatabase.OW_MAXTEMPERATURE, maxTemp);
+
+        db.insert(UserSQLiteDatabase.TABLE_OW,null ,vals);
+    }
+
+    public List<Integer> getAllWeatherData() {
+        List<Integer> ow = new ArrayList<Integer>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
+                        OW_COLS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            OutsideWeather outsideWeather = getOWFromCursor(cursor);
+            ow.add(outsideWeather.getMaxTemperature());
+            System.out.println( "Min: "+outsideWeather.getMinTemperature()+
+                                " Max: "+outsideWeather.getMaxTemperature()+
+                                " Cloud: "+outsideWeather.getCloudPercentage()+
+                                " DateTime: "+outsideWeather.getDataTime());
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return ow;
+    }
+
+    //String dataTime, int cloudPercentage, int maxTemperature, int minTemperature
+
+    private static OutsideWeather getOWFromCursor(Cursor cursor) {
+        OutsideWeather ow = new OutsideWeather( cursor.getString(0),    //Datetime
+                                                cursor.getInt(1),       //cloud
+                                                cursor.getInt(2),       //max_temp
+                                                cursor.getInt(3));      //min_temp
+        return ow;
+    }
 }

@@ -98,6 +98,23 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + "FOREIGN KEY ("+LIGHT_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
 
+
+    //Table Outside Weather
+    public static final String TABLE_OW = "outside_weather";
+    public static final String OW_DATETIME= "ow_time";
+    public static final String OW_MINTEMPERATURE = "ow_min_temperature";
+    public static final String OW_MAXTEMPERATURE = "ow_max_temperature";
+    public static final String OW_CLOUDPERCENTAGE = "ow_cloud_percentage";
+
+    private static final String OW_TABLE_CREATE = "create table "
+            + TABLE_OW + " ("
+            + OW_DATETIME + " datetime NOT NULL PRIMARY KEY DEFAULT CURRENT_TIMESTAMP, "
+            + OW_CLOUDPERCENTAGE + " int NOT NULL, "
+            + OW_MAXTEMPERATURE + " int NOT NULL, "
+            + OW_MINTEMPERATURE + " int NOT NULL "
+            +
+            ");";
+
     public UserSQLiteDatabase(Context context) {
 
         super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);
@@ -111,6 +128,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL(TEMP_TABLE_CREATE);
         db.execSQL(LIGHT_TABLE_CREATE);
         db.execSQL(PLUG_TABLE_CREATE);
+        db.execSQL(OW_TABLE_CREATE);
     }
 
     @Override
@@ -127,6 +145,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_TEMPERATURE);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_LIGHTING);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PLUGLOAD);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OW);
+
         onCreate(db);
     }
 }

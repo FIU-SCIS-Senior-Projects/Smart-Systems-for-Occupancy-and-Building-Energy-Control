@@ -84,14 +84,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             getTemperatureData(id);
             getPlugLoadData(id);
             getLightingData(id);
+        }
 
-            Log.i(LOG_TAG, "Access Data of Owm Coordinates ("+latitude+", "+longitude+")");
-            try {
-                DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        try {
+            DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
+            dataAccessOwm.saveWeatherData();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         Log.i(LOG_TAG, "Finishing network synchronization");

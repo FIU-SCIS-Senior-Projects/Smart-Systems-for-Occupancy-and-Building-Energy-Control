@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 
 import org.apache.http.NameValuePair;
@@ -32,6 +33,7 @@ public class LoginActivity extends ActionBarActivity {
     String login_email, password;
     List<NameValuePair> username_pass;
     private DataAccessUser data_access;
+    TextView warning_msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,8 @@ public class LoginActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        warning_msg = (TextView) findViewById(R.id.warning_text_view);
 
     }
 
@@ -115,8 +119,15 @@ public class LoginActivity extends ActionBarActivity {
             Intent intent = new Intent(this, MyZonesActivity.class);
             startActivity(intent);
         }
-        else {
-            System.out.println("User Not Found...");
+        else
+        {
+            runOnUiThread(new Runnable() {
+
+                public void run() {
+                    warning_msg.setText("Wrong email or password");
+                }
+
+            });
         }
     }
 

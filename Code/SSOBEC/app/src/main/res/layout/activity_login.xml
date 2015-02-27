@@ -61,4 +61,14 @@
         android:layout_below="@+id/password_test_view"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/warning_text_view"
+        android:layout_above="@+id/login_button"
+        android:layout_toEndOf="@+id/password_test_view"
+        android:layout_marginBottom="71dp"
+        android:textColor="#ffff130e" />
+
 </RelativeLayout>
