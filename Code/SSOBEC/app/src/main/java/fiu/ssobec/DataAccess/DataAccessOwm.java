@@ -1,10 +1,6 @@
 package fiu.ssobec.DataAccess;
 
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import net.aksingh.owmjapis.CurrentWeather;
@@ -25,8 +21,6 @@ public class DataAccessOwm {
 
     private OpenWeatherMap owm;
     private CurrentWeather cwd;
-    private LocationManager mlocManager;
-    private LocationListener mlocListener;
     private Context context;
 
     private float longitude=0;
@@ -34,26 +28,11 @@ public class DataAccessOwm {
 
     public DataAccessOwm(Context context) throws JSONException
     {
-        mlocManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
         this.context = context;
-        // Define a listener that responds to location updates
-        mlocListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                //Called when a new location is found by the network location provider.
-                longitude = (float) location.getLongitude();
-                latitude = (float) location.getLatitude();
-            }
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-            public void onProviderEnabled(String provider) {}
-            public void onProviderDisabled(String provider) {}
-        };
-
         owm = new OpenWeatherMap("");
         try {
             cwd = owm.currentWeatherByCityName("Miami");
-            Log.i(LOG_TAG, "Min Temperature: "+cwd.getMainInstance().getMinTemperature());
-            Log.i(LOG_TAG, "Max Temperature: "+cwd.getMainInstance().getMaxTemperature());
+            Log.i(LOG_TAG, "Temperature: "+cwd.getMainInstance().getTemperature());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,8 +41,6 @@ public class DataAccessOwm {
 
     public void saveWeatherData()
     {
-        //cwd = owm.currentWeatherByCoordinates(latitude, longitude);
-
         DataAccessUser data_access = new DataAccessUser(context);
 
         try {

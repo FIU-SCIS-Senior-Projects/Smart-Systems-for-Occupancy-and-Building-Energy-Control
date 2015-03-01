@@ -30,6 +30,7 @@ import fiu.ssobec.Model.User;
 public class LoginActivity extends ActionBarActivity {
 
 
+    public static final String LOGIN_PHP = "http://smartsystems-dev.cs.fiu.edu/loginpost.php";
     String login_email, password;
     List<NameValuePair> username_pass;
     private DataAccessUser data_access;
@@ -100,7 +101,7 @@ public class LoginActivity extends ActionBarActivity {
 
         //send the username and password to loginpost.php file
         //save the response from the database in a string
-        String res = new Database((ArrayList<NameValuePair>) username_pass, "http://smartsystems-dev.cs.fiu.edu/loginpost.php").send();
+        String res = new Database((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
 
         System.out.println("Response is: "+res);
 

@@ -2,22 +2,27 @@ package fiu.ssobec.Activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.SyncUtils;
 
 
 /*
@@ -26,11 +31,11 @@ import fiu.ssobec.R;
     A column in the UserSQLiteDatabase 'loggedIn'
 * */
 
-
 public class MyZonesActivity extends ActionBarActivity {
 
+    public static final String LOG_TAG = "MyZonesActivity";
 
-    private GridView gridViewButtons;
+    public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;
     private static DataAccessUser data_access; //data access variable for user
@@ -50,7 +55,7 @@ public class MyZonesActivity extends ActionBarActivity {
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
 
-        //Declare the access to the SQLite table for zones
+        //Declare the access to the SQLite table for zones`
         //data_access_zones = new DataAccessZones(this);
 
         //Open the data access to the tables
@@ -77,18 +82,21 @@ public class MyZonesActivity extends ActionBarActivity {
         //User that is currently logged in is found
         else
         {
+            SyncUtils.CreateSyncAccount(this);
+            SyncUtils.TriggerRefresh();
             user_id = user.getId(); //Get the ID of the user
 
             List<NameValuePair> userId = new ArrayList<>(1);
 
-            String res="";
-            userId.add(new BasicNameValuePair("user_id",(user_id+"").toString().trim()));
+            String res = null;
+            userId.add(new BasicNameValuePair("user_id", (user_id + "").trim()));
 
-            //send the user_id to zonepost.php
+            //send the user_id to zonepost.php and get the zones
             try {
-                res = new Database((ArrayList<NameValuePair>) userId, "http://smartsystems-dev.cs.fiu.edu/zonepost.php").send();
+                res = new Database((ArrayList<NameValuePair>) userId, GETZONES_PHP).send();
                 System.out.println("Zone Response is: "+res);
             } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "Database Interrupted Exception thrown: "+e.getMessage());
                 e.printStackTrace();
             }
 
@@ -99,7 +107,7 @@ public class MyZonesActivity extends ActionBarActivity {
                 zoneDetails(res);
 
             //Set buttons in a Grid View order
-            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
             ButtonAdapter m_badapter = new ButtonAdapter(this);
             m_badapter.setListData(zoneNames, zoneIDs);
             gridViewButtons.setAdapter(m_badapter);
@@ -137,8 +145,6 @@ public class MyZonesActivity extends ActionBarActivity {
                 return true;
             case R.id.action_settings:
                 return true;
-
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -163,7 +169,7 @@ public class MyZonesActivity extends ActionBarActivity {
                 zoneNames.add(temp);
                 zoneIDs.add(id);
 
-               System.out.println("If zone is not in the DB, add new zone");
+                //If zone is not in the DB, add new zone
                 if (data_access.getZone(id) == null)
                 {
                     System.out.println("Create Zone!");

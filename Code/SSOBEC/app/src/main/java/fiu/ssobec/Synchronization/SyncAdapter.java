@@ -5,8 +5,6 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,11 +28,11 @@ import fiu.ssobec.DataAccess.Database;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-
+/*
     private LocationManager mlocManager;
     private LocationListener mlocListener;
     private float longitude=0;
-    private float latitude=0;
+    private float latitude=0;*/
 
     public static final String LOG_TAG = "SyncAdapter";
 
