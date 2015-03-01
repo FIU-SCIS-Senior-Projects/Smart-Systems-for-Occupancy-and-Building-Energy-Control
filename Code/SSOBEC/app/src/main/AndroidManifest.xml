@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fiu.ssobec" >
 
-    <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="21" />
+    <!--
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
+   <uses-sdk
+       android:minSdkVersion="15"
+       android:targetSdkVersion="21" /> -->
+
+   <!-- To auto-complete the email text field in the login form with the user's emails -->
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -20,8 +22,6 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <!-- Required because we're manually creating a new account. -->
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-
-
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -59,13 +59,14 @@
 
         <activity
             android:name=".Activity.MyZonesActivity"
-            android:label="@string/title_activity_my_zones" />
+            android:label="@string/title_activity_my_zones" >
 
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        </activity>
 
         <!-- Zones Description Activity -->
 
