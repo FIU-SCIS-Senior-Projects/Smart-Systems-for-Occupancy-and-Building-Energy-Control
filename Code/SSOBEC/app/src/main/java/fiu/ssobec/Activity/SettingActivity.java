@@ -21,8 +21,6 @@ public class SettingActivity extends ListActivity {
         ArrayAdapter<String> adapter =new ArrayAdapter<String>(getListView().getContext(),android.R.layout.simple_list_item_1,setting);
 
         getListView().setAdapter(adapter);
-
-
     }
 
 
