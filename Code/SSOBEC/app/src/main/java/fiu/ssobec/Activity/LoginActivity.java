@@ -179,6 +179,12 @@ public class LoginActivity extends ActionBarActivity {
         return user_flag;
     }
 
+    // Create Account
+    public void getCreateAccount(View view) {
+        Intent intent = new Intent(this,CreateAccountActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

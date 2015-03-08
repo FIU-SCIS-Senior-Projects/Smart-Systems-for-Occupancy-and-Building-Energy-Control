@@ -1,0 +1,166 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:layout_gravity="center"
+android:orientation="vertical"
+tools:context=".LinearLayout">
+
+    <!-- Text View CREATE ACCOUNT -->
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingLeft="10px"
+    android:paddingTop="20px"
+    android:text="CREATE ACCOUNT" />
+
+
+    <!-- 1st Row - First Name-->
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="20px">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10px"
+        android:paddingTop="20px"
+        android:text="First Name:"
+        android:id="@+id/first_name" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.50"
+        android:layout_marginLeft="40px"
+        android:paddingTop="20px" />
+
+
+    <!-- 1st Row - Last Name-->
+
+</LinearLayout>
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="20px"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Last Name:"
+        android:paddingTop="20px"
+        android:paddingLeft="10px"
+        android:id="@+id/last_name" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="40px"
+        android:layout_weight="0.50"
+        android:paddingTop="20px" />
+
+    <!-- 1st Row - Email-->
+
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email:"
+            android:paddingTop="20px"
+            android:paddingLeft="10px"
+            android:id="@+id/email" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="40px"
+            android:layout_weight="0.50"
+            android:paddingTop="20px" />
+
+        <!-- 1st Row - Password-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password:"
+            android:paddingTop="20px"
+            android:paddingLeft="10px"
+            android:id="@+id/password" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="40px"
+            android:layout_weight="0.50"
+            android:paddingTop="20px" />
+
+
+        <!-- 1st Row - Repeat Password-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repeat Password:"
+            android:paddingTop="20px"
+            android:paddingLeft="10px"
+            android:id="@+id/repeat_password" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="40px"
+            android:layout_weight="0.50"
+            android:paddingTop="20px" />
+
+
+</LinearLayout>
+
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingLeft="20px"
+    android:paddingTop="10px"
+    android:text="CREATE ACCOUNT"
+    android:id="@+id/create_login_button" />
+
+</LinearLayout>
