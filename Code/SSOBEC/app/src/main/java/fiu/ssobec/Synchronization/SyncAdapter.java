@@ -21,7 +21,7 @@ import java.util.List;
 
 import fiu.ssobec.DataAccess.DataAccessOwm;
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.Database;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -109,7 +109,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).toString().trim()));
 
         try {
-            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, OCCUPANCY_PHP).send();
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, OCCUPANCY_PHP).send();
             System.out.println("Sync Occupancy Response is: "+res);
 
             if(!res.equalsIgnoreCase(DB_NODATA)) {
@@ -147,7 +147,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         id_and_timestamp.add(new BasicNameValuePair("last_time_stamp", (last_time_stamp).trim()));
 
         try {
-            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, TEMPERATURE_PHP).send();
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, TEMPERATURE_PHP).send();
             System.out.println("Sync Temperature Response is: "+res);
 
             if(!res.equalsIgnoreCase(DB_NODATA)) {
@@ -186,7 +186,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
 
-            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, PLUGLOAD_PHP).send();
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, PLUGLOAD_PHP).send();
             System.out.println("Sync Plug Load Response is: "+res);
 
             if(!res.equalsIgnoreCase(DB_NODATA)) {
@@ -225,7 +225,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
 
-            String res = new Database((ArrayList<NameValuePair>) id_and_timestamp, LIGHTING_PHP).send();
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, LIGHTING_PHP).send();
             System.out.println("Sync Lighting Response is: "+res);
 
             if(!res.equalsIgnoreCase(DB_NODATA)) {

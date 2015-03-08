@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
 
 import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.Database;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.SyncUtils;
@@ -93,7 +93,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
             //send the user_id to zonepost.php and get the zones
             try {
-                res = new Database((ArrayList<NameValuePair>) userId, GETZONES_PHP).send();
+                res = new ExternalDatabaseController((ArrayList<NameValuePair>) userId, GETZONES_PHP).send();
                 System.out.println("Zone Response is: "+res);
             } catch (InterruptedException e) {
                 Log.e(LOG_TAG, "Database Interrupted Exception thrown: "+e.getMessage());

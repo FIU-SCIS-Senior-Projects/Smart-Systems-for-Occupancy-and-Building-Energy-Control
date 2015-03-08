@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by Maria on 2/5/2015.
  */
-public class Database {
+public class ExternalDatabaseController {
 
 
     List<NameValuePair> parameters;
@@ -33,7 +33,7 @@ public class Database {
     /*
 
     **/
-    public Database(ArrayList<NameValuePair> parameters, String url)  {
+    public ExternalDatabaseController(ArrayList<NameValuePair> parameters, String url)  {
 
         this.parameters = parameters;
         this.url = url;

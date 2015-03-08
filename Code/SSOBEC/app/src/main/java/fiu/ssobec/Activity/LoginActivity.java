@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.DataAccess.Database;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 import fiu.ssobec.Model.User;
 
@@ -101,7 +101,7 @@ public class LoginActivity extends ActionBarActivity {
 
         //send the username and password to loginpost.php file
         //save the response from the database in a string
-        String res = new Database((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
+        String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
 
         System.out.println("Response is: "+res);
 
