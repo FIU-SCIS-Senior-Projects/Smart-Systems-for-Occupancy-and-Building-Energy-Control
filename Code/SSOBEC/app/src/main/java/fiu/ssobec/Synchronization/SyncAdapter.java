@@ -28,12 +28,6 @@ import fiu.ssobec.DataAccess.ExternalDatabaseController;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-/*
-    private LocationManager mlocManager;
-    private LocationListener mlocListener;
-    private float longitude=0;
-    private float latitude=0;*/
-
     public static final String LOG_TAG = "SyncAdapter";
 
     public static final String OCCUPANCY_PHP = "http://smartsystems-dev.cs.fiu.edu/occupancypost.php";
@@ -73,6 +67,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<Integer> region_id;
         region_id = data_access.getAllZoneID();
+
         Iterator<Integer> region_id_itr = region_id.iterator();
 
         while (region_id_itr.hasNext())
@@ -249,4 +244,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
     }
+
 }

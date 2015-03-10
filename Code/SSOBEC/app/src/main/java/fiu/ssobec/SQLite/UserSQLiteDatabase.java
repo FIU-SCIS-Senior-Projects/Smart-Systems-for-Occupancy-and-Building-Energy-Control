@@ -116,6 +116,12 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
+    //Table energy-waste-per-zone
+    public static final String TABLE_ENERGYWASTE = "energy_waste_per_zone";
+    public static final String ENERYWASTE_ID = "zone_description_id";
+    public static final String ENERYWASTE_DATE = "date";
+
+
     public UserSQLiteDatabase(Context context) {
 
         super(context, SQLiteCommon.DATABASE_NAME, null, SQLiteCommon.DATABASE_VERSION);

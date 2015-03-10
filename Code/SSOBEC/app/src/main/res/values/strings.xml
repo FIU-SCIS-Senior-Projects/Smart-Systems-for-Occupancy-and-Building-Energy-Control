@@ -19,6 +19,8 @@
     <string name="zone_temperature">Temperature in Current Zone:</string>
     <string name="min_outside_temp_f">Min F</string>
 
+    <string name="create_account">CREATE ACCOUNT</string>
+
     <!-- Activity titles -->
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_login">Login</string>

@@ -211,8 +211,8 @@ public class DataAccessUser {
         }
     }
 
-    public List<Integer> getAllZoneID() {
-        List<Integer> zones_id = new ArrayList<Integer>();
+    public ArrayList<Integer> getAllZoneID() {
+        ArrayList<Integer> zones_id = new ArrayList<>();
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
                 ZONE_COLS, null, null, null, null, null);
@@ -226,6 +226,23 @@ public class DataAccessUser {
         // make sure to close the cursor
         cursor.close();
         return zones_id;
+    }
+
+    public ArrayList<String> getAllZoneNames() {
+        ArrayList<String> zones_names = new ArrayList<>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
+                ZONE_COLS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Zones zone = getZoneFromCursor(cursor);
+            zones_names.add(zone.getZone_name());
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return zones_names;
     }
 
     private static Zones getZoneFromCursor(Cursor cursor) {
@@ -511,7 +528,7 @@ public class DataAccessUser {
     }
 
     public List<Integer> getAllWeatherData() {
-        List<Integer> ow = new ArrayList<Integer>();
+        List<Integer> ow = new ArrayList<>();
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
                         OW_COLS, null, null, null, null, null);

@@ -31,10 +31,6 @@ public class EnergyActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //SyncUtils.CreateSyncAccount(this);
-        //SyncUtils.TriggerRefresh();
-
         data_access = new DataAccessUser(this);
 
 

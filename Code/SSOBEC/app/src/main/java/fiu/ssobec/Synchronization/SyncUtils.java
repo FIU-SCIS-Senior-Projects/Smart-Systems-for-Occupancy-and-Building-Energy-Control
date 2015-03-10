@@ -21,9 +21,9 @@ public class SyncUtils {
 
 
     public static final String LOG_TAG = "SyncUtils";
-    public static final long SECONDS_PER_MINUTE = 30L;
-    public static final long SYNC_INTERVAL_IN_MINUTES = 1L;
-    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+    //public static final long SECONDS_PER_MINUTE = 30L;
+    //public static final long SYNC_INTERVAL_IN_MINUTES = 1L;
+    public static final long SYNC_INTERVAL = 60*60*24;
 
     private static final String CONTENT_AUTHORITY = SyncConstants.AUTHORITY;
     private static final String ACCOUNT_TYPE = SyncConstants.ACCOUNT_TYPE;
@@ -36,30 +36,6 @@ public class SyncUtils {
      *
      * @param context Context
      */
-
-    /*
-    public static void CreateSyncAccount(Context context) {
-
-        //Create account type and default account
-        Account newAccount = new Account(MY_ACCOUNT, ACCOUNT_TYPE);
-        //
-        AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-
-        Log.i(LOG_TAG, "Add Periodic Sync");
-        ContentResolver.addPeriodicSync(
-                newAccount,
-                CONTENT_AUTHORITY,
-                Bundle.EMPTY,
-                SYNC_INTERVAL);
-
-        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
-
-        }
-        else
-        {
-            Log.i(LOG_TAG, "The account exists");
-        }
-    }*/
 
     public static void CreateSyncAccount(Context context) {
         boolean newAccount = false;

@@ -1,6 +1,5 @@
 package fiu.ssobec.Activity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +10,9 @@ import android.widget.GridView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,17 +36,12 @@ import fiu.ssobec.Synchronization.SyncUtils;
 public class MyZonesActivity extends ActionBarActivity {
 
     public static final String LOG_TAG = "MyZonesActivity";
-
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     public static ArrayList<String> zoneNames;
     public static ArrayList<Integer> zoneIDs;
     private static DataAccessUser data_access; //data access variable for user
 
     public static int user_id;
-
-    // Global variables
-    // A content resolver for accessing the provider
-    ContentResolver mResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +52,6 @@ public class MyZonesActivity extends ActionBarActivity {
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
 
-        //Declare the access to the SQLite table for zones`
-        //data_access_zones = new DataAccessZones(this);
-
         //Open the data access to the tables
         try {
             data_access.open();
@@ -65,13 +59,8 @@ public class MyZonesActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
-        //Declare the object user
-        User user = null;
-
-        if(data_access.doesTableExists())
-            user = data_access.getUser(1); //Get me a User that is currently logged in, into the
+        User user = data_access.getUser(1); //Get me a User that is currently logged in, into the
                                             //system: loggedIn == 1.
-
         //If a user that is logged in into the system is
         //not found then start a new LoginActivity
         if(user == null)
@@ -89,22 +78,43 @@ public class MyZonesActivity extends ActionBarActivity {
             List<NameValuePair> userId = new ArrayList<>(1);
 
             String res = null;
-            userId.add(new BasicNameValuePair("user_id", (user_id + "").trim()));
+            userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
 
             //send the user_id to zonepost.php and get the zones
             try {
                 res = new ExternalDatabaseController((ArrayList<NameValuePair>) userId, GETZONES_PHP).send();
-                System.out.println("Zone Response is: "+res);
+                Log.i(LOG_TAG, "Zone Response is: "+res);
             } catch (InterruptedException e) {
                 Log.e(LOG_TAG, "Database Interrupted Exception thrown: "+e.getMessage());
                 e.printStackTrace();
+
+            }
+
+            if(res != null) {
+                JSONObject obj;
+                JSONArray arr = null;
+                try {
+                    obj = new JSONObject(res);
+                    arr = obj.getJSONArray("zone_obj");
+
+                    for (int i = 0; i < arr.length(); i++) {
+                        int region_id = arr.getJSONObject(i).getInt("region_id");
+                        String region_name = arr.getJSONObject(i).getString("region_name");
+                        Log.i(LOG_TAG, "Add Region: " + region_id + ", Name: " + region_name);
+
+                        if (!region_name.equalsIgnoreCase("null")&&(data_access.getZone(region_id)==null))
+                            data_access.createZones(region_name,region_id);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             zoneNames = new ArrayList<>();
+            zoneNames = data_access.getAllZoneNames();
             zoneIDs = new ArrayList<>();
-
-            if(res != null)
-                zoneDetails(res);
+            zoneIDs = data_access.getAllZoneID();
 
             //Set buttons in a Grid View order
             GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
@@ -118,7 +128,6 @@ public class MyZonesActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_zones, menu);
-
         return true;
     }
 
