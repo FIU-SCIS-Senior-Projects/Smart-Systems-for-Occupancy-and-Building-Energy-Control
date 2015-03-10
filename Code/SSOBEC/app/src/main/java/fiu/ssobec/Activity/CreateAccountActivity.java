@@ -1,10 +1,21 @@
 package fiu.ssobec.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.InterruptedIOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import fiu.ssobec.DataAccess.Database;
 import fiu.ssobec.R;
 
 public class CreateAccountActivity extends ActionBarActivity {
@@ -36,5 +47,37 @@ public class CreateAccountActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void registerUser (View view){
+
+        List<NameValuePair> new_user_info = new ArrayList<NameValuePair>(3);
+        System.out.println("This button is working");
+
+        String name = ((EditText) findViewById(R.id.first_name_field)).getText().toString()+""
+                +((EditText) findViewById(R.id.last_name_field)).getText().toString();
+
+        String password = ((EditText) findViewById(R.id.password_field)).getText().toString();
+        String login_email = ((EditText) findViewById(R.id.email_field)).getText().toString();
+
+        new_user_info.add(new BasicNameValuePair("name", name.trim()));
+        new_user_info.add(new BasicNameValuePair("password", password.trim()));
+        new_user_info.add(new BasicNameValuePair("login_email", login_email.trim()));
+
+        //Create a new User Account
+
+        try {
+            String res = new Database((ArrayList<NameValuePair>) new_user_info,
+                    "http://smartsystems-dev.cs.fiu.edu/createaccount.php").send();
+
+            //Printing the result
+            System.out.println(res);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
     }
 }
