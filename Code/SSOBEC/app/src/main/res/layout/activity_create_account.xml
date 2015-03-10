@@ -38,7 +38,8 @@ tools:context=".LinearLayout">
         android:layout_height="wrap_content"
         android:layout_weight="0.50"
         android:layout_marginLeft="40px"
-        android:paddingTop="20px" />
+        android:paddingTop="20px"
+        android:id="@+id/first_name_field" />
 
 
     <!-- 1st Row - Last Name-->
@@ -66,7 +67,8 @@ tools:context=".LinearLayout">
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="40px"
         android:layout_weight="0.50"
-        android:paddingTop="20px" />
+        android:paddingTop="20px"
+        android:id="@+id/last_name_field" />
 
     <!-- 1st Row - Email-->
 
@@ -93,7 +95,8 @@ tools:context=".LinearLayout">
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="40px"
             android:layout_weight="0.50"
-            android:paddingTop="20px" />
+            android:paddingTop="20px"
+            android:id="@+id/email_field" />
 
         <!-- 1st Row - Password-->
 
@@ -120,7 +123,9 @@ tools:context=".LinearLayout">
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="40px"
             android:layout_weight="0.50"
-            android:paddingTop="20px" />
+            android:paddingTop="20px"
+            android:id="@+id/password_field"
+            android:inputType="textPassword"/>
 
 
         <!-- 1st Row - Repeat Password-->
@@ -148,7 +153,9 @@ tools:context=".LinearLayout">
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="40px"
             android:layout_weight="0.50"
-            android:paddingTop="20px" />
+            android:paddingTop="20px"
+            android:id="@+id/repeat_field"
+            android:inputType="textPassword"/>
 
 
 </LinearLayout>
@@ -161,6 +168,7 @@ tools:context=".LinearLayout">
     android:paddingLeft="20px"
     android:paddingTop="10px"
     android:text="CREATE ACCOUNT"
-    android:id="@+id/create_login_button" />
+    android:id="@+id/create_login_button"
+    android:onClick="registerUser" />
 
 </LinearLayout>
