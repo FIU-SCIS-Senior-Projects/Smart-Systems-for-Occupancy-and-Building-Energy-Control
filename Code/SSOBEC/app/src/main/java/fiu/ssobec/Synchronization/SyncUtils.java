@@ -21,14 +21,11 @@ public class SyncUtils {
 
 
     public static final String LOG_TAG = "SyncUtils";
-    //public static final long SECONDS_PER_MINUTE = 30L;
-    //public static final long SYNC_INTERVAL_IN_MINUTES = 1L;
     public static final long SYNC_INTERVAL = 60*60*24;
 
     private static final String CONTENT_AUTHORITY = SyncConstants.AUTHORITY;
     private static final String ACCOUNT_TYPE = SyncConstants.ACCOUNT_TYPE;
-    private static final String MY_ACCOUNT = SyncConstants.ACCOUNT;
-
+    //private static final String MY_ACCOUNT = SyncConstants.ACCOUNT;
     private static final String PREF_SETUP_COMPLETE = SyncConstants.PREF_SETUP_COMPLETE;
 
     /**
@@ -36,7 +33,6 @@ public class SyncUtils {
      *
      * @param context Context
      */
-
     public static void CreateSyncAccount(Context context) {
         boolean newAccount = false;
         boolean setupComplete = PreferenceManager

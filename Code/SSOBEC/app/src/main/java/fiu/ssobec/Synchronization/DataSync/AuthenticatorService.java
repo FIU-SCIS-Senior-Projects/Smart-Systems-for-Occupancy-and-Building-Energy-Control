@@ -20,6 +20,7 @@ public class AuthenticatorService extends Service {
 
 
     public static final String ACCOUNT = SyncConstants.ACCOUNT;
+    public static final String ACCOUNT_TYPE = SyncConstants.ACCOUNT_TYPE;
     public static final String LOG_TAG = "AuthenticatorService";
 
     // Instance field that stores the authenticator object
@@ -34,6 +35,17 @@ public class AuthenticatorService extends Service {
     @Override
     public void onDestroy() {
         Log.i(LOG_TAG, "Service destroyed");
+    }
+
+    public static Account GetAccount() {
+        // Note: Normally the account name is set to the user's identity (username or email
+        // address). However, since we aren't actually using any user accounts, it makes more sense
+        // to use a generic string in this case.
+        //
+        // This string should *not* be localized. If the user switches locale, we would not be
+        // able to locate the old account, and may erroneously register multiple accounts.
+        final String accountName = ACCOUNT;
+        return new Account(accountName, ACCOUNT_TYPE);
     }
 
     /*

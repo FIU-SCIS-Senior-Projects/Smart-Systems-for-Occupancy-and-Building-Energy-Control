@@ -1,7 +1,5 @@
 package fiu.ssobec.DataAccess;
 
-import android.content.Intent;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -19,6 +17,8 @@ import java.util.List;
 
 /**
  * Created by Maria on 2/5/2015.
+ *
+ *
  */
 public class ExternalDatabaseController {
 
@@ -31,7 +31,8 @@ public class ExternalDatabaseController {
     String response_str;
 
     /*
-
+    *   'parameters' - parameters needed to execute the query
+    *   'url' - the place of the php file
     **/
     public ExternalDatabaseController(ArrayList<NameValuePair> parameters, String url)  {
 
@@ -67,7 +68,6 @@ public class ExternalDatabaseController {
             response = httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             response_str = httpclient.execute(httppost, responseHandler);
-            System.out.println("Response : " + response_str);
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();

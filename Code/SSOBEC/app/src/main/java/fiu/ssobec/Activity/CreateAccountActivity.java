@@ -1,8 +1,9 @@
 package fiu.ssobec.Activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,14 +12,15 @@ import android.widget.EditText;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fiu.ssobec.DataAccess.Database;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 
 public class CreateAccountActivity extends ActionBarActivity {
+
+    public static final String LOG_TAG = "CreateAccountActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class CreateAccountActivity extends ActionBarActivity {
     }
     public void registerUser (View view){
 
-        List<NameValuePair> new_user_info = new ArrayList<NameValuePair>(3);
+        List<NameValuePair> new_user_info = new ArrayList<>(3);
         System.out.println("This button is working");
 
         String name = ((EditText) findViewById(R.id.first_name_field)).getText().toString()+""
@@ -66,11 +68,12 @@ public class CreateAccountActivity extends ActionBarActivity {
         //Create a new User Account
 
         try {
-            String res = new Database((ArrayList<NameValuePair>) new_user_info,
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) new_user_info,
                     "http://smartsystems-dev.cs.fiu.edu/createaccount.php").send();
 
             //Printing the result
             System.out.println(res);
+            Log.i(LOG_TAG, "DB Result: " + res);
 
         } catch (InterruptedException e) {
             e.printStackTrace();

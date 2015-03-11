@@ -1,6 +1,9 @@
 package fiu.ssobec.Activity;
 
+import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -9,35 +12,31 @@ import android.widget.TextView;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
+import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
 
 public class EnergyActivity extends ActionBarActivity {
 
 
     private DataAccessUser data_access;
-    private String app_title="";
-    int energy_val = 0;
-    String time_stamp="";
     TextView mTextView;
     TextView mTextView1;
     TextView mTextView2;
-
     TextView time_stamp_text;
+    private Menu mOptionsMenu;
+    private Object mSyncObserverHandle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         data_access = new DataAccessUser(this);
 
-
         try {
-            System.out.println("Open data access");
             data_access.open();
-            System.out.println("Open data access of Temperature");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,7 +45,7 @@ public class EnergyActivity extends ActionBarActivity {
         System.out.println("Activity Intent: "+intent.toString());
 
         //Get the title of the activity
-        app_title = getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME);
+        String app_title = getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME);
 
         this.setTitle(app_title);
 
@@ -61,21 +60,13 @@ public class EnergyActivity extends ActionBarActivity {
                 mTextView1 = (TextView) findViewById( R.id.Fahrenheit);
                 mTextView2 = (TextView) findViewById( R.id.Celsius);
 
-                getTemperature();
-                break;
+                getTemperature(); break;
 
-            case "Occupancy":
-                getOccupancy();
-                break;
+            case "Occupancy": getOccupancy(); break;
 
-            case "PlugLoad":
-                getPlugLoad();
-                break;
+            case "PlugLoad": getPlugLoad(); break;
 
-            case "Lighting":
-                getLighting();
-                break;
-
+            case "Lighting": getLighting(); break;
         }
 
     }
@@ -176,6 +167,7 @@ public class EnergyActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_energy, menu);
+        mOptionsMenu = menu;
         return true;
     }
 
@@ -205,52 +197,6 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
-    private void parseDatabaseResponseOcc(String response)
-    {
-        String str_before = "";
-        StringTokenizer stringTokenizer = new StringTokenizer(response, "|");
-
-        while (stringTokenizer.hasMoreElements()) {
-
-            String temp = stringTokenizer.nextElement().toString();
-
-            if (str_before.equalsIgnoreCase("time_stamp"))
-            {
-                time_stamp = temp;
-                System.out.println("Time: "+temp);
-            }
-            else if (str_before.equalsIgnoreCase("occupancy"))
-            {
-                energy_val = Integer.parseInt(temp);
-                System.out.println("Occupancy: "+temp);
-            }
-            str_before = temp;
-        }
-    }
-
-    private void parseDatabaseResponseTemp(String response)
-    {
-        String str_before = "";
-        StringTokenizer stringTokenizer = new StringTokenizer(response, "|");
-
-        while (stringTokenizer.hasMoreElements()) {
-
-            String temp = stringTokenizer.nextElement().toString();
-
-            if (str_before.equalsIgnoreCase("time_stamp"))
-            {
-                time_stamp = temp;
-                System.out.println("Time: "+temp);
-            }
-            else if (str_before.equalsIgnoreCase("temperature"))
-            {
-                energy_val = Integer.parseInt(temp);
-                System.out.println("Temperature: "+temp);
-            }
-            str_before = temp;
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -259,11 +205,70 @@ public class EnergyActivity extends ActionBarActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        mSyncStatusObserver.onStatusChanged(0);
+
+        // Watch for sync state changes
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         data_access.close();
+
+        if (mSyncObserverHandle != null) {
+            ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
+            mSyncObserverHandle = null;
+        }
+    }
+
+    private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
+        /** Callback invoked with the sync adapter status changes. */
+        @Override
+        public void onStatusChanged(int which) {
+            runOnUiThread(new Runnable() {
+                /**
+                 * The SyncAdapter runs on a background thread. To update the UI, onStatusChanged()
+                 * runs on the UI thread.
+                 */
+                @Override
+                public void run() {
+                    // Create a handle to the account that was created by
+                    // SyncService.CreateSyncAccount(). This will be used to query the system to
+                    // see how the sync status has changed.
+                    Account account = AuthenticatorService.GetAccount();
+                    if (account == null) {
+                        // GetAccount() returned an invalid value. This shouldn't happen, but
+                        // we'll set the status to "not refreshing".
+                        setRefreshActionButtonState(false);
+                        return;
+                    }
+                    // Test the ContentResolver to see if the sync adapter is active or pending.
+                    // Set the state of the refresh button accordingly.
+                    boolean syncActive = ContentResolver.isSyncActive(
+                            account, SyncConstants.AUTHORITY);
+                    boolean syncPending = ContentResolver.isSyncPending(
+                            account, SyncConstants.AUTHORITY);
+                    setRefreshActionButtonState(syncActive || syncPending);
+                }
+            });
+        }
+    };
+
+    public void setRefreshActionButtonState(boolean refreshing) {
+        if (mOptionsMenu == null) {
+            return;
+        }
+
+        final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
+        if (refreshItem != null) {
+            if (refreshing) {
+                refreshItem.setActionView(R.layout.actionbar_syncprogress);
+            } else {
+                refreshItem.setActionView(null);
+            }
+        }
     }
 }

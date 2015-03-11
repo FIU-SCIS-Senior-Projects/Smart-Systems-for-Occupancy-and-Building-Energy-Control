@@ -72,13 +72,19 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String TABLE_PLUGLOAD = "zone_plugLoad";
     public static final String PLUG_COLUMN_ID = "zone_description_id";
     public static final String PLUG_COLUMN_DATETIME = "plugLoad_datetime";
-    public static final String PLUG_COLUMN_PLUGLOAD = "plugLoad";
+    public static final String PLUG_COLUMN_STATE = "plugload_state";
+    public static final String PLUG_COLUMN_APPNAME = "appliance_name";
+    public static final String PLUG_COLUMN_APPTYPE = "appliance_type";
+    public static final String PLUG_COLUMN_APPENERGY = "energy_usage_kwh";
 
     private static final String PLUG_TABLE_CREATE = "create table "
             + TABLE_PLUGLOAD + " ("
             + PLUG_COLUMN_ID + " int NOT NULL, "
             + PLUG_COLUMN_DATETIME + " datetime NOT NULL, "
-            + PLUG_COLUMN_PLUGLOAD + " int NOT NULL, "
+            + PLUG_COLUMN_STATE + " varchar(3) NOT NULL, "
+            + PLUG_COLUMN_APPNAME + " varchar(255) NULL, "
+            + PLUG_COLUMN_APPTYPE + " varchar(255) NOT NULL, "
+            + PLUG_COLUMN_APPENERGY + " int NOT NULL, "
             + "CONSTRAINT zone_plugLoad_pk PRIMARY KEY (" + PLUG_COLUMN_ID+" , "+PLUG_COLUMN_DATETIME+"), "
             + "FOREIGN KEY ("+PLUG_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
@@ -116,7 +122,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
-    //Table energy-waste-per-zone
+    //Table day energy-waste-per-zone
     public static final String TABLE_ENERGYWASTE = "energy_waste_per_zone";
     public static final String ENERYWASTE_ID = "zone_description_id";
     public static final String ENERYWASTE_DATE = "date";

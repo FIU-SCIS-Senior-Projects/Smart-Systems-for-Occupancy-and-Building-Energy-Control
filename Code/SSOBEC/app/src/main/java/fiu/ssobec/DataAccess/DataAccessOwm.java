@@ -59,10 +59,7 @@ public class DataAccessOwm {
         data_access.createOutsideWeather((int) cwd.getCloudsInstance().getPercentageOfClouds(),
                                          (int) cwd.getMainInstance().getMinTemperature(),
                                          (int) cwd.getMainInstance().getTemperature());
-
-        System.out.println("Weather Data");
         data_access.getAllWeatherData();
-
         data_access.close();
     }
 

@@ -1,12 +1,17 @@
 package fiu.ssobec.Activity;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -17,7 +22,6 @@ import org.json.JSONObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
@@ -33,13 +37,16 @@ import fiu.ssobec.Synchronization.SyncUtils;
     A column in the UserSQLiteDatabase 'loggedIn'
 * */
 
-public class MyZonesActivity extends ActionBarActivity {
+public class MyZonesActivity extends ActionBarActivity
+            implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
+    public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
-    public static ArrayList<String> zoneNames;
-    public static ArrayList<Integer> zoneIDs;
     private static DataAccessUser data_access; //data access variable for user
+    private Location mLastLocation;
+
+    protected GoogleApiClient mGoogleApiClient;
 
     public static int user_id;
 
@@ -53,16 +60,11 @@ public class MyZonesActivity extends ActionBarActivity {
         data_access = new DataAccessUser(this);
 
         //Open the data access to the tables
-        try {
-            data_access.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
 
-        User user = data_access.getUser(1); //Get me a User that is currently logged in, into the
-                                            //system: loggedIn == 1.
-        //If a user that is logged in into the system is
-        //not found then start a new LoginActivity
+        User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
+
+        //If a user that is logged in into the system is not found then start a new LoginActivity
         if(user == null)
         {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -92,7 +94,7 @@ public class MyZonesActivity extends ActionBarActivity {
 
             if(res != null) {
                 JSONObject obj;
-                JSONArray arr = null;
+                JSONArray arr;
                 try {
                     obj = new JSONObject(res);
                     arr = obj.getJSONArray("zone_obj");
@@ -100,8 +102,6 @@ public class MyZonesActivity extends ActionBarActivity {
                     for (int i = 0; i < arr.length(); i++) {
                         int region_id = arr.getJSONObject(i).getInt("region_id");
                         String region_name = arr.getJSONObject(i).getString("region_name");
-                        Log.i(LOG_TAG, "Add Region: " + region_id + ", Name: " + region_name);
-
                         if (!region_name.equalsIgnoreCase("null")&&(data_access.getZone(region_id)==null))
                             data_access.createZones(region_name,region_id);
                     }
@@ -111,17 +111,23 @@ public class MyZonesActivity extends ActionBarActivity {
                 }
             }
 
-            zoneNames = new ArrayList<>();
-            zoneNames = data_access.getAllZoneNames();
-            zoneIDs = new ArrayList<>();
-            zoneIDs = data_access.getAllZoneID();
-
             //Set buttons in a Grid View order
             GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
             ButtonAdapter m_badapter = new ButtonAdapter(this);
-            m_badapter.setListData(zoneNames, zoneIDs);
+            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridViewButtons.setAdapter(m_badapter);
+
+            Log.i(LOG_TAG, "buildGoogleApiClient");
+            buildGoogleApiClient();
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -131,6 +137,21 @@ public class MyZonesActivity extends ActionBarActivity {
         return true;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mGoogleApiClient != null){
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -159,36 +180,6 @@ public class MyZonesActivity extends ActionBarActivity {
         }
     }
 
-    public void zoneDetails(String response)
-    {
-        int id = 0;
-        String str_before = "";
-        StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
-
-        while (stringTokenizer.hasMoreElements()) {
-
-            String temp = stringTokenizer.nextElement().toString();
-
-            if (str_before.equalsIgnoreCase("id"))
-            {
-                id = Integer.parseInt(temp);
-            }
-            else if (str_before.equalsIgnoreCase("name"))
-            {
-                zoneNames.add(temp);
-                zoneIDs.add(id);
-
-                //If zone is not in the DB, add new zone
-                if (data_access.getZone(id) == null)
-                {
-                    System.out.println("Create Zone!");
-                    data_access.createZones(temp, id);
-                }
-            }
-            str_before = temp;
-        }
-    }
-
     //When an Activity is resumed, open the SQLite
     //connection
     @Override
@@ -210,5 +201,25 @@ public class MyZonesActivity extends ActionBarActivity {
     }
 
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            Log.i(LOG_TAG, "Longitude: "+mLastLocation.getLongitude()+", Latitude"+mLastLocation.getLatitude());
+        } else {
+            Log.i(LOG_TAG, "No location detected");
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(LOG_TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+    }
 }
 

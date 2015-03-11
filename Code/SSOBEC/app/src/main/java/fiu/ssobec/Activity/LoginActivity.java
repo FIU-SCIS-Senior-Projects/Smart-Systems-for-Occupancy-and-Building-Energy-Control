@@ -124,8 +124,7 @@ public class LoginActivity extends ActionBarActivity {
         {
             runOnUiThread(new Runnable() {
 
-                public void run() {
-                    warning_msg.setText("Wrong email or password");
+                public void run() { warning_msg.setText("Wrong email or password");
                 }
 
             });
@@ -179,7 +178,7 @@ public class LoginActivity extends ActionBarActivity {
         return user_flag;
     }
 
-    // Create Account
+    // OnClick Create Account Button
     public void getCreateAccount(View view) {
         Intent intent = new Intent(this,CreateAccountActivity.class);
         startActivity(intent);

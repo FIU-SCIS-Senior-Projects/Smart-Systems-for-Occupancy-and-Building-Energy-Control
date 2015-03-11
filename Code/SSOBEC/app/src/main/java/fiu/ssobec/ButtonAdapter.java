@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.view.ViewGroup.LayoutParams;
 
 import java.util.ArrayList;
 
-import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.Activity.ZonesDescriptionActivity;
 
 /**
@@ -33,7 +32,7 @@ public class ButtonAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return MyZonesActivity.zoneNames.size();
+        return zone_names.size();
     }
 
     @Override
@@ -68,8 +67,8 @@ public class ButtonAdapter extends BaseAdapter {
         b.setId((int) zone_id.get(position));
         b.setTextSize(10);
 
-        System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
-        System.out.println("Adding name: "+zone_names.get(position).toString());
+        //System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
+        //System.out.println("Adding name: "+zone_names.get(position).toString());
 
         final int button_id = b.getId();
         b.setOnClickListener(new View.OnClickListener() {

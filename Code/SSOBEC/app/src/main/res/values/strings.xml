@@ -10,7 +10,7 @@
     <string name="email">Email</string>
     <string name="temperature">Temperature</string>
     <string name="occupancy">Occupancy</string>
-    <string name="plugLoad">Plug Load</string>
+    <string name="status">Plug Load</string>
     <string name="artificialLighting">Artificial Lighting</string>
     <string name="action_logout">Logout</string>
     <string name="celsius">Celsius</string>

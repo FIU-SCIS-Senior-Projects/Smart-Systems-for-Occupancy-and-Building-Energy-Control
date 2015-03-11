@@ -53,7 +53,10 @@ public class DataAccessUser {
 
     private static String[] PLUG_COLS = {   UserSQLiteDatabase.PLUG_COLUMN_ID,
                                             UserSQLiteDatabase.PLUG_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.PLUG_COLUMN_PLUGLOAD};
+                                            UserSQLiteDatabase.PLUG_COLUMN_STATE,
+                                            UserSQLiteDatabase.PLUG_COLUMN_APPNAME,
+                                            UserSQLiteDatabase.PLUG_COLUMN_APPTYPE,
+                                            UserSQLiteDatabase.PLUG_COLUMN_APPENERGY};
 
     private static String[] OW_COLS = {     UserSQLiteDatabase.OW_DATETIME,
                                             UserSQLiteDatabase.OW_CLOUDPERCENTAGE,
@@ -329,13 +332,16 @@ public class DataAccessUser {
 
     /****************************** PLUGLOAD ************************************/
 
-    public static void createPlugLoad(int zone_id,  String date_time, int plugLoad)
+    public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name, String app_type, int energy_usage_kwh)
     {
         System.out.println("create my plugLoad data!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.PLUG_COLUMN_ID, zone_id);
         vals.put(UserSQLiteDatabase.PLUG_COLUMN_DATETIME, date_time);
-        vals.put(UserSQLiteDatabase.PLUG_COLUMN_PLUGLOAD, plugLoad);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_STATE, state);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_APPENERGY, energy_usage_kwh);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_APPNAME, app_name);
+        vals.put(UserSQLiteDatabase.PLUG_COLUMN_APPTYPE, app_type);
 
         db.insert(UserSQLiteDatabase.TABLE_PLUGLOAD,null ,vals);
     }
@@ -371,7 +377,7 @@ public class DataAccessUser {
         {
             PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
             plugLoad_info.add(plugLoad.getDatetime());
-            plugLoad_info.add(plugLoad.getPlugLoad()+"");
+            plugLoad_info.add(plugLoad.getStatus()+"");
 
             return plugLoad_info;
         }
@@ -379,15 +385,20 @@ public class DataAccessUser {
             return null;
     }
 
-    /*  zone_id
-        datetime
-        plugLoad
+    /*  int zone_id,
+       String datetime,
+       String status,
+       String app_type,
+       String app_name,
+       int energy_usage_kwh
     * */
     private static PlugLoad getPlugLoadFromCursor(Cursor cursor) {
-        PlugLoad plug = new PlugLoad( cursor.getInt(0),          //zone_id
-                                      cursor.getString(1),       //datetime
-                                      cursor.getInt(2));        //plugLoad
-        return plug;
+        return new PlugLoad(    cursor.getInt(0),          //zone_id
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getString(3),
+                                cursor.getString(4),
+                                cursor.getInt(5));
     }
 
     /****************************** OCCUPANCY ************************************/
