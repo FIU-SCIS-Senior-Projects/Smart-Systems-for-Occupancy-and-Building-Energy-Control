@@ -23,16 +23,12 @@ public class DataAccessOwm {
     private CurrentWeather cwd;
     private Context context;
 
-    private float longitude=0;
-    private float latitude=0;
-
     public DataAccessOwm(Context context) throws JSONException
     {
         this.context = context;
         owm = new OpenWeatherMap("");
         try {
             cwd = owm.currentWeatherByCityName("Miami");
-            Log.i(LOG_TAG, "Temperature: "+cwd.getMainInstance().getTemperature());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,6 +38,8 @@ public class DataAccessOwm {
     public void saveWeatherData()
     {
         DataAccessUser data_access = new DataAccessUser(context);
+        float Clouds = 0;
+        float Temp = 0;
 
         try {
             data_access.open();
@@ -51,15 +49,21 @@ public class DataAccessOwm {
 
         if(cwd.isValid())
         {
-            Log.i(LOG_TAG, "You are currently in City Name: "+cwd.getCityName()+
-                    ", Coordinates: ("+latitude+", "+longitude+")");
-        }
-        Log.i(LOG_TAG, "Clouds: "+cwd.getCloudsInstance().getPercentageOfClouds());
+            if(cwd.hasCloudsInstance())
+            {
+                Clouds = cwd.getCloudsInstance().getPercentageOfClouds();
+            }
+            if(cwd.getMainInstance().hasTemperature())
+            {
+                Temp = cwd.getMainInstance().getTemperature();
+            }
 
-        data_access.createOutsideWeather((int) cwd.getCloudsInstance().getPercentageOfClouds(),
-                                         (int) cwd.getMainInstance().getMinTemperature(),
-                                         (int) cwd.getMainInstance().getTemperature());
-        data_access.getAllWeatherData();
+            if(Clouds != 0 && Temp != 0)
+            {
+                Log.i(LOG_TAG, "Clouds: "+Clouds+", Temperature: "+Temp);
+                data_access.createOutsideWeather((int) Clouds, (int) Temp);
+            }
+        }
         data_access.close();
     }
 

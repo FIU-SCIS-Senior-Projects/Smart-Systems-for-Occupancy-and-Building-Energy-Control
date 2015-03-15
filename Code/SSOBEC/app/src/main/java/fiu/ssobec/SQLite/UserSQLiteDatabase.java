@@ -108,17 +108,15 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     //Table Outside Weather
     public static final String TABLE_OW = "outside_weather";
     public static final String OW_DATETIME= "ow_time";
-    public static final String OW_MINTEMPERATURE = "ow_min_temperature";
-    public static final String OW_MAXTEMPERATURE = "ow_max_temperature";
+    public static final String OW_TEMPERATURE = "ow_max_temperature";
     public static final String OW_CLOUDPERCENTAGE = "ow_cloud_percentage";
 
     private static final String OW_TABLE_CREATE = "create table "
             + TABLE_OW + " ("
             + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + OW_CLOUDPERCENTAGE + " int NOT NULL, "
-            + OW_MAXTEMPERATURE + " int NOT NULL, "
-            + OW_MINTEMPERATURE + " int NOT NULL, "
-            + "CONSTRAINT cloud_temp_pk PRIMARY KEY (" + OW_CLOUDPERCENTAGE+" , "+OW_MAXTEMPERATURE+" , "+OW_MINTEMPERATURE+ ") "
+            + OW_CLOUDPERCENTAGE + " int NULL, "
+            + OW_TEMPERATURE + " int NULL, "
+            + "CONSTRAINT cloud_temp_pk PRIMARY KEY (" + OW_CLOUDPERCENTAGE+" , "+ OW_TEMPERATURE + ") "
             +
             ");";
 

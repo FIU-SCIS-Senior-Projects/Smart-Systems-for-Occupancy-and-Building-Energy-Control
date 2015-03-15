@@ -114,8 +114,8 @@ public class EnergyActivity extends ActionBarActivity {
             ((TextView) findViewById(R.id.Fahrenheit)).setText(info.get(1)+""+(char) 0x00B0+"F");
             ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+""+(char) 0x00B0+"C");
 
-            ((TextView) findViewById(R.id.max_outside_temp_f)).setText(data_access.getMaxTemperature()+(char) 0x00B0+"F");
-            ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(data_access.getMaxTemperature()))
+            ((TextView) findViewById(R.id.max_outside_temp_f)).setText(data_access.getTemperature()+(char) 0x00B0+"F");
+            ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(data_access.getTemperature()))
                                                                         +""+(char) 0x00B0+"C");
 
             time_stamp.setText(info.get(0)); //set time stamp

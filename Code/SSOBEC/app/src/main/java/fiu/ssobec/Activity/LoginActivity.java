@@ -86,12 +86,8 @@ public class LoginActivity extends ActionBarActivity {
         login_email = ((EditText) findViewById(R.id.email_text_field)).getText().toString();
         password = ((EditText) findViewById(R.id.password_text_field)).getText().toString();
 
-        System.out.println("This is login_email:" + login_email + ", Password" + password);
-
        //declare an arraylist that holds email and password
         username_pass = new ArrayList<NameValuePair>(2);
-
-        //add our  email and password to a NameValuePair ArrayList
 
         //the PHP file will receive the information as follows:
         // $login_email = $_POST['login_email'];
@@ -141,7 +137,6 @@ public class LoginActivity extends ActionBarActivity {
         User user = null;
         int id=0;
 
-        System.out.println("User Details");
         while (stringTokenizer.hasMoreElements()) {
 
             String temp = stringTokenizer.nextElement().toString();
@@ -168,8 +163,7 @@ public class LoginActivity extends ActionBarActivity {
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
         if(user_flag && !data_access.userExist(id))
         {
-            System.out.println("Create User, ID is: "+id);
-            user = data_access.createUser(name, id, email, 1);
+            user = data_access.createUser(name, id, email);
         }
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id))

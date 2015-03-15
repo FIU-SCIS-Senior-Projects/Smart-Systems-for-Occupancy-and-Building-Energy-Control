@@ -9,10 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -37,16 +33,13 @@ import fiu.ssobec.Synchronization.SyncUtils;
     A column in the UserSQLiteDatabase 'loggedIn'
 * */
 
-public class MyZonesActivity extends ActionBarActivity
-            implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+public class MyZonesActivity extends ActionBarActivity{
 
     public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     private static DataAccessUser data_access; //data access variable for user
     private Location mLastLocation;
-
-    protected GoogleApiClient mGoogleApiClient;
 
     public static int user_id;
 
@@ -117,17 +110,7 @@ public class MyZonesActivity extends ActionBarActivity
             m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridViewButtons.setAdapter(m_badapter);
 
-            Log.i(LOG_TAG, "buildGoogleApiClient");
-            buildGoogleApiClient();
         }
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
     }
 
     @Override
@@ -135,22 +118,6 @@ public class MyZonesActivity extends ActionBarActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_zones, menu);
         return true;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(mGoogleApiClient != null){
-            mGoogleApiClient.connect();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
     }
 
     @Override
@@ -200,26 +167,5 @@ public class MyZonesActivity extends ActionBarActivity
         data_access.close();
     }
 
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.i(LOG_TAG, "Longitude: "+mLastLocation.getLongitude()+", Latitude"+mLastLocation.getLatitude());
-        } else {
-            Log.i(LOG_TAG, "No location detected");
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(LOG_TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
-    }
 }
 

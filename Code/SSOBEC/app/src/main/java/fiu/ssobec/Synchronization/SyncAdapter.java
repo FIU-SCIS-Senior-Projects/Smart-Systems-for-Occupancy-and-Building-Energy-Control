@@ -21,6 +21,7 @@ import java.util.List;
 import fiu.ssobec.DataAccess.DataAccessOwm;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
+import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -42,6 +43,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String PLUG_APPLIANCE_TYPE = "appliance_type";
     public static final String PLUG_APPLIANCE_NAME = "appliance_name";
     public static final String ENERGY_USAGE = "energy_usage_kwh";
+
+    public static final String OCCUPANCY_OBJ = "occupancy_obj";
+    public static final String TEMPERATURE_OBJ = "temperature_arr";
+    public static final String PLUGLOAD_OBJ = "plugload_obj";
+    public static final String LIGHTING_OBJ = "lighting_obj";
 
     private Context mcontext;
     private DataAccessUser data_access;
@@ -70,13 +76,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
 
-        //Get all the zones and synchronize all the data specific for each of them
         List<Integer> region_id = data_access.getAllZoneID();
         for (Integer id : region_id) {
-            getOccupancyData(id);
-            getTemperatureData(id);
-            getPlugLoadData(id);
-            getLightingData(id);
+            //getOccupancyData(id);
+            //getTemperatureData(id);
+            //getPlugLoadData(id);
+            //getLightingData(id);
+
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
         }
 
         try {
@@ -91,6 +101,80 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         data_access.close();
     }
 
+    private void getDatabaseData(int region_id, String table_name, String php_file_name, String json_obj_name)
+    {
+        String last_time_stamp = data_access.getLastTimeStamp(region_id, table_name);
+
+        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
+
+        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (region_id + "").trim()));
+        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
+
+        try {
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, php_file_name).send();
+            Log.i(LOG_TAG, "Response from Database for table "+table_name+": "+res);
+
+            JSONObject obj = new JSONObject(res);
+            JSONArray arr = obj.getJSONArray(json_obj_name);
+
+            saveDataOnInternalDB(region_id, arr, table_name);
+
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDataOnInternalDB(int region_id, JSONArray arr, String table_name) throws JSONException {
+
+        switch(table_name)
+        {
+            case UserSQLiteDatabase.TABLE_OCCUPANCY:
+                for (int i = 0; i < arr.length(); i++) {
+                    int occup = arr.getJSONObject(i).getInt("occupancy");
+                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createOccupancy(region_id, time_stamp, occup);
+                }
+
+                break;
+            case UserSQLiteDatabase.TABLE_LIGHTING:
+                for (int i = 0; i < arr.length(); i++) {
+                    String lighting = arr.getJSONObject(i).getString("lighting");
+                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
+                    System.out.println("Lighting: " + lighting + ", Time Stamp: " + time_stamp);
+
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createLighting(region_id, time_stamp, lighting);
+                }
+
+                break;
+            case UserSQLiteDatabase.TABLE_PLUGLOAD:
+                for (int i = 0; i < arr.length(); i++) {
+                    String plugLoad = arr.getJSONObject(i).getString("status");
+                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
+
+                    //, String app_name, String app_type, int energy_usage_kwh
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createPlugLoad(region_id, time_stamp, plugLoad,
+                                arr.getJSONObject(i).getString(PLUG_APPLIANCE_NAME),
+                                arr.getJSONObject(i).getString(PLUG_APPLIANCE_TYPE),
+                                arr.getJSONObject(i).getInt(ENERGY_USAGE));
+                }
+
+                break;
+            case UserSQLiteDatabase.TABLE_TEMPERATURE:
+                for (int i = 0; i < arr.length(); i++) {
+                    int temp = arr.getJSONObject(i).getInt("temperature");
+                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
+                    if (!time_stamp.equalsIgnoreCase("null"))
+                        data_access.createTemperature(region_id, time_stamp, temp);
+                }
+                break;
+        }
+    }
+
+
+/*
     private void getOccupancyData(int RegionID)
     {
         String last_time_stamp = data_access.getLastTimeStamp(RegionID);
@@ -143,7 +227,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             System.out.println("Sync Temperature Response is: "+res);
 
             if(!res.equalsIgnoreCase(DB_NODATA)) {
-               // Log.i(LOG_TAG, "*-"+DB_NODATA+"="+res+"-*");
                 JSONObject obj = new JSONObject(res);
                 JSONArray arr = obj.getJSONArray("temperature_arr");
 
@@ -235,12 +318,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        catch (JSONException e) {
+        } catch (InterruptedException | JSONException e) {
             e.printStackTrace();
         }
     }
+
+    */
 
 }

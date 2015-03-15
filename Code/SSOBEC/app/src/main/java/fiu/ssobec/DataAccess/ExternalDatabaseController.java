@@ -23,12 +23,14 @@ import java.util.List;
 public class ExternalDatabaseController {
 
 
-    List<NameValuePair> parameters;
-    HttpPost httppost;
-    HttpResponse response;
-    HttpClient httpclient;
-    String url;
-    String response_str;
+    private List<NameValuePair> parameters;
+    private HttpPost httppost;
+    private HttpResponse response;
+    private HttpClient httpclient;
+    private String url;
+    private String response_str;
+
+    public static final String USR_DB_COLUMN = "energy_waste_per_zone";
 
     /*
     *   'parameters' - parameters needed to execute the query

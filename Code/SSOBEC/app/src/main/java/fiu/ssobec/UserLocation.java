@@ -7,22 +7,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
 /**
  * Created by Maria on 2/28/2015.
  */
-public class UserLocation implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class UserLocation {
 
     public static final String LOG_TAG = "UserLocation";
     private LocationManager mlocManager;
     private LocationListener mlocListener;
     private double longitude;
     private double latitude;
-    protected GoogleApiClient mGoogleApiClient;
     private  Location mLastLocation;
 
     public UserLocation(Context context) {
@@ -47,6 +41,7 @@ public class UserLocation implements
         Location myloc;
 
         // Register the listener with the Location Manager to receive location updates
+
         if (mlocManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)) {
             Log.i(LOG_TAG, "Network Provider");
             mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
@@ -85,27 +80,4 @@ public class UserLocation implements
 
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            latitude = mLastLocation.getLatitude();
-            longitude = mLastLocation.getLongitude();
-            Log.i(LOG_TAG, "longitude: "+longitude+", latitude: "+latitude);
-        } else {
-            //Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
 }
