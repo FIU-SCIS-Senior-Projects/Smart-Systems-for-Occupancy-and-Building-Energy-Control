@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
@@ -60,8 +59,7 @@ public class DataAccessUser {
 
     private static String[] OW_COLS = {     UserSQLiteDatabase.OW_DATETIME,
                                             UserSQLiteDatabase.OW_CLOUDPERCENTAGE,
-                                            UserSQLiteDatabase.OW_MAXTEMPERATURE,
-                                            UserSQLiteDatabase.OW_MINTEMPERATURE};
+                                            UserSQLiteDatabase.OW_TEMPERATURE};
 
     public DataAccessUser(Context context)
     {
@@ -79,8 +77,9 @@ public class DataAccessUser {
 
     /****************************** USER ************************************/
 
-    public static User createUser(String name,  int id, String email, int loggedIn)
+    public static User createUser(String name,  int id, String email)
     {
+        int loggedIn = 1;
         System.out.println("createUser: Creating new user on my database!!!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.COLUMN_NAME, name);
@@ -435,26 +434,6 @@ public class DataAccessUser {
             return null;
     }
 
-    public String getLastTimeStamp(int zone_id) {
-        String last_time_stamp = "0000-00-00 00:00:00";
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
-                OCC_COLS,
-                UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id,
-                null, null, null, null);
-
-        if (cursor.moveToLast())
-        {
-            //cursor.move(-2);
-            Occupancy occupancy = getOccupancyFromCursor(cursor);
-            last_time_stamp = occupancy.getDate_time();
-        }
-
-        System.out.println("Last Time Stamp is: "+last_time_stamp);
-        cursor.close();
-        return last_time_stamp;
-    }
-
     private static Occupancy getOccupancyFromCursor(Cursor cursor) {
         Occupancy occp = new Occupancy( cursor.getString(1),    //Datetime
                                         cursor.getInt(0),       //Zone_ID
@@ -518,7 +497,7 @@ public class DataAccessUser {
     //STATE
     //Datetime
     private static Lighting getLightingFromCursor(Cursor cursor) {
-        Lighting light = new Lighting( cursor.getInt(0),    //Datetime
+        Lighting light = new Lighting( cursor.getInt(0),            //Datetime
                                         cursor.getString(1),       //Zone_ID
                                         cursor.getString(2));      //Occupancy
         return light;
@@ -527,44 +506,20 @@ public class DataAccessUser {
 
     /****************************** OUTSIDE_WEATHER ************************************/
 
-    public static void createOutsideWeather(int cloudP, int minTemp, int maxTemp)
+    public static void createOutsideWeather(int cloudP, int temp)
     {
-        System.out.println("create my outside weather data!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.OW_CLOUDPERCENTAGE, cloudP);
-        vals.put(UserSQLiteDatabase.OW_MINTEMPERATURE, minTemp);
-        vals.put(UserSQLiteDatabase.OW_MAXTEMPERATURE, maxTemp);
+        vals.put(UserSQLiteDatabase.OW_TEMPERATURE, temp);
 
-        db.insert(UserSQLiteDatabase.TABLE_OW,null ,vals);
-    }
-
-    public List<Integer> getAllWeatherData() {
-        List<Integer> ow = new ArrayList<>();
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
-                        OW_COLS, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            OutsideWeather outsideWeather = getOWFromCursor(cursor);
-            ow.add(outsideWeather.getMaxTemperature());
-            System.out.println( "Min: "+outsideWeather.getMinTemperature()+
-                                " Max: "+outsideWeather.getMaxTemperature()+
-                                " Cloud: "+outsideWeather.getCloudPercentage()+
-                                " DateTime: "+outsideWeather.getDataTime());
-            cursor.moveToNext();
-        }
-        // make sure to close the cursor
-        cursor.close();
-        return ow;
+        db.insert(UserSQLiteDatabase.TABLE_OW, null ,vals);
     }
 
     //String dataTime, int cloudPercentage, int maxTemperature, int minTemperature
     private static OutsideWeather getOWFromCursor(Cursor cursor) {
         OutsideWeather ow = new OutsideWeather( cursor.getString(0),    //Datetime
                                                 cursor.getInt(1),       //cloud
-                                                cursor.getInt(2),       //max_temp
-                                                cursor.getInt(3));      //min_temp
+                                                cursor.getInt(2));      //temp
         return ow;
     }
 
@@ -584,7 +539,7 @@ public class DataAccessUser {
             return "No Data";
     }
 
-    public String getMinTemperature() {
+    public String getTemperature() {
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
                 OW_COLS,
@@ -594,25 +549,47 @@ public class DataAccessUser {
         if (cursor.moveToLast())
         {
             OutsideWeather ow = getOWFromCursor(cursor);
-            return ow.getMinTemperature()+"";
+            return ow.getTemperature()+"";
         }
         else
             return "No Data";
     }
 
-    public String getMaxTemperature() {
+    public String getLastTimeStamp(int zone_id, String table_name) {
+        String last_time_stamp = "0000-00-00 00:00:00";
 
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
-                OW_COLS,
-                null,
-                null, null, null, null);
-
-        if (cursor.moveToLast())
+        Cursor cursor;
+        switch(table_name)
         {
-            OutsideWeather ow = getOWFromCursor(cursor);
-            return ow.getMaxTemperature()+"";
+            case UserSQLiteDatabase.TABLE_OCCUPANCY:
+                cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                    OCC_COLS, UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                if (cursor.moveToLast())
+                    last_time_stamp = getOccupancyFromCursor(cursor).getDate_time();
+                cursor.close();
+                break;
+            case UserSQLiteDatabase.TABLE_LIGHTING:
+                cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                        LIGHT_COLS, UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                if (cursor.moveToLast())
+                    last_time_stamp = getLightingFromCursor(cursor).getDatetime();
+                cursor.close();
+                break;
+            case UserSQLiteDatabase.TABLE_PLUGLOAD:
+                cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                        PLUG_COLS, UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                if (cursor.moveToLast())
+                    last_time_stamp = getPlugLoadFromCursor(cursor).getDatetime();
+                cursor.close();
+                break;
+            case UserSQLiteDatabase.TABLE_TEMPERATURE:
+                cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                        TEMP_COLS, UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                if (cursor.moveToLast())
+                    last_time_stamp = getTemperatureFromCursor(cursor).getDatetime();
+                cursor.close();
+                break;
         }
-        else
-            return "No Data";
+        return last_time_stamp;
     }
 }

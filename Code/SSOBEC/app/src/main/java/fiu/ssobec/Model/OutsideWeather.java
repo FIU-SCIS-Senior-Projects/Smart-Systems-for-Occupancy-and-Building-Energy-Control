@@ -6,15 +6,13 @@ package fiu.ssobec.Model;
 public class OutsideWeather {
 
     private String dataTime;
-    private int minTemperature;
-    private int maxTemperature;
+    private int Temperature;
     private int cloudPercentage;
 
-    public OutsideWeather(String dataTime, int cloudPercentage, int maxTemperature, int minTemperature) {
+    public OutsideWeather(String dataTime, int cloudPercentage, int Temperature) {
         this.dataTime = dataTime;
         this.cloudPercentage = cloudPercentage;
-        this.maxTemperature = maxTemperature;
-        this.minTemperature = minTemperature;
+        this.Temperature = Temperature;
     }
 
     public String getDataTime() {
@@ -25,20 +23,12 @@ public class OutsideWeather {
         this.dataTime = dataTime;
     }
 
-    public int getMaxTemperature() {
-        return maxTemperature;
+    public int getTemperature() {
+        return Temperature;
     }
 
-    public void setMaxTemperature(int maxTemperature) {
-        this.maxTemperature = maxTemperature;
-    }
-
-    public int getMinTemperature() {
-        return minTemperature;
-    }
-
-    public void setMinTemperature(int minTemperature) {
-        this.minTemperature = minTemperature;
+    public void setTemperature(int temperature) {
+        this.Temperature = temperature;
     }
 
     public int getCloudPercentage() {
