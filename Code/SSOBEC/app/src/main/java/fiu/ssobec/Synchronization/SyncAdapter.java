@@ -44,6 +44,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String PLUG_APPLIANCE_NAME = "appliance_name";
     public static final String ENERGY_USAGE = "energy_usage_kwh";
 
+    //Name of the JSON Objects
     public static final String OCCUPANCY_OBJ = "occupancy_obj";
     public static final String TEMPERATURE_OBJ = "temperature_arr";
     public static final String PLUGLOAD_OBJ = "plugload_obj";
@@ -78,11 +79,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<Integer> region_id = data_access.getAllZoneID();
         for (Integer id : region_id) {
-            //getOccupancyData(id);
-            //getTemperatureData(id);
-            //getPlugLoadData(id);
-            //getLightingData(id);
-
             getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
             getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
             getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
@@ -120,7 +116,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             saveDataOnInternalDB(region_id, arr, table_name);
 
         } catch (InterruptedException | JSONException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -139,12 +135,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 break;
             case UserSQLiteDatabase.TABLE_LIGHTING:
                 for (int i = 0; i < arr.length(); i++) {
-                    String lighting = arr.getJSONObject(i).getString("lighting");
+                    String lighting = arr.getJSONObject(i).getString("status");
                     String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
-                    System.out.println("Lighting: " + lighting + ", Time Stamp: " + time_stamp);
+                    System.out.println("Lighting: " + lighting + ", Time Stamp: " + time_stamp
+                                        + ", Energy Usage: " +arr.getJSONObject(i).getInt(ENERGY_USAGE));
 
                     if (!time_stamp.equalsIgnoreCase("null"))
-                        data_access.createLighting(region_id, time_stamp, lighting);
+                        data_access.createLighting(region_id, time_stamp, lighting,
+                                            arr.getJSONObject(i).getInt(ENERGY_USAGE));
                 }
 
                 break;
@@ -172,157 +170,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 break;
         }
     }
-
-
-/*
-    private void getOccupancyData(int RegionID)
-    {
-        String last_time_stamp = data_access.getLastTimeStamp(RegionID);
-
-        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
-
-        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (RegionID + "").toString().trim()));
-        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).toString().trim()));
-
-        try {
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, OCCUPANCY_PHP).send();
-            System.out.println("Sync Occupancy Response is: "+res);
-
-            if(!res.equalsIgnoreCase(DB_NODATA)) {
-                JSONObject obj = new JSONObject(res);
-                JSONArray arr = obj.getJSONArray("occupancy_obj");
-
-                for (int i = 0; i < arr.length(); i++) {
-                    int occup = arr.getJSONObject(i).getInt("occupancy");
-                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
-                    System.out.println("Occupancy: " + occup + ", Time Stamp: " + time_stamp);
-
-                    if (!time_stamp.equalsIgnoreCase("null"))
-                        data_access.createOccupancy(RegionID, time_stamp, occup);
-                }
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getTemperatureData(int RegionID)
-    {
-        System.out.println("Get Temperature from ID: "+RegionID);
-        String last_time_stamp = data_access.getLastTimeStamp_temp(RegionID);
-
-        //put a small database code
-        //Add the region id to the NameValuePair ArrayList;
-        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
-
-        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (RegionID + "").trim()));
-        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
-
-        try {
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, TEMPERATURE_PHP).send();
-            System.out.println("Sync Temperature Response is: "+res);
-
-            if(!res.equalsIgnoreCase(DB_NODATA)) {
-                JSONObject obj = new JSONObject(res);
-                JSONArray arr = obj.getJSONArray("temperature_arr");
-
-                for (int i = 0; i < arr.length(); i++) {
-                    int temp = arr.getJSONObject(i).getInt("temperature");
-                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
-                    System.out.println("Temperature: " + temp + ", Time Stamp: " + time_stamp);
-
-                    if (!time_stamp.equalsIgnoreCase("null"))
-                        data_access.createTemperature(RegionID, time_stamp, temp);
-                }
-            }
-
-        } catch (InterruptedException | JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getPlugLoadData(int RegionID)
-    {
-        System.out.println("Get PlugLoad from ID: "+RegionID);
-        String last_time_stamp = data_access.getLastTimeStamp_plugLoad(RegionID);
-
-        //put a small database code
-        //Add the region id to the NameValuePair ArrayList;
-        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
-
-        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (RegionID + "").trim()));
-        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
-
-        try {
-
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, PLUGLOAD_PHP).send();
-            System.out.println("Sync Plug Load Response is: "+res);
-
-            if(!res.equalsIgnoreCase(DB_NODATA)) {
-                JSONObject obj = new JSONObject(res);
-                JSONArray arr = obj.getJSONArray("plugload_obj");
-
-                for (int i = 0; i < arr.length(); i++) {
-                    String plugLoad = arr.getJSONObject(i).getString("status");
-                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
-
-                    //, String app_name, String app_type, int energy_usage_kwh
-                    if (!time_stamp.equalsIgnoreCase("null"))
-                        data_access.createPlugLoad(RegionID, time_stamp, plugLoad,
-                        arr.getJSONObject(i).getString(PLUG_APPLIANCE_NAME),
-                        arr.getJSONObject(i).getString(PLUG_APPLIANCE_TYPE),
-                        arr.getJSONObject(i).getInt(ENERGY_USAGE));
-                }
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getLightingData(int RegionID)
-    {
-        System.out.println("Get PlugLoad from ID: "+RegionID);
-        String last_time_stamp = data_access.getLastLightTimeStamp(RegionID);
-
-        //put a small database code
-        //Add the region id to the NameValuePair ArrayList;
-        List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
-
-        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (RegionID + "").trim()));
-        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
-
-        try {
-
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, LIGHTING_PHP).send();
-            System.out.println("Sync Lighting Response is: "+res);
-
-            if(!res.equalsIgnoreCase(DB_NODATA)) {
-                JSONObject obj = new JSONObject(res);
-                JSONArray arr = obj.getJSONArray("lighting_obj");
-
-                for (int i = 0; i < arr.length(); i++) {
-                    String lighting = arr.getJSONObject(i).getString("lighting");
-                    String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
-                    System.out.println("Lighting: " + lighting + ", Time Stamp: " + time_stamp);
-
-                    if (!time_stamp.equalsIgnoreCase("null"))
-                        data_access.createLighting(RegionID, time_stamp, lighting);
-                }
-            }
-
-        } catch (InterruptedException | JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    */
 
 }

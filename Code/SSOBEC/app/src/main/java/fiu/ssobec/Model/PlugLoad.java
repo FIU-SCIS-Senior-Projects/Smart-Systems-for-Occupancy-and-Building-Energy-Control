@@ -9,6 +9,7 @@ public class PlugLoad {
     private String datetime;
     private String app_name;
     private String app_type;
+    private int energy_usage_kwh;
 
     public PlugLoad(int zone_id, String datetime, String status, String app_name, String app_type, int energy_usage_kwh) {
         this.zone_id = zone_id;
@@ -19,7 +20,7 @@ public class PlugLoad {
         this.energy_usage_kwh = energy_usage_kwh;
     }
 
-    private int energy_usage_kwh;
+
 
 
     public String getApp_name() {
