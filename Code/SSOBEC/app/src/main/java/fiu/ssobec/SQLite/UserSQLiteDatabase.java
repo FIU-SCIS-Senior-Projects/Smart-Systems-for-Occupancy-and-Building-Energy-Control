@@ -94,12 +94,14 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String LIGHT_COLUMN_ID = "zone_description_id";
     public static final String LIGHT_COLUMN_DATETIME = "lighting_datetime";
     public static final String LIGHT_COLUMN_STATE = "lighting_state";
+    public static final String LIGHT_COLUMN_ENERGY = "energy_usage_kwh";
 
     private static final String LIGHT_TABLE_CREATE = "create table "
             + TABLE_LIGHTING + " ("
             + LIGHT_COLUMN_ID + " int NOT NULL, "
             + LIGHT_COLUMN_DATETIME + " datetime NOT NULL, "
             + LIGHT_COLUMN_STATE + " varchar(3) NOT NULL, "
+            + LIGHT_COLUMN_ENERGY + " int NOT NULL, "
             + "CONSTRAINT zone_lighting_pk PRIMARY KEY (" + LIGHT_COLUMN_ID+" , "+LIGHT_COLUMN_DATETIME+"), "
             + "FOREIGN KEY ("+LIGHT_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
@@ -120,8 +122,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
-    //Table day energy-waste-per-zone
-    public static final String TABLE_ENERGYWASTE = "energy_waste_per_zone";
+    //Table day stat_study
+    public static final String TABLE_STAT = "energy_statistics";
     public static final String ENERYWASTE_ID = "zone_description_id";
     public static final String ENERYWASTE_DATE = "date";
 

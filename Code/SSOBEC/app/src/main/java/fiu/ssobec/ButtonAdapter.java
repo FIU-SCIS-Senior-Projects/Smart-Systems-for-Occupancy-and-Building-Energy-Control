@@ -65,7 +65,7 @@ public class ButtonAdapter extends BaseAdapter {
 
         //set id of the button as region_id
         b.setId((int) zone_id.get(position));
-        b.setTextSize(10);
+        b.setTextSize(12);
 
         //System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
         //System.out.println("Adding name: "+zone_names.get(position).toString());

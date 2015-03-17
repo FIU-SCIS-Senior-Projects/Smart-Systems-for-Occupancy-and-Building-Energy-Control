@@ -161,12 +161,12 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
-        if(user_flag && !data_access.userExist(id))
+        if(user_flag && (data_access.userExist(id) == null))
         {
             user = data_access.createUser(name, id, email);
         }
         //If the user exists, declare that the user has logged in, into the system.
-        else if (data_access.userExist(id))
+        else if (data_access.userExist(id) != null)
             data_access.userLogin(id);
 
         return user_flag;

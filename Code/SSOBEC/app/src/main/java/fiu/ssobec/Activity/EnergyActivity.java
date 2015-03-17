@@ -97,8 +97,6 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getTemperature()
     {
-        System.out.println("Get temperature from region_id: "+ZonesDescriptionActivity.regionID);
-
         int zone_id = ZonesDescriptionActivity.regionID;
 
         ArrayList<String> info = data_access.getLatestTemperature(zone_id);

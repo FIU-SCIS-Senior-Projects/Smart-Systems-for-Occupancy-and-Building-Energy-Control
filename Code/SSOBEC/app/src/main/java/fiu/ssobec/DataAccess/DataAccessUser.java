@@ -48,7 +48,8 @@ public class DataAccessUser {
 
     private static String[] LIGHT_COLS = {  UserSQLiteDatabase.LIGHT_COLUMN_ID,
                                             UserSQLiteDatabase.LIGHT_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.LIGHT_COLUMN_STATE};
+                                            UserSQLiteDatabase.LIGHT_COLUMN_STATE,
+                                            UserSQLiteDatabase.LIGHT_COLUMN_ENERGY};
 
     private static String[] PLUG_COLS = {   UserSQLiteDatabase.PLUG_COLUMN_ID,
                                             UserSQLiteDatabase.PLUG_COLUMN_DATETIME,
@@ -60,6 +61,8 @@ public class DataAccessUser {
     private static String[] OW_COLS = {     UserSQLiteDatabase.OW_DATETIME,
                                             UserSQLiteDatabase.OW_CLOUDPERCENTAGE,
                                             UserSQLiteDatabase.OW_TEMPERATURE};
+
+    private static String TIME_STAMP_FORMAT = "0000-00-00 00:00:00";
 
     public DataAccessUser(Context context)
     {
@@ -80,18 +83,11 @@ public class DataAccessUser {
     public static User createUser(String name,  int id, String email)
     {
         int loggedIn = 1;
-        System.out.println("createUser: Creating new user on my database!!!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.COLUMN_NAME, name);
         vals.put(UserSQLiteDatabase.COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
-
-
-        long rowid = db.insert(UserSQLiteDatabase.TABLE_USER ,null ,vals);
-
-        System.out.println("ROWID: "+rowid);
-        System.out.println("Name: "+name+", logged in"+loggedIn);
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
                 USER_COLS,
@@ -112,6 +108,24 @@ public class DataAccessUser {
                 UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
                 null, null, null, null);
 
+        if (cursor.moveToFirst()) {
+            User nUser = getUserFromCursor(cursor);
+
+            cursor.close();
+            return nUser;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public User userExist (int userid){
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
+                USER_COLS,
+                UserSQLiteDatabase.COLUMN_ID+" = "+ userid+"",
+                null, null, null, null);
 
         if (cursor.moveToFirst()) {
             User nUser = getUserFromCursor(cursor);
@@ -145,24 +159,7 @@ public class DataAccessUser {
         System.out.println("Table column updated, user logout");
     }
 
-    public boolean userExist (int userId){
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
-                USER_COLS,
-                UserSQLiteDatabase.COLUMN_ID+" = "+ userId+"",
-                null, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            //User nUser = getUserFromCursor(cursor);
-            cursor.close();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    private static User getUserFromCursor(Cursor cursor) {
+    public static User getUserFromCursor(Cursor cursor) {
         User user = new User(cursor.getString(0),  //Name
                 cursor.getInt(1),     //ID
                 cursor.getString(2),  //Email
@@ -248,22 +245,8 @@ public class DataAccessUser {
     }
 
     private static Zones getZoneFromCursor(Cursor cursor) {
-        Zones zones = new Zones(cursor.getInt(0),       //ID
-                                cursor.getString(1));   //Name
-        return zones;
-    }
-
-     public boolean doesTableExists()
-    {
-        if(dbHelp == null)
-        {
-            System.out.println("Table does not exist");
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return new Zones(cursor.getInt(0),       //ID
+                                cursor.getString(1));
     }
 
     /****************************** TEMPERATURE ************************************/
@@ -277,25 +260,6 @@ public class DataAccessUser {
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE, temperature);
 
         db.insert(UserSQLiteDatabase.TABLE_TEMPERATURE,null ,vals);
-    }
-
-    public String getLastTimeStamp_temp(int zone_id) {
-        String last_time_stamp = "0000-00-00 00:00:00";
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
-                TEMP_COLS,
-                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id,
-                null, null, null, null);
-
-        if (cursor.moveToLast())
-        {
-            Temperature temperature = getTemperatureFromCursor(cursor);
-            last_time_stamp = temperature.getDatetime();
-        }
-
-        System.out.println("Last Time Stamp is: "+last_time_stamp);
-        cursor.close();
-        return last_time_stamp;
     }
 
     public ArrayList<String> getLatestTemperature(int zone_id)
@@ -343,25 +307,6 @@ public class DataAccessUser {
         vals.put(UserSQLiteDatabase.PLUG_COLUMN_APPTYPE, app_type);
 
         db.insert(UserSQLiteDatabase.TABLE_PLUGLOAD,null ,vals);
-    }
-
-    public String getLastTimeStamp_plugLoad(int zone_id) {
-        String last_time_stamp = "0000-00-00 00:00:00";
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
-                PLUG_COLS,
-                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id,
-                null, null, null, null);
-
-        if (cursor.moveToLast())
-        {
-            PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
-            last_time_stamp = plugLoad.getDatetime();
-        }
-
-        System.out.println("Last Time Stamp is: "+last_time_stamp);
-        cursor.close();
-        return last_time_stamp;
     }
 
     public ArrayList<String> getLatestPlugLoad(int zone_id)
@@ -423,7 +368,6 @@ public class DataAccessUser {
 
         if (cursor.moveToLast())
         {
-            //cursor.move(-2);
             Occupancy occupancy = getOccupancyFromCursor(cursor);
             occup_info.add(occupancy.getDate_time());
             occup_info.add(occupancy.getOccupancy()+"");
@@ -443,13 +387,14 @@ public class DataAccessUser {
 
     /****************************** LIGHTING ************************************/
 
-    public static void createLighting(int zone_id,  String date_time, String lighting)
+    public static void createLighting(int zone_id,  String date_time, String lighting, int energy_usage)
     {
         System.out.println("create my lighting data!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.LIGHT_COLUMN_ID, zone_id);
         vals.put(UserSQLiteDatabase.LIGHT_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.LIGHT_COLUMN_STATE, lighting);
+        vals.put(UserSQLiteDatabase.LIGHT_COLUMN_ENERGY, energy_usage);
 
         db.insert(UserSQLiteDatabase.TABLE_LIGHTING,null ,vals);
     }
@@ -474,32 +419,14 @@ public class DataAccessUser {
             return null;
     }
 
-    public String getLastLightTimeStamp(int zone_id) {
-        String last_time_stamp = "0000-00-00 00:00:00";
-
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
-                LIGHT_COLS,
-                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id,
-                null, null, null, null);
-
-        if (cursor.moveToLast())
-        {
-            Lighting lighting = getLightingFromCursor(cursor);
-            last_time_stamp = lighting.getDatetime();
-        }
-
-        System.out.println("Last Time Stamp is: "+last_time_stamp);
-        cursor.close();
-        return last_time_stamp;
-    }
-
     //ID
     //STATE
     //Datetime
     private static Lighting getLightingFromCursor(Cursor cursor) {
         Lighting light = new Lighting( cursor.getInt(0),            //Datetime
                                         cursor.getString(1),       //Zone_ID
-                                        cursor.getString(2));      //Occupancy
+                                        cursor.getString(2),       //Lighting_state
+                                        cursor.getInt(3));         //Energy
         return light;
     }
 
@@ -555,8 +482,10 @@ public class DataAccessUser {
             return "No Data";
     }
 
+    /****************************** MISC ************************************/
+
     public String getLastTimeStamp(int zone_id, String table_name) {
-        String last_time_stamp = "0000-00-00 00:00:00";
+        String last_time_stamp = TIME_STAMP_FORMAT;
 
         Cursor cursor;
         switch(table_name)

@@ -9,15 +9,25 @@ public class Lighting {
     private int zone_id;
     private String lighting_state; //'ON' - 'OFF'
     private String datetime;
+    private int energy_usage_kwh;
 
-    public Lighting(int zone_id, String datetime, String lighting_state) {
+    public Lighting(int zone_id, String datetime, String lighting_state, int energy_usage_kwh) {
         this.zone_id = zone_id;
         this.lighting_state = lighting_state;
         this.datetime = datetime;
+        this.energy_usage_kwh = energy_usage_kwh;
     }
 
     public int getZone_id() {
         return zone_id;
+    }
+
+    public int getEnergy_usage_kwh() {
+        return energy_usage_kwh;
+    }
+
+    public void setEnergy_usage_kwh(int energy_usage_kwh) {
+        this.energy_usage_kwh = energy_usage_kwh;
     }
 
     public void setZone_id(int zone_id) {
