@@ -592,4 +592,12 @@ public class DataAccessUser {
         }
         return last_time_stamp;
     }
+    /*
+    get Inside Temperature(int min, int max){
+    SQL- get me the inside temperature such that (min<=ac_energy_usage<=max)
+    cursor
+    return ArrayList<double>
+
+
+    }*/
 }
