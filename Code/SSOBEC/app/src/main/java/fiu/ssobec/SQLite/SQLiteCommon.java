@@ -5,7 +5,7 @@ package fiu.ssobec.SQLite;
  */
 public interface SQLiteCommon {
 
-    static final int DATABASE_VERSION = 13;
+    static final int DATABASE_VERSION = 14;
     static final String DATABASE_NAME = "ssobec_internal.db";
 
 }

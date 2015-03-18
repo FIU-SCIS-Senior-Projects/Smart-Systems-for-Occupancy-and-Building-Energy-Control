@@ -23,17 +23,27 @@ public class NaiveBayesTemperature {
     private double sd_otemp_med;
     private double sd_otemp_high;
 
+
+    private NaiveBayesTemperature stats;
+    public NaiveBayesTemperature() {
+
+        this.stats = new NaiveBayesTemperature();
+
+    }
+
     public void training()
     {
+
         //get values from table
         //calculate mean and standard deviation for outside/inside temperature
-        double[] values;
+
+        double[] values= new double[1];
         ArrayList<Double> allvals_itemp_low;
         ArrayList<Double> allvals_itemp_med;
         ArrayList<Double> allvals_itemp_high;
-        ArrayList<Double>allvals_otemp_low;
-        ArrayList<Double>allvals_otemp_med;
-        ArrayList<Double>allvals_otemp_high;
+        ArrayList<Double> allvals_otemp_low;
+        ArrayList<Double> allvals_otemp_med;
+        ArrayList<Double> allvals_otemp_high;
 
         double mean = StatUtils.mean(values);
         double std = FastMath.sqrt(StatUtils.variance(values));
