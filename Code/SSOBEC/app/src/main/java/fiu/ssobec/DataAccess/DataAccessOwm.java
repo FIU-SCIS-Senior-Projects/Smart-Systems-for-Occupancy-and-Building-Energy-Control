@@ -26,7 +26,7 @@ public class DataAccessOwm {
     public DataAccessOwm(Context context) throws JSONException
     {
         this.context = context;
-        owm = new OpenWeatherMap("");
+        owm = new OpenWeatherMap("644d19e86282524c4e9a6c92abea0e6b");
         try {
             cwd = owm.currentWeatherByCityName("Miami");
 
@@ -67,5 +67,9 @@ public class DataAccessOwm {
         data_access.close();
     }
 
+    public void testingWeatherData()
+    {
+        Log.i(LOG_TAG, "Fake Weather Data");
+    }
 
 }

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
@@ -24,45 +26,12 @@ import fiu.ssobec.SQLite.UserSQLiteDatabase;
  *  and support adding new users and updating the
  *  information of users.
  */
-public class DataAccessUser {
+public class DataAccessUser implements DataAccessInterface {
 
     //Database fields
     private static SQLiteDatabase db;
     private UserSQLiteDatabase dbHelp;
 
-    private static String[] USER_COLS = {   UserSQLiteDatabase.COLUMN_EMAIL,
-                                            UserSQLiteDatabase.COLUMN_ID,
-                                            UserSQLiteDatabase.COLUMN_NAME,
-                                            UserSQLiteDatabase.COLUMN_LOGGEDIN};
-
-    private static String[] ZONE_COLS = {   UserSQLiteDatabase.ZONES_COLUMN_ID,
-                                            UserSQLiteDatabase.ZONES_COLUMN_NAME};
-
-    private static String[] TEMP_COLS = {   UserSQLiteDatabase.TEMP_COLUMN_ID,
-                                            UserSQLiteDatabase.TEMP_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE};
-
-    private static String[] OCC_COLS = {    UserSQLiteDatabase.OCC_COLUMN_ID,
-                                            UserSQLiteDatabase.OCC_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY};
-
-    private static String[] LIGHT_COLS = {  UserSQLiteDatabase.LIGHT_COLUMN_ID,
-                                            UserSQLiteDatabase.LIGHT_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.LIGHT_COLUMN_STATE,
-                                            UserSQLiteDatabase.LIGHT_COLUMN_ENERGY};
-
-    private static String[] PLUG_COLS = {   UserSQLiteDatabase.PLUG_COLUMN_ID,
-                                            UserSQLiteDatabase.PLUG_COLUMN_DATETIME,
-                                            UserSQLiteDatabase.PLUG_COLUMN_STATE,
-                                            UserSQLiteDatabase.PLUG_COLUMN_APPNAME,
-                                            UserSQLiteDatabase.PLUG_COLUMN_APPTYPE,
-                                            UserSQLiteDatabase.PLUG_COLUMN_APPENERGY};
-
-    private static String[] OW_COLS = {     UserSQLiteDatabase.OW_DATETIME,
-                                            UserSQLiteDatabase.OW_CLOUDPERCENTAGE,
-                                            UserSQLiteDatabase.OW_TEMPERATURE};
-
-    private static String TIME_STAMP_FORMAT = "0000-00-00 00:00:00";
 
     public DataAccessUser(Context context)
     {
@@ -282,10 +251,6 @@ public class DataAccessUser {
             return null;
     }
 
-    /*  zone_id
-        datetime
-       temperature
-    * */
     private static Temperature getTemperatureFromCursor(Cursor cursor) {
         Temperature temp = new Temperature( cursor.getInt(0),    //zone_id
                 cursor.getString(1),       //datetime
@@ -293,9 +258,33 @@ public class DataAccessUser {
         return temp;
     }
 
+    public ArrayList<Map<String, Integer>> getAllTemperatureByZoneID(int zone_id)
+    {
+        ArrayList<Map<String, Integer>> myList = new ArrayList<>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                TEMP_COLS,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Temperature temp = getTemperatureFromCursor(cursor);
+            Map<String, Integer> myMap = new HashMap<>();
+            myMap.put(temp.getDatetime(), temp.getTemperature());
+            myList.add(myMap);
+            cursor.moveToNext();
+        }
+
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
     /****************************** PLUGLOAD ************************************/
 
-    public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name, String app_type, int energy_usage_kwh)
+    public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name,
+                                      String app_type, int energy_usage_kwh)
     {
         System.out.println("create my plugLoad data!");
         ContentValues vals = new ContentValues();
@@ -329,13 +318,6 @@ public class DataAccessUser {
             return null;
     }
 
-    /*  int zone_id,
-       String datetime,
-       String status,
-       String app_type,
-       String app_name,
-       int energy_usage_kwh
-    * */
     private static PlugLoad getPlugLoadFromCursor(Cursor cursor) {
         return new PlugLoad(    cursor.getInt(0),          //zone_id
                                 cursor.getString(1),
@@ -343,6 +325,55 @@ public class DataAccessUser {
                                 cursor.getString(3),
                                 cursor.getString(4),
                                 cursor.getInt(5));
+    }
+
+    public ArrayList<Map<String, String>> getAllACStateByZoneID(int zone_id)
+    {
+        ArrayList<Map<String, String>> myList = new ArrayList<>();
+
+        //Get only information for the AC
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id+
+                " AND "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+ " = 'AC'",
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            PlugLoad plug = getPlugLoadFromCursor(cursor);
+
+            Map<String, String> myMap = new HashMap<>();
+            myMap.put(plug.getDatetime(), plug.getStatus());
+            myList.add(myMap);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
+    public ArrayList<Map<String, Integer>> getAllPlugLoadEnergy(int zone_id)
+    {
+        ArrayList<Map<String, Integer>> myList = new ArrayList<>();
+
+        //Get only information for the AC
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            PlugLoad plug = getPlugLoadFromCursor(cursor);
+
+            Map<String, Integer> myMap = new HashMap<>();
+            myMap.put(plug.getDatetime(), plug.getEnergy_usage_kwh());
+            myList.add(myMap);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
     }
 
     /****************************** OCCUPANCY ************************************/
@@ -379,11 +410,12 @@ public class DataAccessUser {
     }
 
     private static Occupancy getOccupancyFromCursor(Cursor cursor) {
-        Occupancy occp = new Occupancy( cursor.getString(1),    //Datetime
+        return new Occupancy( cursor.getString(1),    //Datetime
                                         cursor.getInt(0),       //Zone_ID
-                                        cursor.getInt(2));      //Occupancy
-        return occp;
+                                        cursor.getInt(2));
     }
+
+    
 
     /****************************** LIGHTING ************************************/
 
@@ -419,15 +451,35 @@ public class DataAccessUser {
             return null;
     }
 
-    //ID
-    //STATE
-    //Datetime
     private static Lighting getLightingFromCursor(Cursor cursor) {
         Lighting light = new Lighting( cursor.getInt(0),            //Datetime
                                         cursor.getString(1),       //Zone_ID
                                         cursor.getString(2),       //Lighting_state
                                         cursor.getInt(3));         //Energy
         return light;
+    }
+
+    public ArrayList<Map<String, String>> getAllLightingStateByZoneID(int zone_id)
+    {
+        ArrayList<Map<String, String>> myList = new ArrayList<>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                LIGHT_COLS,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Lighting light = getLightingFromCursor(cursor);
+
+            Map<String, String> myMap = new HashMap<>();
+            myMap.put(light.getDatetime(), light.getLighting_state());
+            myList.add(myMap);
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
     }
 
 
@@ -521,12 +573,26 @@ public class DataAccessUser {
         }
         return last_time_stamp;
     }
-    /*
-    get Inside Temperature(int min, int max){
-    SQL- get me the inside temperature such that (min<=ac_energy_usage<=max)
-    cursor
-    return ArrayList<double>
 
+    /****************************** TABLE_STAT ************************************/
+    public static void createStat(int id, String date, double inside_temp_avg, double lighting_time_avg,
+                                  int lighting_energyusage, int lighting_energywaste, int plugload_energyusage,
+                                  int plugload_energywaste, int ac_energyusage, double occup_time_avg, double outside_temp_avg)
+    {
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.STAT_ID, id);
+        vals.put(UserSQLiteDatabase.STAT_DATE, date);
+        vals.put(UserSQLiteDatabase.STAT_INSIDE_TEMP_AVG, inside_temp_avg);
+        vals.put(UserSQLiteDatabase.STAT_LIGHTING_TIME_AVG, lighting_time_avg);
+        vals.put(UserSQLiteDatabase.STAT_LIGHTING_ENERGYUSAGE, lighting_energyusage);
+        vals.put(UserSQLiteDatabase.STAT_LIGHTING_ENERGYWASTE, lighting_energywaste);
+        vals.put(UserSQLiteDatabase.STAT_PLUGLOAD_ENERGYWASTE, plugload_energywaste);
+        vals.put(UserSQLiteDatabase.STAT_PLUGLOAD_ENERGYUSAGE, plugload_energyusage);
+        vals.put(UserSQLiteDatabase.STAT_AC_ENERGYUSAGE, ac_energyusage);
+        vals.put(UserSQLiteDatabase.STAT_OCCUP_TIME_AVG, occup_time_avg);
+        vals.put(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG, outside_temp_avg);
 
-    }*/
+        db.insert(UserSQLiteDatabase.TABLE_STAT, null ,vals);
+    }
+
 }

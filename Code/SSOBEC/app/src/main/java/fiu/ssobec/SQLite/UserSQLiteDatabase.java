@@ -115,7 +115,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     private static final String OW_TABLE_CREATE = "create table "
             + TABLE_OW + " ("
-            + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP UNIQUE, "
             + OW_CLOUDPERCENTAGE + " int NULL, "
             + OW_TEMPERATURE + " int NULL, "
             + "CONSTRAINT cloud_temp_pk PRIMARY KEY (" + OW_CLOUDPERCENTAGE+" , "+ OW_TEMPERATURE + ") "
@@ -124,9 +124,34 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     //Table day stat_study
     public static final String TABLE_STAT = "energy_statistics";
-    public static final String ENERYWASTE_ID = "zone_description_id";
-    public static final String ENERYWASTE_DATE = "date";
+    public static final String STAT_ID = "zone_description_id";
+    public static final String STAT_DATE = "date";
+    public static final String STAT_INSIDE_TEMP_AVG = "inside_temperature_avg";
+    public static final String STAT_LIGHTING_TIME_AVG = "lighting_time_avg_ON";
+    public static final String STAT_LIGHTING_ENERGYUSAGE = "lighting_energy_usage";
+    public static final String STAT_LIGHTING_ENERGYWASTE = "lihgting_energy_waste";
+    public static final String STAT_PLUGLOAD_ENERGYWASTE = "plugload_energy_waste";
+    public static final String STAT_PLUGLOAD_ENERGYUSAGE = "plugload_energy_usage";
+    public static final String STAT_AC_ENERGYUSAGE = "ac_energy_usage";
+    public static final String STAT_OCCUP_TIME_AVG = "occupancy_avg_time";
+    public static final String STAT_OUTSIDE_TEMP_AVG = "outside_temperature_avg";
 
+    private static final String STAT_TABLE_CREATE = "create table "
+            + TABLE_STAT + " ("
+            + STAT_ID + " int NOT NULL, "
+            + STAT_DATE + " date NOT NULL, "
+            + STAT_INSIDE_TEMP_AVG + " double NULL, "
+            + STAT_LIGHTING_TIME_AVG + " double NULL, "
+            + STAT_LIGHTING_ENERGYUSAGE + " int NULL, "
+            + STAT_LIGHTING_ENERGYWASTE + " int NULL, "
+            + STAT_PLUGLOAD_ENERGYWASTE + " int NULL, "
+            + STAT_PLUGLOAD_ENERGYUSAGE + " int NULL, "
+            + STAT_AC_ENERGYUSAGE + " int NULL, "
+            + STAT_OCCUP_TIME_AVG + " double NULL, "
+            + STAT_OUTSIDE_TEMP_AVG + " double NULL, "
+            + "CONSTRAINT energy_statistics_pk PRIMARY KEY (" + STAT_ID+" , "+STAT_DATE+"), "
+            + "FOREIGN KEY ("+STAT_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
+            ");";
 
     public UserSQLiteDatabase(Context context) {
 
@@ -142,6 +167,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL(LIGHT_TABLE_CREATE);
         db.execSQL(PLUG_TABLE_CREATE);
         db.execSQL(OW_TABLE_CREATE);
+        db.execSQL(STAT_TABLE_CREATE);
     }
 
     @Override
@@ -159,6 +185,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_LIGHTING);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_PLUGLOAD);
         db.execSQL("DROP TABLE IF EXISTS "+ TABLE_OW);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABLE_STAT);
 
         onCreate(db);
     }

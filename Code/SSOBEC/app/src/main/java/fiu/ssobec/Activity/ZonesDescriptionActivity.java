@@ -13,6 +13,7 @@ import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
 
 
+
 public class ZonesDescriptionActivity extends ActionBarActivity {
 
     private DataAccessUser data_access;
