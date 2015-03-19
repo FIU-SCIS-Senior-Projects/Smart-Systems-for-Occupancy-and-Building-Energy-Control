@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fiu.ssobec" >
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -57,7 +58,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="com.google.android.gms.version"
+            <meta-data
+                android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />
         </activity>
 
@@ -122,8 +124,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.LoginActivity" />
         </activity>
+        <activity
+            android:name=".ConsumptionAppliances"
+            android:label="@string/title_activity_consumption_appliances" >
+        </activity>
     </application>
-
-
 
 </manifest>

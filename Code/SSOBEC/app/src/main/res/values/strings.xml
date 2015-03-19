@@ -28,6 +28,7 @@
     <string name="title_activity_zones_description">ZonesDescriptionActivity</string>
     <string name="title_activity_temperature">Temperature</string>
     <string name="title_activity_create_account">CreateAccountActivity</string>
+    <string name="title_activity_consumption_appliances">ConsumptionAppliances</string>
 
 
 </resources>
