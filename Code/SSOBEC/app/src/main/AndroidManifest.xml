@@ -125,7 +125,7 @@
                 android:value="fiu.ssobec.Activity.LoginActivity" />
         </activity>
         <activity
-            android:name=".ConsumptionAppliances"
+            android:name=".Activity.ConsumptionAppliances"
             android:label="@string/title_activity_consumption_appliances" >
         </activity>
     </application>

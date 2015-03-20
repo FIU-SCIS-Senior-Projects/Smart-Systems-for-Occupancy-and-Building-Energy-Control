@@ -281,6 +281,78 @@ public class DataAccessUser implements DataAccessInterface {
         return myList;
     }
 
+    public ArrayList<Double> getInsideTemperatureByZone(int zone_id, int ac_energy_lower, int ac_energy_upper)
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+
+        String [] itemperature = {UserSQLiteDatabase.STAT_INSIDE_TEMP_AVG};
+        Cursor cursor;
+
+        if (ac_energy_upper == 0){
+            cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                itemperature,
+                UserSQLiteDatabase.STAT_ID + " = " + zone_id+
+                " AND date("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+") < date('now', '-30 days')"
+                +" AND "+UserSQLiteDatabase.STAT_AC_ENERGYUSAGE+" >= "+ac_energy_lower ,
+                null, null, null, null);
+        }else {
+
+            cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                    itemperature,
+                    UserSQLiteDatabase.STAT_ID + " = " + zone_id +
+                            " AND date(" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME + ") < date('now', '-30 days')"
+                            + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " <= " + ac_energy_upper
+                            + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " >= " + ac_energy_lower,
+                    null, null, null, null);
+        }
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_INSIDE_TEMP_AVG)));
+            cursor.moveToNext();
+        }
+
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
+    public ArrayList<Double> getOutsideTemperatureByZone(int zone_id, int ac_energy_lower, int ac_energy_upper)
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+
+        String [] otemperature = {UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG};
+
+        Cursor cursor;
+
+        if (ac_energy_upper == 0){
+            cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                    otemperature,
+                    UserSQLiteDatabase.STAT_ID + " = " + zone_id+
+                            " AND date("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+") < date('now', '-30 days')"
+                            +" AND "+UserSQLiteDatabase.STAT_AC_ENERGYUSAGE+" >= "+ac_energy_lower ,
+                    null, null, null, null);
+        }else {
+
+            cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                    otemperature,
+                    UserSQLiteDatabase.STAT_ID + " = " + zone_id +
+                            " AND date(" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME + ") < date('now', '-30 days')"
+                            + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " <= " + ac_energy_upper
+                            + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " >= " + ac_energy_lower,
+                    null, null, null, null);
+        }
+
+            cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            cursor.moveToNext();
+        }
+
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
     /****************************** PLUGLOAD ************************************/
 
     public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name,

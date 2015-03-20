@@ -1,6 +1,6 @@
 package fiu.ssobec.Activity;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.ExpandableListActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -8,7 +8,14 @@ import android.view.MenuItem;
 import fiu.ssobec.R;
 
 
-public class ConsumptionAppliances extends ActionBarActivity {
+public class ConsumptionAppliances extends ExpandableListActivity {
+
+    //Initialize variables
+    private static final String STR_CHECK = " Has Checked!";
+    private static final String STR_UNCHECK = " Has unChecked!";
+    private int ParentClickStatus=-1;
+    private int ChildClickStatus=-1;
+    //private ArrayList<Parent> parents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

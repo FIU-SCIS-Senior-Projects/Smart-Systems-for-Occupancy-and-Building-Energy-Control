@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -21,6 +22,7 @@ import fiu.ssobec.R;
 public class CreateAccountActivity extends ActionBarActivity {
 
     public static final String LOG_TAG = "CreateAccountActivity";
+    TextView warning_msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,29 +60,50 @@ public class CreateAccountActivity extends ActionBarActivity {
         String name = ((EditText) findViewById(R.id.first_name_field)).getText().toString()+""
                 +((EditText) findViewById(R.id.last_name_field)).getText().toString();
 
+
         String password = ((EditText) findViewById(R.id.password_field)).getText().toString();
-        String login_email = ((EditText) findViewById(R.id.email_field)).getText().toString();
+        String repassword = ((EditText) findViewById(R.id.repeat_field)).getText().toString();
 
-        new_user_info.add(new BasicNameValuePair("name", name.trim()));
-        new_user_info.add(new BasicNameValuePair("password", password.trim()));
-        new_user_info.add(new BasicNameValuePair("login_email", login_email.trim()));
+        if(password.equals(repassword))
+        {
+            String login_email = ((EditText) findViewById(R.id.email_field)).getText().toString();
 
-        //Create a new User Account
+            new_user_info.add(new BasicNameValuePair("name", name.trim()));
+            new_user_info.add(new BasicNameValuePair("password", password.trim()));
+            new_user_info.add(new BasicNameValuePair("login_email", login_email.trim()));
 
-        try {
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) new_user_info,
-                    "http://smartsystems-dev.cs.fiu.edu/createaccount.php").send();
+            //Create a new User Account
 
-            //Printing the result
-            System.out.println(res);
-            Log.i(LOG_TAG, "DB Result: " + res);
+            try {
+                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) new_user_info,
+                        "http://smartsystems-dev.cs.fiu.edu/createaccount.php").send();
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+                //Printing the result
+                System.out.println(res);
+                Log.i(LOG_TAG, "DB Result: " + res);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            warning_msg = (TextView) findViewById(R.id.warning_message_view);
+
+            runOnUiThread(new Runnable() {
+
+                public void run() {
+                    warning_msg.setText("Password and Repeat Password don't match");
+                }
+
+            });
         }
 
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+
 
     }
+
 }
