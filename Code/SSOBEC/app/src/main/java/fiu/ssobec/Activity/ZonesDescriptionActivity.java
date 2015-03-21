@@ -1,11 +1,16 @@
 package fiu.ssobec.Activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.androidplot.pie.PieChart;
+import com.androidplot.pie.Segment;
+import com.androidplot.pie.SegmentFormatter;
 
 import java.sql.SQLException;
 
@@ -41,7 +46,30 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         System.out.println("Region ID: "+regionID);
 
-        setContentView(R.layout.activity_zones_description);
+        setContentView(R.layout.activity_zones_description2);
+
+        PieChart pie = (PieChart) findViewById(R.id.mySimplePieChart);
+
+        Segment s1 = new Segment("Cooling", 7);
+        Segment s2  = new Segment("Lighting", 20);
+        Segment s3 = new Segment("PlugLoad", 15);
+
+        SegmentFormatter sf1 = new SegmentFormatter();
+        sf1.configure(getApplicationContext(), R.xml.pie_segment_formatter1);
+
+        SegmentFormatter sf2 = new SegmentFormatter();
+        sf2.configure(getApplicationContext(), R.xml.pie_segment_formatter2);
+
+        SegmentFormatter sf3 = new SegmentFormatter();
+        sf3.configure(getApplicationContext(), R.xml.pie_segment_formatter3);
+
+        pie.addSeries(s1, sf1);
+        pie.addSeries(s2, sf2);
+        pie.addSeries(s3, sf3);
+
+        pie.getBorderPaint().setColor(Color.TRANSPARENT);
+        pie.getBackgroundPaint().setColor(Color.TRANSPARENT);
+        pie.setPlotMargins(0, 0, 0, 0);
     }
 
 

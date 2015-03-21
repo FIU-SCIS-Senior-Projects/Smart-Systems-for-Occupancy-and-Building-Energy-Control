@@ -18,16 +18,22 @@
     <string name="outside_temperature">Temperature Outside the Building:</string>
     <string name="zone_temperature">Temperature in Current Zone:</string>
     <string name="min_outside_temp_f">Min F</string>
+    <string name="n_a">N/A</string>
 
+    <string name="create_account_submit">Submit</string>
     <string name="create_account">CREATE ACCOUNT</string>
 
     <!-- Activity titles -->
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_login">Login</string>
-    <string name="title_activity_my_zones">MyZonesActivity</string>
+    <string name="title_activity_my_zones">My Zones</string>
     <string name="title_activity_zones_description">ZonesDescriptionActivity</string>
     <string name="title_activity_temperature">Temperature</string>
-    <string name="title_activity_create_account">CreateAccountActivity</string>
+    <string name="title_activity_create_account">Create Account</string>
+
+    <!-- Occupancy Energy Activity -->
+    <string name="current_occupancy">Current Occupancy: </string>
+    <string name="average_occupancy">Average Occupancy Per Day: </string>
 
 
 </resources>

@@ -24,6 +24,10 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        //Sets the initial touch mode for the Activity under test. This must be called before
+        //getActivity()
+        setActivityInitialTouchMode(true);
         mLoginActivity = getActivity();
         mEmailField = (EditText) mLoginActivity.findViewById(R.id.email_text_field);
         mPasswordField = (EditText) mLoginActivity.findViewById(R.id.password_text_field);

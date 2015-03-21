@@ -2,34 +2,31 @@ package fiu.ssobec.Activity;
 
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.StringTokenizer;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
-import fiu.ssobec.Model.User;
 
 
 public class LoginActivity extends ActionBarActivity {
 
 
+    public static final String LOG_TAG = "LoginActivity";
     public static final String LOGIN_PHP = "http://smartsystems-dev.cs.fiu.edu/loginpost.php";
     String login_email, password;
     List<NameValuePair> username_pass;
@@ -55,6 +52,7 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -62,7 +60,7 @@ public class LoginActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
 
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -114,6 +112,7 @@ public class LoginActivity extends ActionBarActivity {
 
             //Start MyZonesActivity
             Intent intent = new Intent(this, MyZonesActivity.class);
+            Log.i(LOG_TAG, "Start My Zones Activity");
             startActivity(intent);
         }
         else
@@ -134,7 +133,6 @@ public class LoginActivity extends ActionBarActivity {
         boolean user_flag = false;
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
-        User user = null;
         int id=0;
 
         while (stringTokenizer.hasMoreElements()) {
@@ -163,7 +161,7 @@ public class LoginActivity extends ActionBarActivity {
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
         if(user_flag && (data_access.userExist(id) == null))
         {
-            user = data_access.createUser(name, id, email);
+            data_access.createUser(name, id, email);
         }
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id) != null)

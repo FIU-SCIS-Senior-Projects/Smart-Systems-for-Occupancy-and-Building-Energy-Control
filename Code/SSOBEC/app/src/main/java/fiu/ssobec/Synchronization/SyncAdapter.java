@@ -15,13 +15,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import fiu.ssobec.DataAccess.DataAccessOwm;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
+import fiu.ssobec.StatisticalCalculation;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -52,6 +57,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private Context mcontext;
     private DataAccessUser data_access;
+    private StatisticalCalculation sc;
 
     /**
      * Creates an {@link android.content.AbstractThreadedSyncAdapter}.
@@ -70,31 +76,51 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
         Log.i(LOG_TAG, "Beginning network synchronization");
-
         try {
             data_access.open();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        sc = new StatisticalCalculation(mcontext, data_access);
+        Log.i(LOG_TAG, "SC: "+sc.getNewest_timestamp());
 
         List<Integer> region_id = data_access.getAllZoneID();
+        /*TEST
         for (Integer id : region_id) {
             getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
             getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
             getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
             getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
-        }
+        }*/
+        int id = 1;
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
+            getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
 
         try {
             DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
-            dataAccessOwm.saveWeatherData();
+            //dataAccessOwm.saveWeatherData(); TEST
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         Log.i(LOG_TAG, "Finishing network synchronization");
 
+        if(sc.getNewest_timestamp() != null)
+        {
+            Log.i(LOG_TAG, "Calculate Data");
+            sc.calculateData();
+        }
+
         data_access.close();
+
+
+
+        //TODO: If getNewest_timestamp is not null, then
+        //do stat calculations
+
+        //StatisticalCalculation.calculateData(mcontext);
     }
 
     private void getDatabaseData(int region_id, String table_name, String php_file_name, String json_obj_name)
@@ -109,6 +135,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, php_file_name).send();
             Log.i(LOG_TAG, "Response from Database for table "+table_name+": "+res);
+            Log.i(LOG_TAG, "Last Time-Stamp: "+last_time_stamp);
 
             JSONObject obj = new JSONObject(res);
             JSONArray arr = obj.getJSONArray(json_obj_name);
@@ -130,6 +157,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
                     if (!time_stamp.equalsIgnoreCase("null"))
                         data_access.createOccupancy(region_id, time_stamp, occup);
+
+                    if(i == 0)
+                    {
+                        Log.i(LOG_TAG, "checkTimeStamp");
+                        checkTimeStamp(time_stamp);
+                    }
                 }
 
                 break;
@@ -143,6 +176,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     if (!time_stamp.equalsIgnoreCase("null"))
                         data_access.createLighting(region_id, time_stamp, lighting,
                                             arr.getJSONObject(i).getInt(ENERGY_USAGE));
+                    if(i == 0)
+                    {
+                        Log.i(LOG_TAG, "checkTimeStamp");
+                        checkTimeStamp(time_stamp);
+                    }
                 }
 
                 break;
@@ -151,12 +189,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     String plugLoad = arr.getJSONObject(i).getString("status");
                     String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
 
-                    //, String app_name, String app_type, int energy_usage_kwh
+                    // String app_name, String app_type, int energy_usage_kwh
                     if (!time_stamp.equalsIgnoreCase("null"))
                         data_access.createPlugLoad(region_id, time_stamp, plugLoad,
                                 arr.getJSONObject(i).getString(PLUG_APPLIANCE_NAME),
                                 arr.getJSONObject(i).getString(PLUG_APPLIANCE_TYPE),
                                 arr.getJSONObject(i).getInt(ENERGY_USAGE));
+                    if(i == 0)
+                    {
+                        Log.i(LOG_TAG, "checkTimeStamp");
+                        checkTimeStamp(time_stamp);
+                    }
                 }
 
                 break;
@@ -166,8 +209,37 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     String time_stamp = arr.getJSONObject(i).getString(TIME_STAMP);
                     if (!time_stamp.equalsIgnoreCase("null"))
                         data_access.createTemperature(region_id, time_stamp, temp);
+                    if(i == 0)
+                    {
+                        Log.i(LOG_TAG, "checkTimeStamp");
+                        checkTimeStamp(time_stamp);
+                    }
                 }
                 break;
+        }
+    }
+
+    private void checkTimeStamp(String mTimeStamp)
+    {
+        try
+        {
+            if(sc.getNewest_timestamp() != null)
+            {
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date result =  df.parse(mTimeStamp);
+                Date result2 =  df.parse(sc.getNewest_timestamp());
+
+                //If TimeStamp < NewestTimeStamp
+                if(result.compareTo(result2)<0){
+                    System.out.println("result is before result2");
+                    sc.setNewest_timestamp(mTimeStamp);
+                }
+            }
+            else
+                sc.setNewest_timestamp(mTimeStamp);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 

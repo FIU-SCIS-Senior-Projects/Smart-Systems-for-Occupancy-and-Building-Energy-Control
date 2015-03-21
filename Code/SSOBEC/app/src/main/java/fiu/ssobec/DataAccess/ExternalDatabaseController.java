@@ -7,8 +7,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpParams;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -30,7 +33,6 @@ public class ExternalDatabaseController {
     private String url;
     private String response_str;
 
-    public static final String USR_DB_COLUMN = "energy_waste_per_zone";
 
     /*
     *   'parameters' - parameters needed to execute the query
@@ -63,6 +65,12 @@ public class ExternalDatabaseController {
         try {
 
             httpclient = new DefaultHttpClient();
+            ClientConnectionManager mgr = httpclient.getConnectionManager();
+            HttpParams params = httpclient.getParams();
+
+            httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(params,
+                    mgr.getSchemeRegistry()), params);
+
             httppost = new HttpPost(url);
             httppost.setEntity(new UrlEncodedFormEntity(parameters));
 
