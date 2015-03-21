@@ -5,7 +5,6 @@ import android.content.Context;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
