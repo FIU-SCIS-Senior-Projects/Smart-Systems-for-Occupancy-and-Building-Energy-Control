@@ -50,7 +50,7 @@ public class EnergyActivity extends ActionBarActivity {
         this.setTitle(app_title);
 
         setContentView(R.layout.activity_energy);
-        mTextView = (TextView) findViewById(R.id.EnergyValueTextView);
+        mTextView = (TextView) findViewById(R.id.CurrOccupValue);
         time_stamp_text = (TextView) findViewById(R.id.time_stamp_view);
 
         switch (app_title)
@@ -62,7 +62,10 @@ public class EnergyActivity extends ActionBarActivity {
 
                 getTemperature(); break;
 
-            case "Occupancy": getOccupancy(); break;
+            case "Occupancy":
+                setContentView(R.layout.activity_occupancy);
+                getOccupancy();
+                break;
 
             case "PlugLoad": getPlugLoad(); break;
 
@@ -78,6 +81,9 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getOccupancy()
     {
+        ((TextView) findViewById(R.id.CurrOccupValue)).setText("2");
+        ((TextView) findViewById(R.id.AvgOccupValue)).setText("4");
+        /*
         System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
 
         int zone_id = ZonesDescriptionActivity.regionID;
@@ -92,7 +98,7 @@ public class EnergyActivity extends ActionBarActivity {
         {
             mTextView.setText("Current Occupancy: "+info.get(1));
             time_stamp_text.setText("Time:"+info.get(0));
-        }
+        }*/
     }
 
     private void getTemperature()
@@ -112,9 +118,14 @@ public class EnergyActivity extends ActionBarActivity {
             ((TextView) findViewById(R.id.Fahrenheit)).setText(info.get(1)+""+(char) 0x00B0+"F");
             ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+""+(char) 0x00B0+"C");
 
-            ((TextView) findViewById(R.id.max_outside_temp_f)).setText(data_access.getTemperature()+(char) 0x00B0+"F");
-            ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(data_access.getTemperature()))
-                                                                        +""+(char) 0x00B0+"C");
+            String temp;
+
+            if((temp = data_access.getOutsideTemperature()) != "No Data")
+            {
+                ((TextView) findViewById(R.id.max_outside_temp_f)).setText(temp+(char) 0x00B0+"F");
+                ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(temp))
+                        +""+(char) 0x00B0+"C");
+            }
 
             time_stamp.setText(info.get(0)); //set time stamp
         }

@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
@@ -49,7 +47,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** USER ************************************/
 
-    public static User createUser(String name,  int id, String email)
+    public static void createUser(String name, int id, String email)
     {
         int loggedIn = 1;
         ContentValues vals = new ContentValues();
@@ -58,16 +56,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
 
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_USER,
-                USER_COLS,
-                                UserSQLiteDatabase.COLUMN_ID+" = "+id,
-                                null, null, null, null);
-
-        cursor.moveToFirst();
-        User nUser = getUserFromCursor(cursor);
-
-        cursor.close();
-        return nUser;
+        db.insert(UserSQLiteDatabase.TABLE_USER,null ,vals);
     }
 
     public User getUser (int loggedIn){
@@ -126,6 +115,7 @@ public class DataAccessUser implements DataAccessInterface {
         db.update(UserSQLiteDatabase.TABLE_USER, args, UserSQLiteDatabase.COLUMN_ID+" = "+UserId,
                 null);
         System.out.println("Table column updated, user logout");
+        db.delete(UserSQLiteDatabase.TABLE_ZONES,null,null);
     }
 
     public static User getUserFromCursor(Cursor cursor) {
@@ -222,7 +212,6 @@ public class DataAccessUser implements DataAccessInterface {
 
     public static void createTemperature(int zone_id,  String date_time, int temperature)
     {
-        System.out.println("create my temperature data!");
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_ID, zone_id);
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, date_time);
@@ -258,21 +247,20 @@ public class DataAccessUser implements DataAccessInterface {
         return temp;
     }
 
-    public ArrayList<Map<String, Integer>> getAllTemperatureByZoneID(int zone_id)
+    public ArrayList<Double> getAllTemperatureBefore(int zone_id, String date)
     {
-        ArrayList<Map<String, Integer>> myList = new ArrayList<>();
+        ArrayList<Double> myList = new ArrayList<>();
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
                 TEMP_COLS,
-                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id
+                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" <= Datetime('"+date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Temperature temp = getTemperatureFromCursor(cursor);
-            Map<String, Integer> myMap = new HashMap<>();
-            myMap.put(temp.getDatetime(), temp.getTemperature());
-            myList.add(myMap);
+            myList.add( (double) temp.getTemperature());
             cursor.moveToNext();
         }
 
@@ -399,48 +387,42 @@ public class DataAccessUser implements DataAccessInterface {
                                 cursor.getInt(5));
     }
 
-    public ArrayList<Map<String, String>> getAllACStateByZoneID(int zone_id)
+    //Count...
+    public int getAllDateTimesACStateOnBefore(int zone_id, String date)
     {
-        ArrayList<Map<String, String>> myList = new ArrayList<>();
-
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
                 PLUG_COLS,
                 UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id+
-                " AND "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+ " = 'AC'",
+                        " AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+ " = 'ON'"
+                        +" AND "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+ " = 'AC'"
+                        +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" <= Datetime('"+date+"')",
                 null, null, null, null);
 
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            PlugLoad plug = getPlugLoadFromCursor(cursor);
+        int cnt = cursor.getCount();
 
-            Map<String, String> myMap = new HashMap<>();
-            myMap.put(plug.getDatetime(), plug.getStatus());
-            myList.add(myMap);
-            cursor.moveToNext();
-        }
         // make sure to close the cursor
         cursor.close();
-        return myList;
+        return cnt;
     }
 
-    public ArrayList<Map<String, Integer>> getAllPlugLoadEnergy(int zone_id)
+    public ArrayList<Integer> getAllPlugLoadEnergyBefore(int zone_id, String date)
     {
-        ArrayList<Map<String, Integer>> myList = new ArrayList<>();
+        ArrayList<Integer> myList = new ArrayList<>();
 
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
                 PLUG_COLS,
-                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+ " = 'ON'"
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" <= Datetime('"+date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             PlugLoad plug = getPlugLoadFromCursor(cursor);
 
-            Map<String, Integer> myMap = new HashMap<>();
-            myMap.put(plug.getDatetime(), plug.getEnergy_usage_kwh());
-            myList.add(myMap);
+            myList.add(plug.getEnergy_usage_kwh());
             cursor.moveToNext();
         }
         // make sure to close the cursor
@@ -481,13 +463,89 @@ public class DataAccessUser implements DataAccessInterface {
             return null;
     }
 
+    public String getFirstTimeStamp()
+    {
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                null,
+                null, null, null, null);
+
+        if (cursor.moveToFirst())
+        {
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            return occupancy.getDate_time();
+        }
+        else
+            return null;
+    }
+
+    public String getLastTimeStamp()
+    {
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                null,
+                null, null, null, null);
+
+        if (cursor.moveToLast())
+        {
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            return occupancy.getDate_time();
+        }
+        else
+            return null;
+    }
+
     private static Occupancy getOccupancyFromCursor(Cursor cursor) {
         return new Occupancy( cursor.getString(1),    //Datetime
                                         cursor.getInt(0),       //Zone_ID
                                         cursor.getInt(2));
     }
 
-    
+    //Get the occupancy imformation, when the room is empty
+    public ArrayList<String> getAllTimesWhenIsRoomEmpty(int zone_id, String date)
+    {
+        ArrayList<String> myList = new ArrayList<>();
+
+        //Get only information for the AC
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id+" AND "+UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY+" = 0"
+                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            myList.add(occupancy.getDate_time());
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
+    public ArrayList<Double> getAllOccupancyBefore(int zone_id, String date)
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+
+        //Get only information for the AC
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
+                OCC_COLS,
+                UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id
+                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Occupancy occupancy = getOccupancyFromCursor(cursor);
+            myList.add((double) occupancy.getOccupancy());
+            cursor.moveToNext();
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return myList;
+    }
+
 
     /****************************** LIGHTING ************************************/
 
@@ -531,22 +589,39 @@ public class DataAccessUser implements DataAccessInterface {
         return light;
     }
 
-    public ArrayList<Map<String, String>> getAllLightingStateByZoneID(int zone_id)
+    public int getHowLongAreLightsON(int zone_id, String date)
     {
-        ArrayList<Map<String, String>> myList = new ArrayList<>();
+        ArrayList<Integer> myList = new ArrayList<>();
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
-                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
+                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
+                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                null, null, null, null);
+
+        int count = cursor.getCount();
+        // make sure to close the cursor
+        cursor.close();
+        return count;
+    }
+
+    public ArrayList<Double> getAllLightingEnergyUsageBefore(int zone_id, String date)
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                LIGHT_COLS,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" <= Datetime('"+date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Lighting light = getLightingFromCursor(cursor);
 
-            Map<String, String> myMap = new HashMap<>();
-            myMap.put(light.getDatetime(), light.getLighting_state());
-            myList.add(myMap);
+            myList.add((double) light.getEnergy_usage_kwh());
             cursor.moveToNext();
         }
         // make sure to close the cursor
@@ -590,7 +665,7 @@ public class DataAccessUser implements DataAccessInterface {
             return "No Data";
     }
 
-    public String getTemperature() {
+    public String getOutsideTemperature() {
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
                 OW_COLS,

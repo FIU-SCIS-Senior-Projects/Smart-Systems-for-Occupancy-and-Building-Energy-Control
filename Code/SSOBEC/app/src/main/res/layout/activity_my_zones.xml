@@ -11,6 +11,7 @@
         android:id="@+id/grid_view_buttons"
         android:verticalSpacing="2dp"
         android:horizontalSpacing="2dp"
-        android:numColumns="3"/>
+        android:numColumns="3"
+        android:layout_margin="20dp" />
 
 </LinearLayout>

@@ -167,7 +167,7 @@ tools:context=".LinearLayout">
     android:layout_gravity="center"
     android:paddingLeft="20px"
     android:paddingTop="10px"
-    android:text="CREATE ACCOUNT"
+    android:text="@string/create_account_submit"
     android:id="@+id/create_login_button"
     android:onClick="registerUser" />
 

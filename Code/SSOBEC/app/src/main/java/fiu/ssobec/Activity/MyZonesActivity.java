@@ -1,6 +1,9 @@
 package fiu.ssobec.Activity;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -24,7 +27,6 @@ import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
-import fiu.ssobec.Synchronization.SyncUtils;
 
 
 /*
@@ -66,8 +68,8 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
-            SyncUtils.CreateSyncAccount(this);
-            SyncUtils.TriggerRefresh();
+            //SyncUtils.CreateSyncAccount(this);
+            //SyncUtils.TriggerRefresh();
             user_id = user.getId(); //Get the ID of the user
 
             List<NameValuePair> userId = new ArrayList<>(1);
@@ -110,6 +112,10 @@ public class MyZonesActivity extends ActionBarActivity{
             m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridViewButtons.setAdapter(m_badapter);
 
+        }
+        ActionBar bar = getActionBar();
+        if (bar != null) {
+            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("FF729AD1")));
         }
     }
 

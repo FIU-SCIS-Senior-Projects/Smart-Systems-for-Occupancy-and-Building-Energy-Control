@@ -2,7 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="login_textfield_size">24sp</dimen>
+    <dimen name="login_textfield_size">20sp</dimen>
     <dimen name="action_button_min_width">56dp</dimen>
     <dimen name="indeterminate_progress_size">32dp</dimen>
+    <dimen name="pie_segment_label_font_size">15dp</dimen>
+
 </resources>

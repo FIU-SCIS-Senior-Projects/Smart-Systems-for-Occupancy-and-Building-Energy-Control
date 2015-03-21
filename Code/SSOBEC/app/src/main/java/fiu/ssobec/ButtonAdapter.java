@@ -51,10 +51,11 @@ public class ButtonAdapter extends BaseAdapter {
         Button b;
         if (convertView == null) {
             b = new Button(mContext);
-            b.setLayoutParams(new GridView.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+            b.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             b.setPadding(5, 5, 5, 5);
             b.setTextSize(0xa);
             b.setTextColor(Color.BLACK);
+
         } else {
             b = (Button) convertView;
         }
@@ -66,9 +67,6 @@ public class ButtonAdapter extends BaseAdapter {
         //set id of the button as region_id
         b.setId((int) zone_id.get(position));
         b.setTextSize(12);
-
-        //System.out.println("Adding to button adapter id: "+zone_id.get(position).toString());
-        //System.out.println("Adding name: "+zone_names.get(position).toString());
 
         final int button_id = b.getId();
         b.setOnClickListener(new View.OnClickListener() {
