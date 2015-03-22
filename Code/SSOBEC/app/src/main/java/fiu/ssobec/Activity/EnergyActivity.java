@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.sql.SQLException;
@@ -67,7 +69,10 @@ public class EnergyActivity extends ActionBarActivity {
                 getOccupancy();
                 break;
 
-            case "PlugLoad": getPlugLoad(); break;
+            case "PlugLoad":
+                setContentView(R.layout.activity_plugload);
+                getPlugLoad();
+                break;
 
             case "Lighting": getLighting(); break;
         }
@@ -135,7 +140,8 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getPlugLoad()
     {
-        System.out.println("Get plug load from region_id: "+ZonesDescriptionActivity.regionID);
+        ((TextView) findViewById(R.id.CurrPlugValue)).setText("2");
+       /* System.out.println("Get plug load from region_id: "+ZonesDescriptionActivity.regionID);
 
         int zone_id = ZonesDescriptionActivity.regionID;
 
@@ -149,7 +155,7 @@ public class EnergyActivity extends ActionBarActivity {
         {
             mTextView.setText("Current PlugLoad: "+info.get(1));
             time_stamp_text.setText("Time:"+info.get(0));
-        }
+        }*/
     }
 
     private void getLighting()
@@ -279,5 +285,12 @@ public class EnergyActivity extends ActionBarActivity {
                 refreshItem.setActionView(null);
             }
         }
+    }
+
+    public void predictConsumption (View view)
+    {
+        Intent intent = new Intent(this,ConsumptionAppliances.class);
+        Log.i("EnergyActivity", "Starting my new prediction table");
+        startActivity(intent);
     }
 }

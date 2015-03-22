@@ -4,12 +4,11 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bar_bg"
     android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top"
     >
     <TableRow>
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/imageParent"
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:layout_marginLeft="10dip"/>
@@ -43,9 +42,7 @@
             android:id="@+id/rightcheck"
             android:layout_height="25dip"
             android:layout_gravity="left|center_vertical"
-            android:scaleType="centerCrop"
-            android:background="@drawable/rightcheck"
-            />
+            android:scaleType="centerCrop" />
         <CheckBox android:id="@+id/checkbox" android:focusable="false"
             android:layout_alignParentRight="true" android:freezesText="false"
             android:layout_width="wrap_content" android:layout_height="wrap_content"

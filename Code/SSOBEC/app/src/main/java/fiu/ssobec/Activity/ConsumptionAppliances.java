@@ -248,10 +248,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             // Get grouprow.xml file elements and set values
             ((TextView) convertView.findViewById(R.id.text1)).setText(parent.getText1());
             ((TextView) convertView.findViewById(R.id.text)).setText(parent.getText2());
-            ImageView image = (ImageView) convertView.findViewById(R.id.image);
-            image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting" + parent.getName(), null, null));
-            ImageView rightcheck = (ImageView) convertView.findViewById(R.id.rightcheck);
+            //ImageView image = (ImageView) convertView.findViewById(R.id.image);
+            //image.setImageResource(getResources().getIdentifier("fiu.ssobec:drawable/consumption" + parent.getName(), null, null));
 
+            ImageView rightcheck = (ImageView) convertView.findViewById(R.id.rightcheck);
             //Log.i("onCheckedChanged", "isChecked: "+parent.isChecked());
 
             // Change right check image on parent at runtime

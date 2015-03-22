@@ -36,6 +36,12 @@
     <string name="current_occupancy">Current Occupancy: </string>
     <string name="average_occupancy">Average Occupancy Per Day: </string>
 
+    <string name="prediction_consumption">Predict Consumption</string>
+    <string name="title_activity_prediction_appliances">PredictionAppliances</string>
+
+    <string name="electronic_appliances">Electronic Appliances</string>
+
+    <string name="amount_appliances">Amount Appliances</string>
 
 </resources>
 

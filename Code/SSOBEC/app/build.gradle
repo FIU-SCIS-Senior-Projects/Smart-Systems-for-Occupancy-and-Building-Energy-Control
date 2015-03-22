@@ -31,7 +31,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:6.5.87'
     compile 'net.aksingh:owm-japis:2.5.0.3'
     compile 'org.apache.commons:commons-math3:3.4.1'
-    compile files('C:/Smart-Building2/Code/SSOBEC/libs/androidplot-core-0.6.1.jar')
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'joda-time:joda-time:2.7'
+    compile files('C:/Smart-Building/Code/SSOBEC/libs/androidplot-core-0.6.1.jar')
 }

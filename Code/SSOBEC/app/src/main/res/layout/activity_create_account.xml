@@ -4,7 +4,8 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:layout_gravity="center"
 android:orientation="vertical"
-tools:context=".LinearLayout">
+tools:context=".LinearLayout"
+    android:background="@color/background_material_light">
 
     <!-- Text View CREATE ACCOUNT -->
 
