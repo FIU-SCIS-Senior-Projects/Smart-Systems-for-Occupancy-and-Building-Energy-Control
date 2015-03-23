@@ -7,27 +7,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import java.util.ArrayList;
+
 import fiu.ssobec.Child;
 import fiu.ssobec.Parent;
 import fiu.ssobec.R;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 
 public class ConsumptionAppliances extends ExpandableListActivity {
 
     //Initialize variables
-    private static final String STR_CHECK = " Has Checked!";
-    private static final String STR_UNCHECK = " Has unChecked!";
+    //private static final String STR_CHECK = " Has Checked!";
+    //private static final String STR_UNCHECK = " Has unChecked!";
     private int ParentClickStatus = -1;
     private int ChildClickStatus = -1;
     private ArrayList<Parent> parents;
@@ -37,13 +37,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         super.onCreate(savedInstanceState);
 
         Resources res = this.getResources();
-        Drawable devider = res.getDrawable(R.drawable.line);
+        Drawable divider = res.getDrawable(R.drawable.line);
 
         // Set ExpandableListView values
-
         getExpandableListView().setGroupIndicator(null);
-        getExpandableListView().setDivider(devider);
-        getExpandableListView().setChildDivider(devider);
+        getExpandableListView().setDivider(divider);
+        getExpandableListView().setChildDivider(divider);
         getExpandableListView().setDividerHeight(1);
         registerForContextMenu(getExpandableListView());
 
@@ -207,7 +206,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return;
 
         parents = newParents;
-
         // Check for ExpandableListAdapter object
         if (this.getExpandableListAdapter() == null) {
             //Create ExpandableListAdapter Object
@@ -221,6 +219,13 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_consumption_appliances, menu);
+        return true;
+    }
+
     /**
      * A Custom adapter to create Parent view (Used grouprow.xml) and Child View((Used childrow.xml).
      */
@@ -230,13 +235,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         private LayoutInflater inflater;
 
         public MyExpandableListAdapter() {
-            // Create Layout Inflator
             inflater = LayoutInflater.from(ConsumptionAppliances.this);
         }
 
-
         // This Function used to inflate parent rows view
-
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parentView) {
@@ -248,26 +250,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             // Get grouprow.xml file elements and set values
             ((TextView) convertView.findViewById(R.id.text1)).setText(parent.getText1());
             ((TextView) convertView.findViewById(R.id.text)).setText(parent.getText2());
-            //ImageView image = (ImageView) convertView.findViewById(R.id.image);
-            //image.setImageResource(getResources().getIdentifier("fiu.ssobec:drawable/consumption" + parent.getName(), null, null));
-
-            ImageView rightcheck = (ImageView) convertView.findViewById(R.id.rightcheck);
-            //Log.i("onCheckedChanged", "isChecked: "+parent.isChecked());
-
-            // Change right check image on parent at runtime
-            if (parent.isChecked() == true) {
-                rightcheck.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/rightcheck", null, null));
-            } else {
-                rightcheck.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/button_check", null, null));
-            }
-
-            // Get grouprow.xml file checkbox elements
-            CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox);
-            checkbox.setChecked(parent.isChecked());
-
-            // Set CheckUpdateListener for CheckBox (see below CheckUpdateListener class)
-            checkbox.setOnCheckedChangeListener(new CheckUpdateListener(parent));
-
+            ImageView image = (ImageView) convertView.findViewById(R.id.imageParent);
+            image.setImageResource(getResources().getIdentifier("fiu.ssobec:drawable/consumption" + parent.getName(), null, null));
             return convertView;
         }
 
@@ -284,8 +268,15 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
             // Get childrow.xml file elements and set values
             ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
-            ImageView image = (ImageView) convertView.findViewById(R.id.image);
+            ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
             image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting" + parent.getName(), null, null));
+
+            // Get grouprow.xml file checkbox elements
+            CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox_child_row);
+            checkbox.setChecked(child.isChecked());
+
+            // Set CheckUpdateListener for CheckBox (see below CheckUpdateListener class)
+            checkbox.setOnCheckedChangeListener(new CheckUpdateListener(child));
 
             return convertView;
         }
@@ -302,12 +293,9 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         public long getChildId(int groupPosition, int childPosition) {
             /****** When Child row clicked then this function call *******/
 
-            //Log.i("Noise", "parent == "+groupPosition+"=  child : =="+childPosition);
+            Log.i("Noise", "parent == "+groupPosition+"=  child : =="+childPosition);
             if (ChildClickStatus != childPosition) {
                 ChildClickStatus = childPosition;
-
-                Toast.makeText(getApplicationContext(), "Parent :" + groupPosition + " Child :" + childPosition,
-                        Toast.LENGTH_LONG).show();
             }
 
             return childPosition;
@@ -339,12 +327,9 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         public long getGroupId(int groupPosition) {
             Log.i("Parent", groupPosition + "=  getGroupId " + ParentClickStatus);
 
+            /*
             if (groupPosition == 2 && ParentClickStatus != groupPosition) {
-
-                //Alert to user
-                Toast.makeText(getApplicationContext(), "Parent :" + groupPosition,
-                        Toast.LENGTH_LONG).show();
-            }
+            }*/
 
             ParentClickStatus = groupPosition;
             if (ParentClickStatus == 0)
@@ -383,58 +368,21 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         /**
          * **************** Checkbox Checked Change Listener *******************
          */
-
         private final class CheckUpdateListener implements OnCheckedChangeListener {
-            private final Parent parent;
+            private final Child child;
 
-            private CheckUpdateListener(Parent parent) {
-                this.parent = parent;
+            private CheckUpdateListener(Child child) {
+                this.child = child;
             }
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i("onCheckedChanged", "isChecked: " + isChecked);
-                parent.setChecked(isChecked);
+                child.setChecked(isChecked);
 
                 ((MyExpandableListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
 
-                final Boolean checked = parent.isChecked();
-               // Toast.makeText(getApplicationContext(), "Parent : " + parent.getName() + " " + (checked ? STR_CHECKED : STR_UNCHECKED),
-                //        Toast.LENGTH_LONG).show();
+                final Boolean checked = child.isChecked();
             }
         }
     }
 }
-
-
-
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_consumption_appliances);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_consumption_appliances, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    */
-

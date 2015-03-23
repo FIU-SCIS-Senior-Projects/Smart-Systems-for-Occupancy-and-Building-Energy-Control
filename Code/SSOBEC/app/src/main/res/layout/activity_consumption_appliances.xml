@@ -3,11 +3,12 @@
     android:layout_height="wrap_content"
 
     android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top">
+   <!-- android:background="@color/default_background" -->
 
 
     <TableRow android:background="@color/background_material_light">
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/childImage"
             android:layout_width="30dip"
             android:layout_height="30dip"
             android:layout_marginLeft="30dip"/>

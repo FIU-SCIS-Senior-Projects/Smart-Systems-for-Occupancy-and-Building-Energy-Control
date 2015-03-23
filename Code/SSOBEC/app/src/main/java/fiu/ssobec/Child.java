@@ -7,6 +7,7 @@ public class Child {
     private String name;
     private String text1;
     private String text2;
+    private boolean checked;
 
     public String getName()
     {
@@ -36,5 +37,15 @@ public class Child {
     public void setText2(String text2)
     {
         this.text2 = text2;
+    }
+
+    public boolean isChecked()
+    {
+        return checked;
+    }
+
+    public void setChecked(boolean checked)
+    {
+        this.checked = checked;
     }
 }
