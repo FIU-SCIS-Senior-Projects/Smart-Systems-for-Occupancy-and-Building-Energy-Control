@@ -1,17 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CHILD -->
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
 
-    android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top"
-    android:background="@color/default_background">
+    android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top">
 
-
-    <TableRow android:background="@color/background_material_light">
+    <!--   android:background="@drawable/bar_bg" -->
+    <TableRow android:background="@color/light_blue_background"
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/childImage"
             android:layout_width="30dip"
-            android:layout_height="30dip"
-            android:layout_marginLeft="30dip"/>
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:contentDescription="@string/consumption_appliances_childrow_image" />
         <TableLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -20,21 +23,30 @@
             <TableRow>
                 <TextView
                     android:id="@+id/text1"
+                    style="@style/SettingCodeFontBold"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_weight="1" android:layout_gravity="left|center_vertical"
-                    android:textSize="12dip" android:layout_marginLeft="30dip"
-                    />
+                    android:textSize="12sp" android:layout_marginLeft="30dip"
+
+                    android:textColor="@color/default_font_color" />
             </TableRow>
             <TableRow >
                 <TextView
                     android:id="@+id/text"
+                    style="@style/SettingCodeFont"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_weight="1" android:layout_gravity="left|center_vertical"
-                    android:textSize="12dip" android:layout_marginLeft="30dip"/>
+                    android:textSize="12sp" android:layout_marginLeft="30dip"
+                    android:textColor="@color/default_font_color" />
             </TableRow>
         </TableLayout>
+
+        <CheckBox android:id="@+id/checkbox_child_row" android:focusable="false"
+            android:freezesText="false"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="3dp" />
 
     </TableRow>
 </TableLayout>
