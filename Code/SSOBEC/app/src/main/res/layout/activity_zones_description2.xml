@@ -8,12 +8,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="fiu.ssobec.Activity.ZonesDescriptionActivity">
+    tools:context="fiu.ssobec.Activity.ZonesDescriptionActivity"
+    android:background="@color/default_background">
 
     <com.androidplot.pie.PieChart
         android:id="@+id/mySimplePieChart"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"/>
 
     <LinearLayout
@@ -28,19 +29,20 @@
             android:text="@string/temperature"
             android:id="@+id/TemperatureButton"
             android:onClick="getTemperature"
-            android:background="#ff6bb3ff"
+            android:background="@color/temperature_blue"
             android:paddingLeft="20dp"
             android:paddingTop="20dp"
             android:layout_margin="20dp"
             android:padding="20dp"
-            android:src="@drawable/thermometer" />
+            android:src="@drawable/thermometer"
+            android:baselineAlignBottom="false" />
 
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/occupancy"
             android:id="@+id/OccupancyButton"
-            android:background="#ffff6176"
+            android:background="@color/occupancy_red"
             android:onClick="getOccupancy"
             android:layout_gravity="top"
             android:layout_weight="0.50"

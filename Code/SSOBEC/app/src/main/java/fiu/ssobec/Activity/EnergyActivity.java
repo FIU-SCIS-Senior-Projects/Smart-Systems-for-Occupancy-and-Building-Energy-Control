@@ -12,6 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -88,6 +92,20 @@ public class EnergyActivity extends ActionBarActivity {
     {
         ((TextView) findViewById(R.id.CurrOccupValue)).setText("2");
         ((TextView) findViewById(R.id.AvgOccupValue)).setText("4");
+
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<DataPoint>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        graph.addSeries(series);
+
+
         /*
         System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
 

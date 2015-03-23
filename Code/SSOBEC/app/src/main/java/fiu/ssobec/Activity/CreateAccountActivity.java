@@ -57,7 +57,7 @@ public class CreateAccountActivity extends ActionBarActivity {
         List<NameValuePair> new_user_info = new ArrayList<>(3);
         System.out.println("This button is working");
 
-        String name = ((EditText) findViewById(R.id.first_name_field)).getText().toString()+""
+        String name = ((EditText) findViewById(R.id.first_name_field)).getText().toString()+" "
                 +((EditText) findViewById(R.id.last_name_field)).getText().toString();
 
 

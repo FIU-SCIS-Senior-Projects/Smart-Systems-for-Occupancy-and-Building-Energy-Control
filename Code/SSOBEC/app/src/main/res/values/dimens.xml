@@ -5,6 +5,6 @@
     <dimen name="login_textfield_size">20sp</dimen>
     <dimen name="action_button_min_width">56dp</dimen>
     <dimen name="indeterminate_progress_size">32dp</dimen>
-    <dimen name="pie_segment_label_font_size">15dp</dimen>
+    <dimen name="pie_segment_label_font_size">18dp</dimen>
 
 </resources>

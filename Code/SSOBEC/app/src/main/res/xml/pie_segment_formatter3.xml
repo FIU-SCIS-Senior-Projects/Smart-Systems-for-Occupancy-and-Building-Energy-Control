@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
-    fillPaint.color="#ff22d053"
-    labelPaint.textSize="@dimen/pie_segment_label_font_size"/>
+    fillPaint.color="@color/plugload_green"
+    labelPaint.textSize="@dimen/pie_segment_label_font_size"
+    labelPaint.setColor="@color/default_font_color"
+    innerEdgePaint.color = "@color/plugload_green"
+    outerEdgePaint.color = "@color/plugload_green"/>

@@ -128,14 +128,6 @@
             android:name=".Activity.ConsumptionAppliances"
             android:label="@string/title_activity_consumption_appliances" >
         </activity>
-        <activity
-            android:name=".Activity.PredictionAppliances"
-            android:label="@string/title_activity_prediction_appliances"
-            android:parentActivityName=".Activity.EnergyActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="fiu.ssobec.Activity.EnergyActivity" />
-        </activity>
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.androidplot.pie.PieChart;
+import com.androidplot.pie.PieRenderer;
 import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
 
@@ -56,12 +57,16 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         SegmentFormatter sf1 = new SegmentFormatter();
         sf1.configure(getApplicationContext(), R.xml.pie_segment_formatter1);
+        //sf1.getLabelPaint().set
+        sf1.getLabelPaint().setColor(Color.BLACK);
 
         SegmentFormatter sf2 = new SegmentFormatter();
         sf2.configure(getApplicationContext(), R.xml.pie_segment_formatter2);
+        sf2.getLabelPaint().setColor(Color.BLACK);
 
         SegmentFormatter sf3 = new SegmentFormatter();
         sf3.configure(getApplicationContext(), R.xml.pie_segment_formatter3);
+        sf3.getLabelPaint().setColor(Color.BLACK);
 
         pie.addSeries(s1, sf1);
         pie.addSeries(s2, sf2);
@@ -69,7 +74,9 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         pie.getBorderPaint().setColor(Color.TRANSPARENT);
         pie.getBackgroundPaint().setColor(Color.TRANSPARENT);
+
         pie.setPlotMargins(0, 0, 0, 0);
+        pie.getRenderer(PieRenderer.class).setDonutSize(.90f, PieRenderer.DonutMode.PERCENT);
     }
 
 

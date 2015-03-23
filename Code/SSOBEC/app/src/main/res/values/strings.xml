@@ -33,7 +33,7 @@
     <string name="title_activity_create_account">Create Account</string>
 
     <!-- Occupancy Energy Activity -->
-    <string name="current_occupancy">Current Occupancy: </string>
+    <string name="current_occupancy">Occupants currently in the room </string>
     <string name="average_occupancy">Average Occupancy Per Day: </string>
 
     <string name="prediction_consumption">Predict Consumption</string>
@@ -42,6 +42,7 @@
     <string name="electronic_appliances">Electronic Appliances</string>
 
     <string name="amount_appliances">Amount Appliances</string>
+    <string name="consumption_appliances_childrow_image">An image that represents the appliance name</string>
 
 </resources>
 

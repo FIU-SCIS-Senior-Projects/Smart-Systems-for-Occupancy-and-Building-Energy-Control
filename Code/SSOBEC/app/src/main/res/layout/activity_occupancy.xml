@@ -5,9 +5,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="fiu.ssobec.Activity.EnergyActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/default_background">
 
     <!-- Current Occupancy -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,13 +17,12 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp">
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/CurrOccupTextView"
-            android:text="@string/current_occupancy"/>
-
+            android:id="@+id/imageView2"
+            android:src="@drawable/multipleoccupants"
+            android:layout_gravity="center_vertical" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,7 +30,26 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/CurrOccupValue"
             android:text="@string/n_a"
-            android:background="@xml/boxborder"/>
+            android:textColor="@color/default_font_color"
+            android:textSize="45sp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/CurrOccupTextView"
+            android:text="@string/current_occupancy"
+            android:textColor="@color/gray_font_color"
+            android:textSize="15sp"
+            android:paddingLeft="10dp"
+            android:layout_gravity="bottom"
+            android:textStyle="italic"
+            android:textAlignment="center" />
+
+
+
 
     </LinearLayout>
 
@@ -41,17 +61,19 @@
     <!-- Average Occupancy -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="0.04"
-        android:layout_marginTop="20dp">
+        android:layout_weight="0.00"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="30dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/AvgOccupTextView"
-            android:text="@string/average_occupancy"/>
+            android:text="@string/average_occupancy"
+            android:textColor="@color/default_font_color" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -59,7 +81,32 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/AvgOccupValue"
             android:text="@string/n_a"
-            android:background="@xml/boxborder"/>
+            android:textColor="@color/default_font_color" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:paddingTop="100dp" />
+
+
+    <!-- Graph View -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0.00"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="30dp">
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:id="@+id/graph"
+            android:background="@color/light_blue_background" />
+
 
     </LinearLayout>
 
@@ -71,7 +118,8 @@
         android:id="@+id/time_stamp_view"
         android:layout_marginEnd="42dp"
         android:layout_marginBottom="44dp"
-        android:text="@string/n_a" />
+        android:text="@string/n_a"
+        android:visibility="invisible" />
 
 
 </LinearLayout>
