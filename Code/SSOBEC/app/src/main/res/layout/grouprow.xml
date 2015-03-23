@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top"
     >
-    <TableRow>
+    <TableRow android:background="@color/login_button_background">
         <ImageView
             android:id="@+id/imageParent"
             android:layout_width="50dip"
@@ -37,16 +37,18 @@
                     android:textSize="14dip" android:layout_marginLeft="10dip"/>
             </TableRow>
         </TableLayout>
+
         <ImageView
             android:layout_width="25dip"
             android:id="@+id/rightcheck"
             android:layout_height="25dip"
             android:layout_gravity="left|center_vertical"
             android:scaleType="centerCrop" />
+        <!--
         <CheckBox android:id="@+id/checkbox" android:focusable="false"
             android:layout_alignParentRight="true" android:freezesText="false"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_marginTop="5px" />
+            android:layout_marginTop="5px" /> -->
 
     </TableRow>
 </TableLayout>
