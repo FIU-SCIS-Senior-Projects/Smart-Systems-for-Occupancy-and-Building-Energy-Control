@@ -31,6 +31,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
     private int ParentClickStatus = -1;
     private int ChildClickStatus = -1;
     private ArrayList<Parent> parents;
+    static String ELECTRIC_APPL = "electric_appliances";
+
+    static int APPLIANCE_GROUP_POSITION = 0;
+    static int AMOUNT_APPLIANCE_GROUP_POSITION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
             // Set values in parent class object
             if (i == 1) {
-                parent.setName("" + i);
+                parent.setName(ELECTRIC_APPL);
                 parent.setText1("Electric Appliances");
                 parent.setText2("Select the appliances that you want to make a prediction");
                 parent.setChildren(new ArrayList<Child>());
@@ -264,19 +268,33 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             final Child child = parent.getChildren().get(childPosition);
 
             // Inflate childrow.xml file for child rows
-            convertView = inflater.inflate(R.layout.childrow, parentView, false);
-
-            // Get childrow.xml file elements and set values
-            ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
-            ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
-            image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting" + parent.getName(), null, null));
-
-            // Get grouprow.xml file checkbox elements
-            CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox_child_row);
+            if(parent.getName().equals(ELECTRIC_APPL)) {
+                convertView = inflater.inflate(R.layout.childrow, parentView, false);
+                 CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox_child_row);
             checkbox.setChecked(child.isChecked());
 
             // Set CheckUpdateListener for CheckBox (see below CheckUpdateListener class)
             checkbox.setOnCheckedChangeListener(new CheckUpdateListener(child));
+
+                ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
+                image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting" + parent.getName(), null, null));
+
+            }
+            /*
+            else
+                convertView = inflater.inflate(R.layout.childrow_num_field, parentView, false);*/
+
+            // Get childrow.xml file elements and set values
+
+
+            // Get grouprow.xml file checkbox elements
+            //TODO: uncomment checkbox when done testing
+           /* CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox_child_row);
+            checkbox.setChecked(child.isChecked());
+
+            // Set CheckUpdateListener for CheckBox (see below CheckUpdateListener class)
+            checkbox.setOnCheckedChangeListener(new CheckUpdateListener(child));*/
 
             return convertView;
         }
@@ -284,7 +302,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
-            //Log.i("Childs", groupPosition+"=  getChild =="+childPosition);
             return parents.get(groupPosition).getChildren().get(childPosition);
         }
 
@@ -378,10 +395,13 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i("onCheckedChanged", "isChecked: " + isChecked);
                 child.setChecked(isChecked);
-
                 ((MyExpandableListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
-
                 final Boolean checked = child.isChecked();
+                if(checked)
+                {
+                   Parent parent =  (Parent) getGroup(AMOUNT_APPLIANCE_GROUP_POSITION);
+                   //inflater.inflate(R.layout.childrow, parentView, false);
+                }
             }
         }
     }
