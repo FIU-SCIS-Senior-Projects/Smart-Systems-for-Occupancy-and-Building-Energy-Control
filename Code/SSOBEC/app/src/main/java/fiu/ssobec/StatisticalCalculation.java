@@ -9,11 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,8 +66,6 @@ public class StatisticalCalculation {
         double occup_time_avg=0;
         double outside_temp_avg=0;
 
-        /*currdate = date+1;
-        * */
         List<Integer> region_id = data_access.getAllZoneID();
 
         getDateWithoutTime(earliest_timestamp);
@@ -185,32 +179,14 @@ public class StatisticalCalculation {
         return plugloadwaste;
     }
 
-    public void getDateWithoutTime(String datetime)
+    public static void getDateWithoutTime(String datetime)
     {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date result=null;
-        try {
-            result =  df.parse(earliest_timestamp);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Date resulttemp = result;
-        //result =new Date(resulttemp.getTime() + (1440 * ONE_MINUTE_IN_MILLIS));
-
-        currdatetime = df.format(result);
         DateTimeFormatter dateStringFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter dateStringFormat2 = DateTimeFormat.forPattern("yyyy-MM-dd 00:00:00");
         DateTime time = dateStringFormat.parseDateTime(datetime);
 
-        time.plusDays(2);
+        time = time.plusDays(1);
 
         String date = dateStringFormat2.print(time);
-
-        currdatetime = date;
-               //MutableDateTime mutableDateTime = time.toMutableDateTime();
-        Log.i(LOG_TAG, "Datetime: "+datetime+", Datetime+1: "+date);
-
-
     }
 }

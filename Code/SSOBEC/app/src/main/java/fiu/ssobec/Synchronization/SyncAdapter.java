@@ -93,10 +93,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
         }*/
         int id = 1;
-            getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
-            getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
-            getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
-            getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
+        getDatabaseData(id, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
+        getDatabaseData(id, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
+        getDatabaseData(id, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
+        getDatabaseData(id, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
 
         try {
             DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
@@ -116,11 +116,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         data_access.close();
 
 
-
         //TODO: If getNewest_timestamp is not null, then
-        //do stat calculations
-
-        //StatisticalCalculation.calculateData(mcontext);
     }
 
     private void getDatabaseData(int region_id, String table_name, String php_file_name, String json_obj_name)
