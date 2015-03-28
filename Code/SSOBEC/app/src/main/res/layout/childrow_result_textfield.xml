@@ -43,14 +43,12 @@
             </TableRow>
         </TableLayout>
 
-        <EditText
-            android:id="@+id/numField_child_row"
+        <TextView
+            android:id="@+id/textview_child_row"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:inputType="number"
             android:ems="10"
             android:layout_marginTop="3dp"
-            android:autoText="false"
             android:textColor="@color/default_font_color" />
     </TableRow>
 
