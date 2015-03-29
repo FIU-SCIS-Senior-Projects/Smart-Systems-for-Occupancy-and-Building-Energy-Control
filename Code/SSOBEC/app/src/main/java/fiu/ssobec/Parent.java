@@ -42,6 +42,7 @@ public class Parent {
     {
         this.text2 = text2;
     }
+
     public String getCheckedType()
     {
         return checkedtype;
@@ -52,11 +53,11 @@ public class Parent {
         this.checkedtype = checkedtype;
     }
 
-
     public boolean isChecked()
     {
         return checked;
     }
+
     public void setChecked(boolean checked)
     {
         this.checked = checked;
