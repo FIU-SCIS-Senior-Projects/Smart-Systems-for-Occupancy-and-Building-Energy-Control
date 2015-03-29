@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CHILD -->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+
+    android:stretchColumns="1" android:paddingTop="0dip" android:layout_gravity="top">
+
+    <!--   android:background="@drawable/bar_bg" -->
+    <TableRow android:background="@color/light_blue_background"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/calculate_consumption"
+            android:id="@+id/monthly_cons_button"
+            android:layout_column="0" />
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="total"
+            android:id="@+id/total_consumption_textview"
+            android:layout_column="12"
+            android:textSize="20sp"
+            android:textColor="@color/default_font_color" />
+
+    </TableRow>
+</TableLayout>
