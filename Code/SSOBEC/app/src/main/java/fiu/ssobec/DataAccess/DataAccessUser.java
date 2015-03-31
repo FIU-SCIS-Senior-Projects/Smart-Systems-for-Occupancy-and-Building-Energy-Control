@@ -44,7 +44,6 @@ public class DataAccessUser implements DataAccessInterface {
         dbHelp.close();
     }
 
-
     /****************************** USER ************************************/
 
     public static void createUser(String name, int id, String email)
@@ -691,28 +690,32 @@ public class DataAccessUser implements DataAccessInterface {
         {
             case UserSQLiteDatabase.TABLE_OCCUPANCY:
                 cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
-                    OCC_COLS, UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                        OCC_COLS, UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id, null, null, null,
+                            UserSQLiteDatabase.OCC_COLUMN_DATETIME+" ASC");
                 if (cursor.moveToLast())
                     last_time_stamp = getOccupancyFromCursor(cursor).getDate_time();
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_LIGHTING:
                 cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
-                        LIGHT_COLS, UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                        LIGHT_COLS, UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id, null, null, null,
+                        UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" ASC");
                 if (cursor.moveToLast())
                     last_time_stamp = getLightingFromCursor(cursor).getDatetime();
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_PLUGLOAD:
                 cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
-                        PLUG_COLS, UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                        PLUG_COLS, UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id, null, null, null,
+                        UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" ASC");
                 if (cursor.moveToLast())
                     last_time_stamp = getPlugLoadFromCursor(cursor).getDatetime();
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
                 cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
-                        TEMP_COLS, UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id, null, null, null, null);
+                        TEMP_COLS, UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id, null, null, null,
+                        UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" ASC");
                 if (cursor.moveToLast())
                     last_time_stamp = getTemperatureFromCursor(cursor).getDatetime();
                 cursor.close();

@@ -25,7 +25,6 @@ public class SyncUtils {
 
     private static final String CONTENT_AUTHORITY = SyncConstants.AUTHORITY;
     private static final String ACCOUNT_TYPE = SyncConstants.ACCOUNT_TYPE;
-    //private static final String MY_ACCOUNT = SyncConstants.ACCOUNT;
     private static final String PREF_SETUP_COMPLETE = SyncConstants.PREF_SETUP_COMPLETE;
 
     /**
@@ -46,12 +45,15 @@ public class SyncUtils {
         if (accountManager.addAccountExplicitly(account, null, null)) {
             // Inform the system that this account supports sync
             ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 1);
+
             // Inform the system that this account is eligible for auto sync when the network is up
             ContentResolver.setSyncAutomatically(account, CONTENT_AUTHORITY, true);
+
             // Recommend a schedule for automatic synchronization. The system may modify this based
             // on other scheduled syncs and network utilization.
             ContentResolver.addPeriodicSync(
                     account, CONTENT_AUTHORITY, new Bundle(),SYNC_INTERVAL);
+
             newAccount = true;
 
             Log.i(LOG_TAG,"CreateSyncAccount: add Account Explicitly");
