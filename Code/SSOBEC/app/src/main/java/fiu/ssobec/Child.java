@@ -1,7 +1,5 @@
 package fiu.ssobec;
 
-import android.widget.EditText;
-
 /**
  * Created by Dalaidis on 3/20/2015.
  */
@@ -11,7 +9,7 @@ public class Child {
     private String text1;
     private String text2;
     private boolean checked;
-    private EditText editText;
+    private int editTextChildNumField;
 
     public String getName()
     {
@@ -53,11 +51,11 @@ public class Child {
         this.checked = checked;
     }
 
-    public EditText getEditText() {
-        return editText;
+    public int getEditTextChildNumField() {
+        return editTextChildNumField;
     }
 
-    public void setEditText(EditText editText) {
-        this.editText = editText;
+    public void setEditTextChildNumField(int editTextChildNumField) {
+        this.editTextChildNumField = editTextChildNumField;
     }
 }

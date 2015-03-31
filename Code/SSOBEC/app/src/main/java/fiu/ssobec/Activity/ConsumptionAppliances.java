@@ -4,6 +4,8 @@ import android.app.ExpandableListActivity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 
 import fiu.ssobec.Child;
 import fiu.ssobec.Parent;
+import fiu.ssobec.PredictPlugLoadConsumption;
 import fiu.ssobec.R;
 
 
@@ -143,11 +146,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
     }
 
 
-    public void calculateMonthlyConsumption(View view)
-    {
-        System.out.println("Button pressed");
-    }
-
     /**
      * A Custom adapter to create Parent view (Used grouprow.xml) and Child View((Used childrow.xml).
      */
@@ -210,10 +208,11 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                         public void onClick(View v)
                         {
                             System.out.println("Button Clicked");
+                            calcData();
+
                         }
                     });
                 }
-
                 else
                 {
                     convertView = inflater.inflate(R.layout.childrow_result_textfield, parentView, false);
@@ -222,7 +221,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
                             + parent.getName(), null, null));
                 }
-
             }
             else
             {
@@ -231,9 +229,77 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                 image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
                         + parent.getName(), null, null));
+
+                //get field...
+                EditText my_num_text = (EditText) convertView.findViewById(R.id.numField_child_row);
+                my_num_text.setText(child.getEditTextChildNumField()+"");
+                my_num_text.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        System.out.println("Text Changed: "+s.toString());
+                        int result;
+                        try
+                        {
+                            result = Integer.parseInt(s.toString());
+                            child.setEditTextChildNumField(result);
+                        }
+                        catch (NumberFormatException e)
+                        {
+                            System.out.println("Not a number: "+e);
+                        }
+
+                    }
+                });
             }
 
             return convertView;
+        }
+
+        public void calcData() {
+            ArrayList<Integer> powerKw = new ArrayList<>();
+            ArrayList<Integer> quantity = new ArrayList<>();
+            ArrayList<Integer> hoursUse = new ArrayList<>();
+            ArrayList<Integer> daysUse = new ArrayList<>();
+
+            int numChilds = 4;
+            for (int i = 0; i < 4; i++) {
+                //Create parent class object
+                final Parent parent = parents.get(i);
+
+                for (int j = 0; j < numChilds; j++) {
+                    Child otherchilds = parent.getChildren().get(j);
+                    switch(i)
+                    {
+                        case 0:
+                            if(otherchilds.isChecked())
+                            {
+                                powerKw.add(20);
+                            }
+                            else
+                                powerKw.add(0);
+                            break;
+                        case 1:
+                            quantity.add(otherchilds.getEditTextChildNumField());
+                            break;
+                        case 2:
+                            hoursUse.add(otherchilds.getEditTextChildNumField());
+                            break;
+                        case 3:
+                            daysUse.add(otherchilds.getEditTextChildNumField());
+                            break;
+                    }
+                }
+
+
+            }
+
+            PredictPlugLoadConsumption mypredict = new PredictPlugLoadConsumption(powerKw,quantity,hoursUse,daysUse);
+            mypredict.MonthlyConsumption();
         }
 
         @Override
@@ -265,7 +331,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         @Override
         public Object getGroup(int groupPosition) {
-            Log.i("Parent", groupPosition + "=  getGroup ");
+            //Log.i("Parent", groupPosition + "=  getGroup ");
             return parents.get(groupPosition);
         }
 
@@ -277,7 +343,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         //Call when parent row clicked
         @Override
         public long getGroupId(int groupPosition) {
-            Log.i("Parent", groupPosition + "=  getGroupId " + ParentClickStatus);
+            //Log.i("Parent", groupPosition + "=  getGroupId " + ParentClickStatus);
 
             ParentClickStatus = groupPosition;
             if (ParentClickStatus == 0)
@@ -341,5 +407,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 }
             }
         }
+
     }
 }

@@ -19,14 +19,18 @@ public class PredictPlugLoadConsumption {
         this.daysUse = daysUse;
     }
 
-    public void MonthlyConsumption() {
+    public int MonthlyConsumption() {
 
-    int totalConsumption=0;
+        int totalConsumption=0;
 
-        for (int i=0; i>powerKw.size(); i++){
-            totalConsumption+=powerKw.get(i)*quantity.get(i)*hoursUse.get(i)*daysUse.get(i);
+        System.out.println("Power Size: "+powerKw.size());
+        System.out.println("Power KW: "+powerKw.toString());
+        for (int i=0; i < powerKw.size(); i++){
+
+            totalConsumption = powerKw.get(i)*quantity.get(i)*hoursUse.get(i)*daysUse.get(i)+totalConsumption;
         }
 
         System.out.println("Total Contumption is: "+totalConsumption+ " kWh");
+        return totalConsumption;
     }
 }
