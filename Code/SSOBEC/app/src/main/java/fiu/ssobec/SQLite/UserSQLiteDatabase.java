@@ -81,7 +81,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + TABLE_PLUGLOAD + " ("
             + PLUG_COLUMN_ID + " int NOT NULL, "
             + PLUG_COLUMN_DATETIME + " datetime NOT NULL, "
-            + PLUG_COLUMN_STATE + " varchar(3) NOT NULL, "
+            + PLUG_COLUMN_STATE + " varchar(9) NOT NULL, "
             + PLUG_COLUMN_APPNAME + " varchar(255) NULL, "
             + PLUG_COLUMN_APPTYPE + " varchar(255) NOT NULL, "
             + PLUG_COLUMN_APPENERGY + " int NOT NULL, "

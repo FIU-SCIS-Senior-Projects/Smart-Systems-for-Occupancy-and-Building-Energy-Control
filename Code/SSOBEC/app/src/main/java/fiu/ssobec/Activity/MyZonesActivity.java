@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -27,6 +26,7 @@ import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.SyncUtils;
 
 
 /*
@@ -41,7 +41,6 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     private static DataAccessUser data_access; //data access variable for user
-    private Location mLastLocation;
 
     public static int user_id;
 
@@ -68,7 +67,7 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
-            //SyncUtils.CreateSyncAccount(this);
+            SyncUtils.CreateSyncAccount(this);
             //SyncUtils.TriggerRefresh();
             user_id = user.getId(); //Get the ID of the user
 
