@@ -44,6 +44,7 @@
     <string name="amount_appliances">Amount Appliances</string>
     <string name="consumption_appliances_childrow_image">An image that represents the appliance name</string>
     <string name="calculate_consumption">Monthly Consumption</string>
+    <string name="title_activity_acconsumption_prediction">ACConsumptionPrediction</string>
 
 </resources>
 

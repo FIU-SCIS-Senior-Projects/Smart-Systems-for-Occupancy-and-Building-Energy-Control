@@ -36,16 +36,18 @@ public class ConsumptionAppliances extends ExpandableListActivity {
     private ArrayList<Parent> parents;
     static String ELECTRIC_APPL = "Electric Appliances";
     static String AMOUNT_APPL = "Amount of Appliances";
-    static String HOURS_USE = "Hours of use";
-    static String DAYS_USE = "Days of use";
-    static String MONTH_COST = "Montly Cost";
+    static String HOURS_USE = "Hours of Use";
+    static String DAYS_USE = "Days of Use";
+    static String MONTHLY_CONSUMPTION = "Monthly Consumption";
+    static String MONTHLY_COST = "Monthly Cost";
 
-    static String [] parent_text1 = {ELECTRIC_APPL, AMOUNT_APPL, HOURS_USE, DAYS_USE, MONTH_COST};
+    static String [] parent_text1 = {ELECTRIC_APPL, AMOUNT_APPL, HOURS_USE, DAYS_USE, MONTHLY_CONSUMPTION,MONTHLY_COST};
     static String [] parent_text2 = {"Select the appliances that you want to make a prediction",
             "Select the amount of appliances",
-            "Select the hours of use",
-            "Select the days of use",
-            "Prediction of Montly Cost"};
+            "Select the hours of Use",
+            "Select the days of Use",
+            "Prediction of Monthly Consumption",
+            "Prediction of Monthly Cost"};
 
     static String [] appl_names = {"laptop", "Microwave", "Fridge/Freezer", "Printer"};
 
@@ -79,7 +81,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         final ArrayList<Parent> list = new ArrayList<Parent>();
         int numChilds = 4;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             //Create parent class object
             final Parent parent = new Parent();
 
@@ -88,12 +90,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             parent.setText2(parent_text2[i]);
             parent.setChildren(new ArrayList<Child>());
 
-            if(i == 4)
+            if(i == 4 || i == 5)
                 numChilds = 5;
 
             for(int j = 0 ; j < numChilds ; j++)
             {
-                if(i == 4 && j == numChilds - 1)
+                if((i == 4 || i == 5) && j == numChilds - 1)
                 {
                     final Child child = new Child();
                     child.setName("" + j);
@@ -186,6 +188,17 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             final Parent parent = parents.get(groupPosition);
             final Child child = parent.getChildren().get(childPosition);
 
+
+            ArrayList<Double> powerKw = new ArrayList<>();
+            ArrayList<Integer> quantity = new ArrayList<>();
+            ArrayList<Integer> hoursUse = new ArrayList<>();
+            ArrayList<Integer> daysUse = new ArrayList<>();
+
+            calcData(powerKw,quantity,hoursUse,daysUse);
+            final PredictPlugLoadConsumption mypredict = new PredictPlugLoadConsumption(powerKw,quantity,hoursUse,daysUse);
+            mypredict.MonthlyConsumption();
+
+
             // Inflate childrow.xml file for child rows
             if (parent.getName().equals("0")) {
                 convertView = inflater.inflate(R.layout.childrow, parentView, false);
@@ -204,11 +217,39 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
+                    final View finalConvertView1 = convertView;
                     b.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v)
                         {
                             System.out.println("Button Clicked");
-                            calcData();
+                            mypredict.getTotalConsumption();
+                            ((TextView) finalConvertView1.findViewById(R.id.total_consumption_textview)).setText(mypredict.getTotalConsumption() + "");
+
+                        }
+                    });
+                }
+                else
+                {
+                    convertView = inflater.inflate(R.layout.childrow_result_textfield, parentView, false);
+                    ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                    ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
+                    image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
+                            + parent.getName(), null, null));
+                }
+            }
+            else if (parent.getName().equals("5"))
+            {
+                if(child.getName().equals("4"))
+                {
+                    convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
+                    Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
+                    b.setText(MONTHLY_COST);
+                    final View finalConvertView = convertView;
+                    b.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v)
+                        {
+                            System.out.println("Button Clicked");
+                            ((TextView) finalConvertView.findViewById(R.id.total_consumption_textview)).setText( mypredict.getTotalCost()+"");
 
                         }
                     });
@@ -260,11 +301,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return convertView;
         }
 
-        public void calcData() {
-            ArrayList<Integer> powerKw = new ArrayList<>();
-            ArrayList<Integer> quantity = new ArrayList<>();
-            ArrayList<Integer> hoursUse = new ArrayList<>();
-            ArrayList<Integer> daysUse = new ArrayList<>();
+        public void calcData( ArrayList<Double> powerKw, ArrayList<Integer> quantity, ArrayList<Integer> hoursUse, ArrayList<Integer> daysUse) {
 
             int numChilds = 4;
             for (int i = 0; i < 4; i++) {
@@ -278,10 +315,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                         case 0:
                             if(otherchilds.isChecked())
                             {
-                                powerKw.add(20);
+                                powerKw.add(20.0);
                             }
                             else
-                                powerKw.add(0);
+                                powerKw.add(0.0);
                             break;
                         case 1:
                             quantity.add(otherchilds.getEditTextChildNumField());
@@ -294,12 +331,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                             break;
                     }
                 }
-
-
             }
 
-            PredictPlugLoadConsumption mypredict = new PredictPlugLoadConsumption(powerKw,quantity,hoursUse,daysUse);
-            mypredict.MonthlyConsumption();
         }
 
         @Override
