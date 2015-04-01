@@ -29,7 +29,6 @@ public class StatisticalCalculation {
     private static String currdatetime;
     private static String earliest_timestamp;
     private static String last_timestamp;
-    static final long ONE_MINUTE_IN_MILLIS=60000;
     Context mcontext;
     DataAccessUser data_access;
 

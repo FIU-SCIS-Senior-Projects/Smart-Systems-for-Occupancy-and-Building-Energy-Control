@@ -2,6 +2,6 @@
 <config
     fillPaint.color="@color/lighting_yellow"
     labelPaint.textSize="@dimen/pie_segment_label_font_size"
-    labelPaint.setColor="@color/default_font_color"
+    labelPaint.color="@color/default_font_color"
     innerEdgePaint.color = "@color/lighting_yellow"
     outerEdgePaint.color = "@color/lighting_yellow"/>
