@@ -90,4 +90,16 @@
         android:id="@+id/max_outside_temp_c"
         android:layout_above="@+id/divider2"
         android:layout_alignEnd="@+id/Celsius" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temperature_ac_performance"
+        android:id="@+id/temp_ac_performance"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/building_temperature_textview"
+        android:layout_alignEnd="@+id/building_temperature_textview"
+        android:onClick="predictAC" />
+
+
 </RelativeLayout>

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.PredictPlugLoadConsumption;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -309,6 +310,12 @@ public class EnergyActivity extends ActionBarActivity {
     {
         Intent intent = new Intent(this,ConsumptionAppliances.class);
         Log.i("EnergyActivity", "Starting my new prediction table");
+        startActivity(intent);
+    }
+    public void predictAC (View view)
+    {
+        Intent intent = new Intent(this,ACConsumptionPrediction.class);
+        Log.i("EnergyActivity", "Starting my new prediction for AC");
         startActivity(intent);
     }
 }
