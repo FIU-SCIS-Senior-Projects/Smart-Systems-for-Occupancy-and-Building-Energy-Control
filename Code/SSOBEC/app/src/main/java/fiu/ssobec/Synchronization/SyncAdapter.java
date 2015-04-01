@@ -46,6 +46,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TIME_STAMP = "time_stamp";
 
     public static final String PLUG_APPLIANCE_TYPE = "appliance_type";
+    public static final String PLUG_STATUS = "status";
     public static final String PLUG_APPLIANCE_NAME = "appliance_name";
     public static final String ENERGY_USAGE = "energy_usage_kwh";
     public static final String OCCUPANCY_COLUMN = "occupancy";
@@ -126,7 +127,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
 
-        //id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (region_id + "").trim()));
         id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (sqlRegionIdArr).trim()));
         id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
 
@@ -160,8 +160,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     System.out.println("occ: "+myobj.getInt(OCCUPANCY_COLUMN));
                     System.out.println("time: "+myobj.getString(TIME_STAMP));
 
-//                    data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN),myobj.getString(TIME_STAMP),
-//                                                myobj.getInt(OCCUPANCY_COLUMN));
+                    data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN),myobj.getString(TIME_STAMP),
+                                                myobj.getInt(OCCUPANCY_COLUMN));
                     j++;
                 }
 
@@ -178,8 +178,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     System.out.println("time: "+myobj.getString(TIME_STAMP));
                     System.out.println("light_energy: "+myobj.getInt(ENERGY_USAGE));
 
-//                    data_access.createLighting( myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
-//                                                myobj.getString(LIGHTSTATUS_COLUMN), myobj.getInt(ENERGY_USAGE));
+                    data_access.createLighting( myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
+                                                myobj.getString(LIGHTSTATUS_COLUMN), myobj.getInt(ENERGY_USAGE));
                     j++;
                 }
 
@@ -195,10 +195,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     System.out.println("time: "+myobj.getString(TIME_STAMP));
                     System.out.println("light_energy: "+myobj.getInt(ENERGY_USAGE));
 
-//                    data_access.createPlugLoad(region_id, time_stamp, plugLoad,
-//                            arr.getJSONObject(i).getString(PLUG_APPLIANCE_NAME),
-//                            arr.getJSONObject(i).getString(PLUG_APPLIANCE_TYPE),
-//                            arr.getJSONObject(i).getInt(ENERGY_USAGE));
+                    data_access.createPlugLoad(region_id, myobj.getString(TIME_STAMP), myobj.getString(PLUG_STATUS),
+                            myobj.getString(PLUG_APPLIANCE_NAME),
+                            myobj.getString(PLUG_APPLIANCE_TYPE),
+                            myobj.getInt(ENERGY_USAGE));
                     j++;
                 }
 
@@ -213,7 +213,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     System.out.println("time: "+myobj.getString(TIME_STAMP));
                     System.out.println("temperature: "+myobj.getInt(TEMPERATURE_COLUMN));
 
-                    //data_access.createTemperature(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP), myobj.getInt(TEMPERATURE_COLUMN));
+                    data_access.createTemperature(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP), myobj.getInt(TEMPERATURE_COLUMN));
 
                     j++;
                 }
