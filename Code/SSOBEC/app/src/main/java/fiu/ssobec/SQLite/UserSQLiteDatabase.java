@@ -84,7 +84,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + PLUG_COLUMN_STATE + " varchar(9) NOT NULL, "
             + PLUG_COLUMN_APPNAME + " varchar(255) NULL, "
             + PLUG_COLUMN_APPTYPE + " varchar(255) NOT NULL, "
-            + PLUG_COLUMN_APPENERGY + " int NOT NULL, "
+            + PLUG_COLUMN_APPENERGY + " double NOT NULL, "
             + "CONSTRAINT zone_plugLoad_pk PRIMARY KEY (" + PLUG_COLUMN_ID+" , "+PLUG_COLUMN_DATETIME+"), "
             + "FOREIGN KEY ("+PLUG_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
@@ -101,7 +101,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + LIGHT_COLUMN_ID + " int NOT NULL, "
             + LIGHT_COLUMN_DATETIME + " datetime NOT NULL, "
             + LIGHT_COLUMN_STATE + " varchar(3) NOT NULL, "
-            + LIGHT_COLUMN_ENERGY + " int NOT NULL, "
+            + LIGHT_COLUMN_ENERGY + " double NOT NULL, "
             + "CONSTRAINT zone_lighting_pk PRIMARY KEY (" + LIGHT_COLUMN_ID+" , "+LIGHT_COLUMN_DATETIME+"), "
             + "FOREIGN KEY ("+LIGHT_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";

@@ -14,11 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,12 +50,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String ZONEID_COLUMN = "zone_description_region_id";
     public static final String LIGHTSTATUS_COLUMN = "status";
 
-    //Name of the JSON Objects
-    public static final String OCCUPANCY_OBJ = "occupancy_obj";
-    public static final String TEMPERATURE_OBJ = "temperature_arr";
-    public static final String PLUGLOAD_OBJ = "plugload_obj";
-    public static final String LIGHTING_OBJ = "lighting_obj";
-
     private Context mcontext;
     private DataAccessUser data_access;
     private StatisticalCalculation sc;
@@ -88,42 +78,43 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sc = new StatisticalCalculation(mcontext, data_access);
-        Log.i(LOG_TAG, "SC: "+sc.getNewest_timestamp());
+
 
         List<Integer> region_id = data_access.getAllZoneID();
 
         sqlRegionIdArr = sqlArrayFormat(region_id);
         Log.i(LOG_TAG, "Region ID: "+sqlRegionIdArr);
 
-        getDatabaseData(1, UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP, OCCUPANCY_OBJ);
-        getDatabaseData(1, UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP, LIGHTING_OBJ);
-        getDatabaseData(1, UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP, TEMPERATURE_OBJ);
-        getDatabaseData(1, UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP, PLUGLOAD_OBJ);
+        getDatabaseData(UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP);
+        getDatabaseData(UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP);
+        getDatabaseData(UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP);
+        getDatabaseData(UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP);
 
         try {
             DataAccessOwm dataAccessOwm = new DataAccessOwm(mcontext);
-            dataAccessOwm.saveWeatherData(); //TEST
+            dataAccessOwm.saveWeatherData();
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-
-        if(sc.getNewest_timestamp() != null)
-        {
-            Log.i(LOG_TAG, "Calculate Data");
-            //sc.calculateData();
         }
 
         data_access.close();
         Log.i(LOG_TAG, "Finishing network synchronization");
 
+        sc = new StatisticalCalculation(mcontext);
+        if(sc.getNewest_timestamp() != null)
+        {
+            Log.i(LOG_TAG, "Calculate Data");
+            sc.calculateData();
+        }
+
+        sc.close();
+
     }
 
-    private void getDatabaseData(int region_id, String table_name, String php_file_name, String json_obj_name)
+    private void getDatabaseData(String table_name, String php_file_name)
     {
         //"0000-00-00 00:00:00"
-        //String last_time_stamp = data_access.getLastTimeStamp(region_id, table_name);
-        String last_time_stamp = "0000-00-00 00:00:00";
+        String last_time_stamp = data_access.getLastTimeStamp(table_name);
 
         List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
 
@@ -133,33 +124,28 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, php_file_name).send();
             Log.i(LOG_TAG, "Response from Database for table "+table_name+": "+res);
-            Log.i(LOG_TAG, "Last Time-Stamp: "+last_time_stamp);
 
-            saveDataOnInternalDB(region_id, table_name, res);
+            new JSONObject(res);
+
+            saveDataOnInternalDB(table_name, res);
 
         } catch (InterruptedException | JSONException e) {
-            //e.printStackTrace();
+            Log.e(LOG_TAG, "There was an error while getting the");
         }
     }
 
-    private void saveDataOnInternalDB(int region_id, String table_name, String db_res) throws JSONException {
+    private void saveDataOnInternalDB(String table_name, String db_res) throws JSONException {
 
-        JSONObject obj;
-        int j;
+        JSONObject obj =  new JSONObject(db_res);
+        int j=0;
         JSONObject myobj;
 
         switch(table_name)
         {
             case UserSQLiteDatabase.TABLE_OCCUPANCY:
-                obj = new JSONObject(db_res);
-                j=0;
                 while(obj.has(j+""))
                 {
                     myobj = obj.getJSONObject(j+"");
-                    System.out.println("zone_id: "+myobj.getInt(ZONEID_COLUMN));
-                    System.out.println("occ: "+myobj.getInt(OCCUPANCY_COLUMN));
-                    System.out.println("time: "+myobj.getString(TIME_STAMP));
-
                     data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN),myobj.getString(TIME_STAMP),
                                                 myobj.getInt(OCCUPANCY_COLUMN));
                     j++;
@@ -167,17 +153,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 break;
             case UserSQLiteDatabase.TABLE_LIGHTING:
-                obj = new JSONObject(db_res);
-                j=0;
-
                 while(obj.has(j+""))
                 {
                     myobj = obj.getJSONObject(j+"");
-                    System.out.println("zone_id: "+myobj.getInt(ZONEID_COLUMN));
-                    System.out.println("light stat: "+myobj.getString(LIGHTSTATUS_COLUMN));
-                    System.out.println("time: "+myobj.getString(TIME_STAMP));
-                    System.out.println("light_energy: "+myobj.getInt(ENERGY_USAGE));
-
                     data_access.createLighting( myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
                                                 myobj.getString(LIGHTSTATUS_COLUMN), myobj.getInt(ENERGY_USAGE));
                     j++;
@@ -185,17 +163,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 break;
             case UserSQLiteDatabase.TABLE_PLUGLOAD:
-                obj = new JSONObject(db_res);
-                j=0;
                 while(obj.has(j+""))
                 {
                     myobj = obj.getJSONObject(j+"");
-                    System.out.println("zone_id: "+myobj.getInt(ZONEID_COLUMN));
-                    System.out.println("light stat: "+myobj.getString(PLUG_APPLIANCE_TYPE));
-                    System.out.println("time: "+myobj.getString(TIME_STAMP));
-                    System.out.println("light_energy: "+myobj.getInt(ENERGY_USAGE));
-
-                    data_access.createPlugLoad(region_id, myobj.getString(TIME_STAMP), myobj.getString(PLUG_STATUS),
+                    data_access.createPlugLoad(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
+                            myobj.getString(PLUG_STATUS),
                             myobj.getString(PLUG_APPLIANCE_NAME),
                             myobj.getString(PLUG_APPLIANCE_TYPE),
                             myobj.getInt(ENERGY_USAGE));
@@ -204,44 +176,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
-                obj = new JSONObject(db_res);
-                j=0;
                 while(obj.has(j+""))
                 {
                     myobj = obj.getJSONObject(j+"");
-                    System.out.println("zone_id: "+myobj.getInt(ZONEID_COLUMN));
-                    System.out.println("time: "+myobj.getString(TIME_STAMP));
-                    System.out.println("temperature: "+myobj.getInt(TEMPERATURE_COLUMN));
-
-                    data_access.createTemperature(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP), myobj.getInt(TEMPERATURE_COLUMN));
+                    data_access.createTemperature(myobj.getInt(ZONEID_COLUMN),
+                                                  myobj.getString(TIME_STAMP),
+                                                  myobj.getInt(TEMPERATURE_COLUMN));
 
                     j++;
                 }
 
                 break;
-        }
-    }
-
-    private void checkTimeStamp(String mTimeStamp)
-    {
-        try
-        {
-            if(sc.getNewest_timestamp() != null)
-            {
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date result =  df.parse(mTimeStamp);
-                Date result2 =  df.parse(sc.getNewest_timestamp());
-
-                //If TimeStamp < NewestTimeStamp
-                if(result.compareTo(result2)<0){
-                    sc.setNewest_timestamp(mTimeStamp);
-                }
-            }
-            else
-                sc.setNewest_timestamp(mTimeStamp);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
     }
 
