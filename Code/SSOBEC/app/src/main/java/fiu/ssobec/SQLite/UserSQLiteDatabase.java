@@ -85,7 +85,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + PLUG_COLUMN_APPNAME + " varchar(255) NULL, "
             + PLUG_COLUMN_APPTYPE + " varchar(255) NOT NULL, "
             + PLUG_COLUMN_APPENERGY + " double NOT NULL, "
-            + "CONSTRAINT zone_plugLoad_pk PRIMARY KEY (" + PLUG_COLUMN_ID+" , "+PLUG_COLUMN_DATETIME+"), "
+            + "CONSTRAINT zone_plugLoad_pk PRIMARY KEY (" + PLUG_COLUMN_ID+" , "+PLUG_COLUMN_DATETIME+" , "+PLUG_COLUMN_APPNAME+"), "
             + "FOREIGN KEY ("+PLUG_COLUMN_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";
 

@@ -110,7 +110,6 @@ public class DataAccessUser implements DataAccessInterface {
 
     // Table column updated user logout
     public static void userLogout (int UserId){
-        String strFilter = "_id=" + UserId;
         ContentValues args = new ContentValues();
         args.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, 0);
         db.update(UserSQLiteDatabase.TABLE_USER, args, UserSQLiteDatabase.COLUMN_ID+" = "+UserId,
@@ -346,7 +345,7 @@ public class DataAccessUser implements DataAccessInterface {
     /****************************** PLUGLOAD ************************************/
 
     public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name,
-                                      String app_type, int energy_usage_kwh)
+                                      String app_type, double energy_usage_kwh)
     {
         System.out.println("create my plugLoad data!");
         ContentValues vals = new ContentValues();
@@ -408,9 +407,9 @@ public class DataAccessUser implements DataAccessInterface {
         return cnt;
     }
 
-    public ArrayList<Integer> getAllPlugLoadEnergyBefore(int zone_id, String date)
+    public ArrayList<Double> getAllPlugLoadEnergyBefore(int zone_id, String date)
     {
-        ArrayList<Integer> myList = new ArrayList<>();
+        ArrayList<Double> myList = new ArrayList<>();
 
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
@@ -504,7 +503,7 @@ public class DataAccessUser implements DataAccessInterface {
     }
 
     //Get the occupancy imformation, when the room is empty
-    public ArrayList<String> getAllTimesWhenIsRoomEmpty(int zone_id, String date)
+    public ArrayList<String> getAllTimesWhenIsRoomEmpty(int zone_id, String upperbound_date, String lowerbound_date)
     {
         ArrayList<String> myList = new ArrayList<>();
 
@@ -512,7 +511,8 @@ public class DataAccessUser implements DataAccessInterface {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
                 OCC_COLS,
                 UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id+" AND "+UserSQLiteDatabase.OCC_COLUMN_OCCUPANCY+" = 0"
-                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -521,12 +521,13 @@ public class DataAccessUser implements DataAccessInterface {
             myList.add(occupancy.getDate_time());
             cursor.moveToNext();
         }
+
         // make sure to close the cursor
         cursor.close();
         return myList;
     }
 
-    public ArrayList<Double> getAllOccupancyBefore(int zone_id, String date)
+    public ArrayList<Double> getAllOccupancyBefore(int zone_id, String upperbound_date, String lowerbound_date)
     {
         ArrayList<Double> myList = new ArrayList<>();
 
@@ -534,13 +535,15 @@ public class DataAccessUser implements DataAccessInterface {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
                 OCC_COLS,
                 UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id
-                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                        +" AND "+UserSQLiteDatabase.OCC_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Occupancy occupancy = getOccupancyFromCursor(cursor);
             myList.add((double) occupancy.getOccupancy());
+            Log.i(LOG_TAG, "getAllOccupancyBefore, Light: " + occupancy.toString());
             cursor.moveToNext();
         }
         // make sure to close the cursor
@@ -551,7 +554,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** LIGHTING ************************************/
 
-    public static void createLighting(int zone_id,  String date_time, String lighting, int energy_usage)
+    public static void createLighting(int zone_id,  String date_time, String lighting, double energy_usage)
     {
         System.out.println("create my lighting data!");
         ContentValues vals = new ContentValues();
@@ -587,11 +590,34 @@ public class DataAccessUser implements DataAccessInterface {
         Lighting light = new Lighting( cursor.getInt(0),            //Datetime
                                         cursor.getString(1),       //Zone_ID
                                         cursor.getString(2),       //Lighting_state
-                                        cursor.getInt(3));         //Energy
+                                        cursor.getDouble(3));         //Energy
         return light;
     }
 
-    public int getHowLongAreLightsON(int zone_id, String upperbound_date, String lowerbound_date)
+
+    public int getLightingWaste(int zone_id, String datearr)
+    {
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                LIGHT_COLS,
+                UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" IN "+datearr+" ",
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        int count = cursor.getCount();
+        while (!cursor.isAfterLast()) {
+            Lighting light = getLightingFromCursor(cursor);
+            Log.i(LOG_TAG, "getLightingWaste, Light: " + light.toString());
+            cursor.moveToNext();
+        }
+
+        // make sure to close the cursor
+        cursor.close();
+        return count;
+    }
+
+    public int getTotalTimeLightWasON(int zone_id, String upperbound_date, String lowerbound_date)
     {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
@@ -601,14 +627,11 @@ public class DataAccessUser implements DataAccessInterface {
                 +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
-        Log.i(LOG_TAG, "Our cursor has: ");
-
         cursor.moveToFirst();
         int count = cursor.getCount();
-
         while (!cursor.isAfterLast()) {
             Lighting light = getLightingFromCursor(cursor);
-            Log.i(LOG_TAG, "getHowLongAreLightsON, Light: " + light.toString());
+            Log.i(LOG_TAG, "getTotalTimeLightWasON, Light: " + light.toString());
             cursor.moveToNext();
         }
 
@@ -617,10 +640,8 @@ public class DataAccessUser implements DataAccessInterface {
         return count;
     }
 
-    public ArrayList<Double> getAllLightingEnergyUsageBefore(int zone_id, String upperbound_date, String lowerbound_date)
+    public double getAllLightingEnergyUsageBefore(int zone_id, String upperbound_date, String lowerbound_date)
     {
-        ArrayList<Double> myList = new ArrayList<>();
-
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
                 UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
@@ -629,16 +650,19 @@ public class DataAccessUser implements DataAccessInterface {
                         +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
+        double totalEnergyUsage=0.0;
+
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Lighting light = getLightingFromCursor(cursor);
+            totalEnergyUsage = light.getEnergy_usage_kwh() + totalEnergyUsage;
 
-            myList.add((double) light.getEnergy_usage_kwh());
             cursor.moveToNext();
         }
         // make sure to close the cursor
         cursor.close();
-        return myList;
+
+        return totalEnergyUsage;
     }
 
 
@@ -655,10 +679,9 @@ public class DataAccessUser implements DataAccessInterface {
 
     //String dataTime, int cloudPercentage, int maxTemperature, int minTemperature
     private static OutsideWeather getOWFromCursor(Cursor cursor) {
-        OutsideWeather ow = new OutsideWeather( cursor.getString(0),    //Datetime
+        return new OutsideWeather( cursor.getString(0),    //Datetime
                                                 cursor.getInt(1),       //cloud
-                                                cursor.getInt(2));      //temp
-        return ow;
+                                                cursor.getInt(2));
     }
 
     public String getCloudPercentage() {

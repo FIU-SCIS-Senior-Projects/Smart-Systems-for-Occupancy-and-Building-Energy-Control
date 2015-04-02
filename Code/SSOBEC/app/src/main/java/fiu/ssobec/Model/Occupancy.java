@@ -1,7 +1,5 @@
 package fiu.ssobec.Model;
 
-import java.sql.Date;
-
 /**
  * Created by Maria on 2/19/2015.
  */
@@ -39,5 +37,14 @@ public class Occupancy {
 
     public void setOccupancy(int occupancy) {
         this.occupancy = occupancy;
+    }
+
+    @Override
+    public String toString() {
+        return "Occupancy{" +
+                "date_time='" + date_time + '\'' +
+                ", zone_id=" + zone_id +
+                ", occupancy=" + occupancy +
+                '}';
     }
 }
