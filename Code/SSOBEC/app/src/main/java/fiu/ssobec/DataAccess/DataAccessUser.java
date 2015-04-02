@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class DataAccessUser implements DataAccessInterface {
     //Database fields
     private static SQLiteDatabase db;
     private UserSQLiteDatabase dbHelp;
+    public static final String LOG_TAG = "DataAccessUser";
 
 
     public DataAccessUser(Context context)
@@ -246,14 +248,16 @@ public class DataAccessUser implements DataAccessInterface {
         return temp;
     }
 
-    public ArrayList<Double> getAllTemperatureBefore(int zone_id, String date)
+    //Get temperature of one day.
+    public ArrayList<Double> getAllTemperatureOnDateInterval(int zone_id, String upperbound_date, String lowerbound_date)
     {
         ArrayList<Double> myList = new ArrayList<>();
 
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
                 TEMP_COLS,
                 UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id
-                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -319,7 +323,6 @@ public class DataAccessUser implements DataAccessInterface {
                             +" AND "+UserSQLiteDatabase.STAT_AC_ENERGYUSAGE+" >= "+ac_energy_lower ,
                     null, null, null, null);
         }else {
-
             cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
                     otemperature,
                     UserSQLiteDatabase.STAT_ID + " = " + zone_id +
@@ -588,24 +591,33 @@ public class DataAccessUser implements DataAccessInterface {
         return light;
     }
 
-    public int getHowLongAreLightsON(int zone_id, String date)
+    public int getHowLongAreLightsON(int zone_id, String upperbound_date, String lowerbound_date)
     {
-        ArrayList<Integer> myList = new ArrayList<>();
-
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
                 UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
                 +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
-                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
+        Log.i(LOG_TAG, "Our cursor has: ");
+
+        cursor.moveToFirst();
         int count = cursor.getCount();
+
+        while (!cursor.isAfterLast()) {
+            Lighting light = getLightingFromCursor(cursor);
+            Log.i(LOG_TAG, "getHowLongAreLightsON, Light: " + light.toString());
+            cursor.moveToNext();
+        }
+
         // make sure to close the cursor
         cursor.close();
         return count;
     }
 
-    public ArrayList<Double> getAllLightingEnergyUsageBefore(int zone_id, String date)
+    public ArrayList<Double> getAllLightingEnergyUsageBefore(int zone_id, String upperbound_date, String lowerbound_date)
     {
         ArrayList<Double> myList = new ArrayList<>();
 
@@ -613,7 +625,8 @@ public class DataAccessUser implements DataAccessInterface {
                 LIGHT_COLS,
                 UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
                         +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
-                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -682,45 +695,65 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** MISC ************************************/
 
-    public String getLastTimeStamp(int zone_id, String table_name) {
+    public String getLastTimeStamp(String table_name) {
         String last_time_stamp = TIME_STAMP_FORMAT;
 
         Cursor cursor;
         switch(table_name)
         {
             case UserSQLiteDatabase.TABLE_OCCUPANCY:
-                cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
-                        OCC_COLS, UserSQLiteDatabase.OCC_COLUMN_ID + " = " + zone_id, null, null, null,
-                            UserSQLiteDatabase.OCC_COLUMN_DATETIME+" ASC");
-                if (cursor.moveToLast())
-                    last_time_stamp = getOccupancyFromCursor(cursor).getDate_time();
+                cursor = db.rawQuery("SELECT min(" + UserSQLiteDatabase.OCC_COLUMN_DATETIME
+                        + ") FROM " + UserSQLiteDatabase.TABLE_OCCUPANCY
+                        + " WHERE " + UserSQLiteDatabase.OCC_COLUMN_DATETIME
+                        + " IN (SELECT max (" + UserSQLiteDatabase.OCC_COLUMN_DATETIME + ") "
+                        + "FROM " + UserSQLiteDatabase.TABLE_OCCUPANCY
+                        + " GROUP BY " + UserSQLiteDatabase.OCC_COLUMN_ID + " );", null);
+
+                if (cursor.moveToFirst())
+                    last_time_stamp = cursor.getString(0);
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_LIGHTING:
-                cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
-                        LIGHT_COLS, UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id, null, null, null,
-                        UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" ASC");
-                if (cursor.moveToLast())
-                    last_time_stamp = getLightingFromCursor(cursor).getDatetime();
+                cursor = db.rawQuery("SELECT min(" + UserSQLiteDatabase.LIGHT_COLUMN_DATETIME
+                        + ") FROM " + UserSQLiteDatabase.TABLE_LIGHTING
+                        + " WHERE " + UserSQLiteDatabase.LIGHT_COLUMN_DATETIME
+                        + " IN (SELECT max (" + UserSQLiteDatabase.LIGHT_COLUMN_DATETIME + ") "
+                        + "FROM " + UserSQLiteDatabase.TABLE_LIGHTING
+                        + " GROUP BY " + UserSQLiteDatabase.LIGHT_COLUMN_ID + " );", null);
+
+                if (cursor.moveToFirst())
+                    last_time_stamp = cursor.getString(0);
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_PLUGLOAD:
-                cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
-                        PLUG_COLS, UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id, null, null, null,
-                        UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" ASC");
-                if (cursor.moveToLast())
-                    last_time_stamp = getPlugLoadFromCursor(cursor).getDatetime();
+                cursor = db.rawQuery("SELECT min(" + UserSQLiteDatabase.PLUG_COLUMN_DATETIME
+                        + ") FROM " + UserSQLiteDatabase.TABLE_PLUGLOAD
+                        + " WHERE " + UserSQLiteDatabase.PLUG_COLUMN_DATETIME
+                        + " IN (SELECT max (" + UserSQLiteDatabase.PLUG_COLUMN_DATETIME + ") "
+                        + "FROM " + UserSQLiteDatabase.TABLE_PLUGLOAD
+                        + " GROUP BY " + UserSQLiteDatabase.PLUG_COLUMN_ID + " );", null);
+
+                if (cursor.moveToFirst())
+                    last_time_stamp = cursor.getString(0);
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
-                cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
-                        TEMP_COLS, UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id, null, null, null,
-                        UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" ASC");
-                if (cursor.moveToLast())
-                    last_time_stamp = getTemperatureFromCursor(cursor).getDatetime();
+                cursor = db.rawQuery("SELECT min("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        +") FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
+                        +" WHERE "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        + " IN (SELECT max ("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+") "
+                        +"FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
+                        +" GROUP BY "+UserSQLiteDatabase.TEMP_COLUMN_ID+" );", null);
+
+                if (cursor.moveToFirst())
+                    last_time_stamp = cursor.getString(0);
+
                 cursor.close();
                 break;
         }
+        if(last_time_stamp == null)
+            last_time_stamp = TIME_STAMP_FORMAT;
+
         return last_time_stamp;
     }
 

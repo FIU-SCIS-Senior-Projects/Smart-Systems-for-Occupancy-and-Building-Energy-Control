@@ -49,4 +49,14 @@ public class Lighting {
     public void setDatetime(String datetime) {
         this.datetime = datetime;
     }
+
+    @Override
+    public String toString() {
+        return "Lighting{" +
+                "zone_id=" + zone_id +
+                ", lighting_state='" + lighting_state + '\'' +
+                ", datetime='" + datetime + '\'' +
+                ", energy_usage_kwh=" + energy_usage_kwh +
+                '}';
+    }
 }
