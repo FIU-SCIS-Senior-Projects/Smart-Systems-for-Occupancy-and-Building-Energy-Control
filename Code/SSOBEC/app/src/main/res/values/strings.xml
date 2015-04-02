@@ -47,7 +47,15 @@
     <string name="calculate_consumption">Monthly Consumption</string>
 
     <string name="title_activity_acconsumption_prediction">ACConsumptionPrediction</string>
-    <string name="ac_forecast_temperature_today">Today\'s Forecast Temperature: </string>
+
+    <string name="ac_mean_low_temperature_inside">Mean Low Temperature Inside: </string>
+    <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>
+    <string name="ac_mean_high_temperature_inside">Mean High Temperature Inside: </string>
+
+    <string name="ac_mean_low_temperature_outside">Mean Low Temperature Outside: </string>
+    <string name="ac_mean_medium_temperature_outside">Mean Medium Temperature Outside: </string>
+    <string name="ac_mean_high_temperature_outside">Mean High Temperature Outside: </string>
+
     <string name="ac_inside_temperature_today">Enter Inside Temperature: </string>
 
 

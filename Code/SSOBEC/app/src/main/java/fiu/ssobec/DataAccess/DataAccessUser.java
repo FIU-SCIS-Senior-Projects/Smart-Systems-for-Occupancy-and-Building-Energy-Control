@@ -294,7 +294,7 @@ public class DataAccessUser implements DataAccessInterface {
         }
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_INSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
             cursor.moveToNext();
         }
 
@@ -308,7 +308,6 @@ public class DataAccessUser implements DataAccessInterface {
         ArrayList<Double> myList = new ArrayList<>();
 
         String [] otemperature = {UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG};
-
         Cursor cursor;
 
         if (ac_energy_upper == 0){
@@ -331,7 +330,8 @@ public class DataAccessUser implements DataAccessInterface {
 
             cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            //myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
             cursor.moveToNext();
         }
 
@@ -339,6 +339,26 @@ public class DataAccessUser implements DataAccessInterface {
         cursor.close();
         return myList;
     }
+
+    public ArrayList<Double> getACEnergyUsage()
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+        Cursor cursor;
+
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_AC_ENERGYUSAGE}, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            //myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return myList;
+    }
+
 
     /****************************** PLUGLOAD ************************************/
 

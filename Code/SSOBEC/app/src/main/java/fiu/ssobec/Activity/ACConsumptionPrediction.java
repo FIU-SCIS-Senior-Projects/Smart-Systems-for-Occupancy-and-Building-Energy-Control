@@ -4,6 +4,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import fiu.ssobec.R;
 
@@ -13,6 +14,8 @@ public class ACConsumptionPrediction extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
+
+        ((EditText) findViewById(R.id.result_mean_low_temp_ins)).setText("78");
     }
 
 

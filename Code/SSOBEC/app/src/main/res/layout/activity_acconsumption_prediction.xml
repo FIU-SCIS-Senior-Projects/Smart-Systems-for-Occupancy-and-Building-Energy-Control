@@ -11,21 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp">
+        android:layout_marginTop="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ac_forecast_temperature_today"
-            android:id="@+id/outside_temp"/>
+            android:text="@string/ac_mean_low_temperature_inside"
+            android:id="@+id/mean_low_temp_ins"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/outside_temperature_value_textview"
-            android:layout_marginLeft="30dp" />
+            android:id="@+id/result_mean_low_temp_ins"
+            android:layout_marginLeft="60dp" />
 
 
     </LinearLayout>
@@ -33,34 +32,74 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ac_inside_temperature_today"
-            android:id="@+id/inside_temp" />
+            android:text="@string/ac_mean_medium_temperature_inside"
+            android:id="@+id/mean_medium_temp_ins" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/result_mean_medium_temp_ins"
+            android:layout_marginLeft="30dp" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:layout_width="73dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/editText" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOW"
-            android:id="@+id/textView"
-            android:layout_marginLeft="30dp" />
+            android:text="@string/ac_mean_high_temperature_inside"
+            android:id="@+id/mean_high_temp_ins" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/result_mean_high_ins"
+            android:layout_marginLeft="60dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ac_mean_low_temperature_outside"
+            android:id="@+id/mean_low_temp_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/result_mean_low_temp_out"
+            android:layout_marginLeft="60dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ac_mean_medium_temperature_outside"
+            android:id="@+id/textView" />
     </LinearLayout>
 
 
