@@ -104,7 +104,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if(sc.getNewest_timestamp() != null)
         {
             Log.i(LOG_TAG, "Calculate Data");
-            sc.calculateData();
+            //sc.calculateData();
         }
 
         sc.close();
@@ -170,7 +170,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             myobj.getString(PLUG_STATUS),
                             myobj.getString(PLUG_APPLIANCE_NAME),
                             myobj.getString(PLUG_APPLIANCE_TYPE),
-                            myobj.getInt(ENERGY_USAGE));
+                            myobj.getDouble(ENERGY_USAGE));
+
+                    System.out.println("PlugLoad! Energy Usage Double: "+ myobj.getDouble(ENERGY_USAGE));
                     j++;
                 }
 

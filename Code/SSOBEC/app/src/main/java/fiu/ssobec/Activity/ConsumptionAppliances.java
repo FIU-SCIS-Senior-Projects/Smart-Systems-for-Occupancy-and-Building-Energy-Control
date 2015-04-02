@@ -20,9 +20,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import fiu.ssobec.Child;
+import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.Parent;
 import fiu.ssobec.PredictPlugLoadConsumption;
 import fiu.ssobec.R;
@@ -51,7 +55,11 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
     static String [] appl_names = {"laptop", "Microwave", "Fridge/Freezer", "Printer"};
 
+    static int num_childs;
+
     MyExpandableListAdapter mAdapter;
+
+    private static DataAccessUser data_access;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         Resources res = this.getResources();
         Drawable divider = res.getDrawable(R.drawable.line);
+
+        //Declare the access to the SQLite table for user
+        data_access = new DataAccessUser(this);
+
+        //Open the data access to the tables
+        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
 
         // Set ExpandableListView values
         getExpandableListView().setGroupIndicator(null);
@@ -68,11 +82,64 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         registerForContextMenu(getExpandableListView());
 
         //Create one  Static Data in Arraylist
-        final ArrayList<Parent> mydummyList = buildDummyData();
+        final ArrayList<Parent> mydummyList = getDBData();
 
         // Adding ArrayList data to ExpandableListView values
         loadHosts(mydummyList);
     }
+
+
+    private ArrayList<Parent> getDBData() {
+        // Creating ArrayList of type parent class to store parent class objects
+        final ArrayList<Parent> list = new ArrayList<>();
+
+        HashMap<String, Double> hmap = data_access.getAllApplianceInformation(ZonesDescriptionActivity.regionID);
+
+        num_childs = hmap.size();
+
+        String[] app_names_children = Arrays.copyOf(hmap.keySet().toArray(), hmap.keySet().toArray().length, String[].class);
+
+        Log.i("ConsumptionAppliances", "Hmap: " + hmap.toString() + " Childs Size: " + num_childs);
+
+        Log.i("ConsumptionAppliances", "Region ID: "+ZonesDescriptionActivity.regionID);
+
+        for (int i = 0; i < 6; i++) {
+
+            //Create parent class object
+            final Parent parent = new Parent();
+
+            parent.setName("" + i);
+            parent.setText1(parent_text1[i]);
+            parent.setText2(parent_text2[i]);
+            parent.setChildren(new ArrayList<Child>());
+
+            if(i == 4 || i == 5)
+                num_childs = num_childs + 1;
+
+            for(int j = 0 ; j < num_childs ; j++)
+            {
+                System.out.println(" i = "+i+", j = "+j);
+
+                if((i == 4 || i == 5) && (j == num_childs - 1))
+                {
+                    final Child child = new Child();
+                    child.setName("" + j);
+                    parent.getChildren().add(child);
+                }
+                else
+                {
+                    final Child child = new Child();
+                    child.setName("" + j);
+                    child.setText1(app_names_children[j]);
+                    parent.getChildren().add(child);
+                }
+            }
+            //Adding Parent class object to ArrayList
+            list.add(parent);
+        }
+        return list;
+    }
+
 
     //Data Service Implementation
 
@@ -140,13 +207,32 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
     }
 
+    //When an Activity is resumed, open the SQLite
+    //connection
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //When an Activity is left, close the
+    //SQLite connection
+    @Override
+    protected void onPause() {
+        super.onPause();
+        data_access.close();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_consumption_appliances, menu);
         return true;
     }
-
 
     /**
      * A Custom adapter to create Parent view (Used grouprow.xml) and Child View((Used childrow.xml).
@@ -213,7 +299,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             }
             else if (parent.getName().equals("4"))
             {
-                if(child.getName().equals("4"))
+                if(child.getName().equals((num_childs-1)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
@@ -239,7 +325,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             }
             else if (parent.getName().equals("5"))
             {
-                if(child.getName().equals("4"))
+                if(child.getName().equals((num_childs-1)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);

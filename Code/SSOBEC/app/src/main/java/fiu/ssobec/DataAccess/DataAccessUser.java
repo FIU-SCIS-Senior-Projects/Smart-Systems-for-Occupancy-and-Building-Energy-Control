@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
@@ -366,7 +367,7 @@ public class DataAccessUser implements DataAccessInterface {
     /****************************** PLUGLOAD ************************************/
 
     public static void createPlugLoad(int zone_id,  String date_time, String state, String app_name,
-                                      String app_type, int energy_usage_kwh)
+                                      String app_type, double energy_usage_kwh)
     {
         System.out.println("create my plugLoad data!");
         ContentValues vals = new ContentValues();
@@ -428,9 +429,9 @@ public class DataAccessUser implements DataAccessInterface {
         return cnt;
     }
 
-    public ArrayList<Integer> getAllPlugLoadEnergyBefore(int zone_id, String date)
+    public ArrayList<Double> getAllPlugLoadEnergyBefore(int zone_id, String date)
     {
-        ArrayList<Integer> myList = new ArrayList<>();
+        ArrayList<Double> myList = new ArrayList<>();
 
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
@@ -451,6 +452,36 @@ public class DataAccessUser implements DataAccessInterface {
         cursor.close();
         return myList;
     }
+
+
+    /*This method will return a HashMap with the key (name of appliance)
+    and the value (the energy usage of the appliance).
+    * */
+    public HashMap<String, Double> getAllApplianceInformation(int region_id)
+    {
+        HashMap<String, Double> hmap = new HashMap<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + region_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            PlugLoad plug = getPlugLoadFromCursor(cursor);
+
+            if(!hmap.containsKey(plug.getApp_name()))
+            {
+                System.out.println("PlugLoad: "+plug.getApp_name());
+                hmap.put(plug.getApp_name(), plug.getEnergy_usage_kwh());
+            }
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return hmap;
+    }
+
 
     /****************************** OCCUPANCY ************************************/
 
@@ -758,12 +789,12 @@ public class DataAccessUser implements DataAccessInterface {
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
-                cursor = db.rawQuery("SELECT min("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
-                        +") FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
-                        +" WHERE "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
-                        + " IN (SELECT max ("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+") "
-                        +"FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
-                        +" GROUP BY "+UserSQLiteDatabase.TEMP_COLUMN_ID+" );", null);
+                cursor = db.rawQuery("SELECT min(" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        + ") FROM " + UserSQLiteDatabase.TABLE_TEMPERATURE
+                        + " WHERE " + UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        + " IN (SELECT max (" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME + ") "
+                        + "FROM " + UserSQLiteDatabase.TABLE_TEMPERATURE
+                        + " GROUP BY " + UserSQLiteDatabase.TEMP_COLUMN_ID + " );", null);
 
                 if (cursor.moveToFirst())
                     last_time_stamp = cursor.getString(0);
