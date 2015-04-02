@@ -35,6 +35,9 @@ public class StatisticalCalculation {
     Context mcontext;
     DataAccessUser mdata_access;
 
+    //Data is given every hour.
+    private static int DB_TIME_INTERVAL = 1;
+
     public StatisticalCalculation(Context context)
     {
         mcontext = context;
@@ -66,8 +69,8 @@ public class StatisticalCalculation {
 
         double inside_temp_avg=0;
         double lighting_time_avg=0;
-        int lighting_energyusage=0;
-        int lighting_energywaste=0;
+        double lighting_energyusage=0;
+        double lighting_energywaste=0;
         int plugload_energyusage=0;
         int plugload_energywaste=0;
         int ac_energyusage=0;
@@ -95,22 +98,23 @@ public class StatisticalCalculation {
                 Log.i(LOG_TAG, "Array of Temperature: " + mdata_access.getAllTemperatureOnDateInterval(id, upperbound_date, lowerbound_date).toString());
 
                 //How many hours in a day were the lights on
-                lighting_time_avg = mdata_access.getHowLongAreLightsON(id, upperbound_date, lowerbound_date);
+                lighting_time_avg = mdata_access.getTotalTimeLightWasON(id, upperbound_date, lowerbound_date)*DB_TIME_INTERVAL;
                 Log.i(LOG_TAG, "Lighting Time Avg: "+lighting_time_avg);
 
                 //How much energy was used by light in that day
-                lighting_energyusage = (int) sum(mdata_access.getAllLightingEnergyUsageBefore(id, upperbound_date, lowerbound_date));
+                lighting_energyusage = mdata_access.getAllLightingEnergyUsageBefore(id, upperbound_date, lowerbound_date);
                 Log.i(LOG_TAG, "Lighting Energy Usage: "+lighting_energyusage);
 
+                //What is the average occupancy in a room in a day
+                occup_time_avg = avg(mdata_access.getAllOccupancyBefore(id, upperbound_date, lowerbound_date));
+                Log.i(LOG_TAG, "Occupancy Average: "+occup_time_avg);
+
+                //How much energy was wasted in that day
+                //lighting_energywaste = calculateLightWaste(id, mdata_access.getAllTimesWhenIsRoomEmpty(id, upperbound_date, lowerbound_date));
+                //Log.i(LOG_TAG, "Lighting Energy Wasted: "+lighting_energywaste);
+
             /*
-            //What is the average occupancy in a room in a day
-            occup_time_avg = avg(data_access.getAllOccupancyBefore(id, currdatetime));
 
-            Log.i(LOG_TAG, "Occupancy Average: "+occup_time_avg);
-
-
-            //How much energy was wasted in that day
-            lighting_energywaste = calculateLightWaste(data_access.getAllTimesWhenIsRoomEmpty(id, currdatetime));
 
             //How much energy was used by plug load in a day
             plugload_energyusage = sum(data_access.getAllPlugLoadEnergyBefore(id, currdatetime));
@@ -167,17 +171,17 @@ public class StatisticalCalculation {
 
     }
 
-    public static int calculateLightWaste(ArrayList<String> datetimesRoomIsEmpty)
+    public int calculateLightWaste(int region_id, ArrayList<String> datetimesRoomIsEmpty)
     {
         int lightwaste=0;
 
+        String datetimes_arr = sqlArrayFormat(datetimesRoomIsEmpty);
+
+        Log.i(LOG_TAG, "inClause: "+datetimes_arr);
+
+        mdata_access.getLightingWaste(region_id, datetimes_arr);
+
         //Iterate through all the dates
-        Iterator itrdates = datetimesRoomIsEmpty.iterator();
-        while(itrdates.hasNext())
-        {
-            //Query for the times the light was ON and date was the same as when the room was empty
-            //light waste = get +
-        }
 
         return lightwaste;
     }
@@ -223,5 +227,26 @@ public class StatisticalCalculation {
         lowerbound_date = dateStringFormat2.print(low_time);
 
         Log.i(LOG_TAG, "2 add day: upp: "+upperbound_date+", low: "+lowerbound_date);
+    }
+
+    //Format: (1, 2, 3)
+    private String sqlArrayFormat(List<String> datetimes)
+    {
+        String res="(";
+        int counter=0;
+
+        Iterator itr = datetimes.iterator();
+        while(itr.hasNext())
+        {
+            String str = itr.next().toString();
+            if(counter == datetimes.size()-1)
+                res = res+" '"+str+"' )";
+            else
+                res = res+" '"+str+"' ,";
+
+            counter++;
+        }
+
+        return res;
     }
 }

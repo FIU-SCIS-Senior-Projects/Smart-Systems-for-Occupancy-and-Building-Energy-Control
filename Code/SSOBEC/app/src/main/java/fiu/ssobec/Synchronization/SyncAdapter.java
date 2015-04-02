@@ -34,9 +34,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String OCCUPANCY_PHP = "http://smartsystems-dev.cs.fiu.edu/occupancypost.php";
     public static final String TEMPERATURE_PHP = "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php";
     public static final String LIGHTING_PHP = "http://smartsystems-dev.cs.fiu.edu/lightingpost.php";
-    public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost2.php";
+    public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost.php";
 
-    public static final String DB_NODATA = "No Data";
     public static final String ZONE_COLUMN_ID = "region_id";
     public static final String LAST_TIME_STAMP = "last_time_stamp";
     public static final String TIME_STAMP = "time_stamp";
@@ -104,7 +103,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if(sc.getNewest_timestamp() != null)
         {
             Log.i(LOG_TAG, "Calculate Data");
-            //sc.calculateData();
+            sc.calculateData();
         }
 
         sc.close();
@@ -120,75 +119,78 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (sqlRegionIdArr).trim()));
         id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
+        Log.i(LOG_TAG, "Table name: "+table_name+", time_stamp: "+last_time_stamp);
 
         try {
             String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, php_file_name).send();
-            Log.i(LOG_TAG, "Response from Database for table "+table_name+": "+res);
+            Log.i(LOG_TAG, "Response from Database for table: "+table_name+": "+res);
 
             new JSONObject(res);
 
             saveDataOnInternalDB(table_name, res);
 
         } catch (InterruptedException | JSONException e) {
-            Log.e(LOG_TAG, "There was an error while getting the");
+            Log.e(LOG_TAG, "There was an error while getting the: "+table_name);
+            e.printStackTrace();
         }
     }
 
-    private void saveDataOnInternalDB(String table_name, String db_res) throws JSONException {
+    private void saveDataOnInternalDB(String table_name, String db_res){
 
-        JSONObject obj =  new JSONObject(db_res);
-        int j=0;
-        JSONObject myobj;
+        try {
 
-        switch(table_name)
+            JSONObject obj =  new JSONObject(db_res);
+            int j=0;
+            JSONObject myobj;
+
+            switch (table_name) {
+                case UserSQLiteDatabase.TABLE_OCCUPANCY:
+                    while (obj.has(j + "")) {
+                        myobj = obj.getJSONObject(j + "");
+                        data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
+                                myobj.getInt(OCCUPANCY_COLUMN));
+                        j++;
+                    }
+
+                    break;
+                case UserSQLiteDatabase.TABLE_LIGHTING:
+                    while (obj.has(j + "")) {
+                        myobj = obj.getJSONObject(j + "");
+                        data_access.createLighting(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
+                                myobj.getString(LIGHTSTATUS_COLUMN), myobj.getDouble(ENERGY_USAGE));
+                        j++;
+                    }
+
+                    break;
+                case UserSQLiteDatabase.TABLE_PLUGLOAD:
+                    while (obj.has(j + "")) {
+                        myobj = obj.getJSONObject(j + "");
+                        data_access.createPlugLoad(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
+                                myobj.getString(PLUG_STATUS),
+                                myobj.getString(PLUG_APPLIANCE_NAME),
+                                myobj.getString(PLUG_APPLIANCE_TYPE),
+                                myobj.getDouble(ENERGY_USAGE));
+                        j++;
+                    }
+
+                    break;
+                case UserSQLiteDatabase.TABLE_TEMPERATURE:
+                    while (obj.has(j + "")) {
+                        myobj = obj.getJSONObject(j + "");
+                        data_access.createTemperature(myobj.getInt(ZONEID_COLUMN),
+                                myobj.getString(TIME_STAMP),
+                                myobj.getInt(TEMPERATURE_COLUMN));
+
+                        j++;
+                    }
+
+                    break;
+            }
+        }
+        catch(JSONException e)
         {
-            case UserSQLiteDatabase.TABLE_OCCUPANCY:
-                while(obj.has(j+""))
-                {
-                    myobj = obj.getJSONObject(j+"");
-                    data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN),myobj.getString(TIME_STAMP),
-                                                myobj.getInt(OCCUPANCY_COLUMN));
-                    j++;
-                }
-
-                break;
-            case UserSQLiteDatabase.TABLE_LIGHTING:
-                while(obj.has(j+""))
-                {
-                    myobj = obj.getJSONObject(j+"");
-                    data_access.createLighting( myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
-                                                myobj.getString(LIGHTSTATUS_COLUMN), myobj.getInt(ENERGY_USAGE));
-                    j++;
-                }
-
-                break;
-            case UserSQLiteDatabase.TABLE_PLUGLOAD:
-                while(obj.has(j+""))
-                {
-                    myobj = obj.getJSONObject(j+"");
-                    data_access.createPlugLoad(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
-                            myobj.getString(PLUG_STATUS),
-                            myobj.getString(PLUG_APPLIANCE_NAME),
-                            myobj.getString(PLUG_APPLIANCE_TYPE),
-                            myobj.getDouble(ENERGY_USAGE));
-
-                    System.out.println("PlugLoad! Energy Usage Double: "+ myobj.getDouble(ENERGY_USAGE));
-                    j++;
-                }
-
-                break;
-            case UserSQLiteDatabase.TABLE_TEMPERATURE:
-                while(obj.has(j+""))
-                {
-                    myobj = obj.getJSONObject(j+"");
-                    data_access.createTemperature(myobj.getInt(ZONEID_COLUMN),
-                                                  myobj.getString(TIME_STAMP),
-                                                  myobj.getInt(TEMPERATURE_COLUMN));
-
-                    j++;
-                }
-
-                break;
+            Log.i(LOG_TAG, "There's been a murder for table: "+table_name);
+            e.printStackTrace();
         }
     }
 
