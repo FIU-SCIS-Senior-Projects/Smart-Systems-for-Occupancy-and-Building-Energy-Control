@@ -21,8 +21,6 @@ public class PlugLoad {
     }
 
 
-
-
     public String getApp_name() {
         return app_name;
     }

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fiu.ssobec.Model.Lighting;
 import fiu.ssobec.Model.Occupancy;
@@ -297,7 +298,7 @@ public class DataAccessUser implements DataAccessInterface {
         }
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_INSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
             cursor.moveToNext();
         }
 
@@ -311,7 +312,6 @@ public class DataAccessUser implements DataAccessInterface {
         ArrayList<Double> myList = new ArrayList<>();
 
         String [] otemperature = {UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG};
-
         Cursor cursor;
 
         if (ac_energy_upper == 0){
@@ -333,7 +333,8 @@ public class DataAccessUser implements DataAccessInterface {
 
             cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            //myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
             cursor.moveToNext();
         }
 
@@ -341,6 +342,26 @@ public class DataAccessUser implements DataAccessInterface {
         cursor.close();
         return myList;
     }
+
+    public ArrayList<Double> getACEnergyUsage()
+    {
+        ArrayList<Double> myList = new ArrayList<>();
+        Cursor cursor;
+
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_AC_ENERGYUSAGE}, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            //myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
+            myList.add(cursor.getDouble(0));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return myList;
+    }
+
 
     /****************************** PLUGLOAD ************************************/
 
@@ -432,6 +453,36 @@ public class DataAccessUser implements DataAccessInterface {
         cursor.close();
         return res;
     }
+
+
+    /*This method will return a HashMap with the key (name of appliance)
+    and the value (the energy usage of the appliance).
+    * */
+    public HashMap<String, Double> getAllApplianceInformation(int region_id)
+    {
+        HashMap<String, Double> hmap = new HashMap<>();
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                PLUG_COLS,
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + region_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            PlugLoad plug = getPlugLoadFromCursor(cursor);
+
+            if(!hmap.containsKey(plug.getApp_name()))
+            {
+                System.out.println("PlugLoad: "+plug.getApp_name());
+                hmap.put(plug.getApp_name(), plug.getEnergy_usage_kwh());
+            }
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return hmap;
+    }
+
 
     /****************************** OCCUPANCY ************************************/
 
@@ -763,12 +814,12 @@ public class DataAccessUser implements DataAccessInterface {
                 cursor.close();
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
-                cursor = db.rawQuery("SELECT min("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
-                        +") FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
-                        +" WHERE "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME
-                        + " IN (SELECT max ("+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+") "
-                        +"FROM "+UserSQLiteDatabase.TABLE_TEMPERATURE
-                        +" GROUP BY "+UserSQLiteDatabase.TEMP_COLUMN_ID+" );", null);
+                cursor = db.rawQuery("SELECT min(" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        + ") FROM " + UserSQLiteDatabase.TABLE_TEMPERATURE
+                        + " WHERE " + UserSQLiteDatabase.TEMP_COLUMN_DATETIME
+                        + " IN (SELECT max (" + UserSQLiteDatabase.TEMP_COLUMN_DATETIME + ") "
+                        + "FROM " + UserSQLiteDatabase.TABLE_TEMPERATURE
+                        + " GROUP BY " + UserSQLiteDatabase.TEMP_COLUMN_ID + " );", null);
 
                 if (cursor.moveToFirst())
                     last_time_stamp = cursor.getString(0);

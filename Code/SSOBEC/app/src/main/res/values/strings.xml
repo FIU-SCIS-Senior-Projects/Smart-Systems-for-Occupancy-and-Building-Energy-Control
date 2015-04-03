@@ -29,6 +29,7 @@
     <string name="title_activity_my_zones">My Zones</string>
     <string name="title_activity_zones_description">ZonesDescriptionActivity</string>
     <string name="title_activity_temperature">Temperature</string>
+    <string name="temperature_ac_performance">Temperature AC Performance</string>
     <string name="title_activity_consumption_appliances">ConsumptionAppliances</string>
     <string name="title_activity_create_account">Create Account</string>
 
@@ -44,6 +45,23 @@
     <string name="amount_appliances">Amount Appliances</string>
     <string name="consumption_appliances_childrow_image">An image that represents the appliance name</string>
     <string name="calculate_consumption">Monthly Consumption</string>
+
+    <string name="title_activity_acconsumption_prediction">ACConsumptionPrediction</string>
+
+    <string name="ac_mean_low_temperature_inside">Mean Low Temperature Inside: </string>
+    <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>
+    <string name="ac_mean_high_temperature_inside">Mean High Temperature Inside: </string>
+
+    <string name="ac_mean_low_temperature_outside">Mean Low Temperature Outside: </string>
+    <string name="ac_mean_medium_temperature_outside">Mean Medium Temperature Outside: </string>
+    <string name="ac_mean_high_temperature_outside">Mean High Temperature Outside: </string>
+
+    <string name="ac_inside_temperature_today">Enter Inside Temperature: </string>
+
+
+
+
+
 
 </resources>
 
