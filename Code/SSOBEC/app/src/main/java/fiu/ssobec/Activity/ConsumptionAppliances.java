@@ -113,15 +113,16 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             parent.setText2(parent_text2[i]);
             parent.setChildren(new ArrayList<Child>());
 
-            if(i == 4 || i == 5)
+            if(i == 4)
                 num_childs = num_childs + 1;
 
             for(int j = 0 ; j < num_childs ; j++)
             {
                 System.out.println(" i = "+i+", j = "+j);
 
-                if((i == 4 || i == 5) && (j == num_childs - 1))
+                if((i == 4 || i == 5) && (j == num_childs-1))
                 {
+                    System.out.println("button child: i = "+i+", j = "+j);
                     final Child child = new Child();
                     child.setName("" + j);
                     parent.getChildren().add(child);
@@ -281,9 +282,9 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             ArrayList<Integer> daysUse = new ArrayList<>();
 
             calcData(powerKw,quantity,hoursUse,daysUse);
+
             final PredictPlugLoadConsumption mypredict = new PredictPlugLoadConsumption(powerKw,quantity,hoursUse,daysUse);
             mypredict.MonthlyConsumption();
-
 
             // Inflate childrow.xml file for child rows
             if (parent.getName().equals("0")) {
@@ -389,12 +390,11 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         public void calcData( ArrayList<Double> powerKw, ArrayList<Integer> quantity, ArrayList<Integer> hoursUse, ArrayList<Integer> daysUse) {
 
-            int numChilds = 4;
             for (int i = 0; i < 4; i++) {
                 //Create parent class object
                 final Parent parent = parents.get(i);
 
-                for (int j = 0; j < numChilds; j++) {
+                for (int j = 0; j < num_childs; j++) {
                     Child otherchilds = parent.getChildren().get(j);
                     switch(i)
                     {

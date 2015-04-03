@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:text="New Text"
             android:id="@+id/result_mean_low_temp_out"
-            android:layout_marginLeft="60dp" />
+            android:layout_marginLeft="50dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -99,13 +99,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ac_mean_medium_temperature_outside"
-            android:id="@+id/textView" />
+            android:id="@+id/mean_medium_temp_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/textView2" />
+            android:id="@+id/result_mean_medium_temp_out"
+            android:layout_marginLeft="50dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ac_mean_high_temperature_outside"
+            android:id="@+id/mean_high_temp_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/result_mean_high_out"
+            android:layout_marginLeft="50dp" />
     </LinearLayout>
 
 

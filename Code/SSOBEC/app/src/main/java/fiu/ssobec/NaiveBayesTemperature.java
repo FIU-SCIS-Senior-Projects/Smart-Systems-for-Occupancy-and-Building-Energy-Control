@@ -42,7 +42,6 @@ public class NaiveBayesTemperature {
 
     public void training()
     {
-
         DataAccessUser dataAccessUser = new DataAccessUser(context);
 
         try {
@@ -116,7 +115,6 @@ public class NaiveBayesTemperature {
         else if (max < P_high)
             max = P_high;
 
-        
     }
 
 

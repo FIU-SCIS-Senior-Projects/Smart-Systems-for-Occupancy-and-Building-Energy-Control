@@ -15,7 +15,7 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
 
-        ((EditText) findViewById(R.id.result_mean_low_temp_ins)).setText("78");
+        //((EditText) findViewById(R.id.result_mean_low_temp_ins)).setText("78");
     }
 
 
