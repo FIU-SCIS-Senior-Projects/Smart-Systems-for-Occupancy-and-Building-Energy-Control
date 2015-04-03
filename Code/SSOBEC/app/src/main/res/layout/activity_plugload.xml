@@ -48,6 +48,25 @@
 
     </LinearLayout>
 
+    <!-- Graph View -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0.00"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="30dp">
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:id="@+id/occupancy_graph"
+            android:background="@color/light_blue_background" />
+
+
+    </LinearLayout>
+
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

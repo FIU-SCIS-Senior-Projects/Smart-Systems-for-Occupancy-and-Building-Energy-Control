@@ -48,9 +48,6 @@
             android:textStyle="italic"
             android:textAlignment="center" />
 
-
-
-
     </LinearLayout>
 
     <View
@@ -92,6 +89,17 @@
         android:paddingTop="100dp" />
 
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/time_stamp_view"
+        android:layout_marginEnd="42dp"
+        android:layout_marginBottom="44dp"
+        android:text="@string/n_a"
+        android:visibility="invisible" />
+
     <!-- Graph View -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -104,22 +112,11 @@
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="200dip"
-            android:id="@+id/graph"
+            android:id="@+id/occupancy_graph"
             android:background="@color/light_blue_background" />
 
 
     </LinearLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@+id/time_stamp_view"
-        android:layout_marginEnd="42dp"
-        android:layout_marginBottom="44dp"
-        android:text="@string/n_a"
-        android:visibility="invisible" />
 
 
 </LinearLayout>

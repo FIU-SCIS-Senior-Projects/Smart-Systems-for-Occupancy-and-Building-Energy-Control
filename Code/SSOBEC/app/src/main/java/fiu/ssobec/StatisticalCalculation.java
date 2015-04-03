@@ -71,21 +71,23 @@ public class StatisticalCalculation {
         double lighting_time_avg=0;
         double lighting_energyusage=0;
         double lighting_energywaste=0;
-        int plugload_energyusage=0;
-        int plugload_energywaste=0;
-        int ac_energyusage=0;
+        double plugload_energyusage=0;
         double occup_time_avg=0;
         double outside_temp_avg=0;
+
+        int plugload_energywaste=0;
+        int ac_energyusage=0;
 
         boolean there_is_data = true;
         List<Integer> region_id = mdata_access.getAllZoneID();
 
         upperbound_date = earliest_timestamp;
 
-        int counter=0;
 
-        while(counter < 5)
+        while(there_is_data)
         {
+            there_is_data = false;
+
             getDateWithoutTime(upperbound_date);
             Log.i(LOG_TAG, "Original Timestamp: "+earliest_timestamp+", Upper: "+upperbound_date+", Lower: "+lowerbound_date);
 
@@ -110,31 +112,30 @@ public class StatisticalCalculation {
                 Log.i(LOG_TAG, "Occupancy Average: "+occup_time_avg);
 
                 //How much energy was wasted in that day
-                //lighting_energywaste = calculateLightWaste(id, mdata_access.getAllTimesWhenIsRoomEmpty(id, upperbound_date, lowerbound_date));
-                //Log.i(LOG_TAG, "Lighting Energy Wasted: "+lighting_energywaste);
+                lighting_energywaste = calculateLightWaste(id, mdata_access.getAllTimesWhenIsRoomEmpty(id, upperbound_date, lowerbound_date));
+                Log.i(LOG_TAG, "Lighting Energy Wasted: "+lighting_energywaste);
 
-            /*
+                //How much energy was used by plug load in a day
+                plugload_energyusage = mdata_access.getAllPlugLoadEnergyBefore(id, upperbound_date, lowerbound_date);
+                Log.i(LOG_TAG, "Plug load Energy Usage: "+plugload_energyusage);
 
-
-            //How much energy was used by plug load in a day
-            plugload_energyusage = sum(data_access.getAllPlugLoadEnergyBefore(id, currdatetime));
-
-            //How much energy was wasted by plug load
-            plugload_energywaste = calculatePlugLoadWaste(currdatetime);
-
-            //How much energy was used by the AC
-            ac_energyusage = data_access.getAllDateTimesACStateOnBefore(id, currdatetime);
+                //Average of outside temperature in a day
+                outside_temp_avg = avg(mdata_access.getAllTemperatureOnDateInterval(id, upperbound_date, lowerbound_date));
 
 
-            if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugload_energyusage
-                    +plugload_energywaste+ac_energyusage+occup_time_avg > 0)
-            {
-                //save it in the database
-            }*/
+                if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugload_energyusage
+                        +plugload_energywaste+ac_energyusage+occup_time_avg > 0)
+                {
+                    //save it in the database
+                    mdata_access.createStat(id,getDateFromDateTime(upperbound_date), inside_temp_avg, lighting_time_avg,
+                    lighting_energyusage, lighting_energywaste, plugload_energyusage,
+                    plugload_energywaste, ac_energyusage, occup_time_avg, outside_temp_avg);
+                    there_is_data = true;
+                }
 
             }
             addDay();
-            counter++;
+
         }
 
     }
@@ -146,11 +147,10 @@ public class StatisticalCalculation {
             Double[] d = new Double[vals.size()];
             vals.toArray(d);
             double[] valsarr = ArrayUtils.toPrimitive(d);
-            //Log.i(LOG_TAG, "avg-Find mean of: "+ Arrays.toString(valsarr));
             return StatUtils.mean(valsarr);
         }
         else
-        {   //Log.i(LOG_TAG, "EmptyArr");
+        {
             return 0;
         }
     }
@@ -165,7 +165,7 @@ public class StatisticalCalculation {
             return StatUtils.sum(valsarr);
         }
         else
-        {   //Log.i(LOG_TAG, "EmptyArr");
+        {
             return 0;
         }
 
@@ -175,13 +175,13 @@ public class StatisticalCalculation {
     {
         int lightwaste=0;
 
-        String datetimes_arr = sqlArrayFormat(datetimesRoomIsEmpty);
+        if(!datetimesRoomIsEmpty.isEmpty()) {
+            String datetimes_arr = sqlArrayFormat(datetimesRoomIsEmpty);
 
-        Log.i(LOG_TAG, "inClause: "+datetimes_arr);
+            Log.i(LOG_TAG, "inClause: " + datetimes_arr);
 
-        mdata_access.getLightingWaste(region_id, datetimes_arr);
-
-        //Iterate through all the dates
+            lightwaste = mdata_access.getLightingWaste(region_id, datetimes_arr);
+        }
 
         return lightwaste;
     }
@@ -248,5 +248,14 @@ public class StatisticalCalculation {
         }
 
         return res;
+    }
+
+    private String getDateFromDateTime(String datetime)
+    {
+        DateTimeFormatter dateStringFormat2 = DateTimeFormat.forPattern("yyyy-MM-dd 00:00:00");
+        DateTimeFormatter dateStringFormat = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTime date_time = dateStringFormat2.parseDateTime(datetime);
+
+        return dateStringFormat.print(date_time);
     }
 }

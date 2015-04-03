@@ -94,7 +94,7 @@ public class EnergyActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.AvgOccupValue)).setText("4");
 
 
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        GraphView graph = (GraphView) findViewById(R.id.occupancy_graph);
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<DataPoint>(new DataPoint[] {
                 new DataPoint(0, 1),

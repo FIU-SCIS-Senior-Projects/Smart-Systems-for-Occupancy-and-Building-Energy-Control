@@ -407,28 +407,30 @@ public class DataAccessUser implements DataAccessInterface {
         return cnt;
     }
 
-    public ArrayList<Double> getAllPlugLoadEnergyBefore(int zone_id, String date)
+    public double getAllPlugLoadEnergyBefore(int zone_id, String upperbound_date, String lowerbound_date)
     {
-        ArrayList<Double> myList = new ArrayList<>();
-
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
                 PLUG_COLS,
                 UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
-                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+ " = 'ON'"
-                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" <= Datetime('"+date+"')",
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+" = 'ON'"
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
+        double res=0.0;
         while (!cursor.isAfterLast()) {
             PlugLoad plug = getPlugLoadFromCursor(cursor);
 
-            myList.add(plug.getEnergy_usage_kwh());
+            res = res + plug.getEnergy_usage_kwh();
+
             cursor.moveToNext();
         }
+
         // make sure to close the cursor
         cursor.close();
-        return myList;
+        return res;
     }
 
     /****************************** OCCUPANCY ************************************/
@@ -782,9 +784,15 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** TABLE_STAT ************************************/
     public static void createStat(int id, String date, double inside_temp_avg, double lighting_time_avg,
-                                  int lighting_energyusage, int lighting_energywaste, int plugload_energyusage,
+                                  double lighting_energyusage, double lighting_energywaste, double plugload_energyusage,
                                   int plugload_energywaste, int ac_energyusage, double occup_time_avg, double outside_temp_avg)
     {
+        System.out.println("Date: "+date+" InsideTemp: "+inside_temp_avg);
+        System.out.println("Lighting Time: "+lighting_time_avg+" lighting_energyusage: "+lighting_energyusage);
+        System.out.println("Lighting lighting_energywaste: "+lighting_energywaste+" plugload_energyusage: "+plugload_energyusage);
+        System.out.println("plugload_energywaste: "+plugload_energywaste+" ac_energyusage: "+ac_energyusage);
+        System.out.println("occup_time_avg: "+occup_time_avg+" outside_temp_avg: "+outside_temp_avg);
+
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.STAT_ID, id);
         vals.put(UserSQLiteDatabase.STAT_DATE, date);
