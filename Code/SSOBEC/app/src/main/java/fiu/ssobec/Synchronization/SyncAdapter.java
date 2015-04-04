@@ -78,9 +78,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
 
-
         List<Integer> region_id = data_access.getAllZoneID();
-
         sqlRegionIdArr = sqlArrayFormat(region_id);
         Log.i(LOG_TAG, "Region ID: "+sqlRegionIdArr);
 
@@ -126,7 +124,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.i(LOG_TAG, "Response from Database for table: "+table_name+": "+res);
 
             new JSONObject(res);
-
             saveDataOnInternalDB(table_name, res);
 
         } catch (InterruptedException | JSONException e) {
@@ -189,7 +186,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
         catch(JSONException e)
         {
-            Log.i(LOG_TAG, "There's been a murder for table: "+table_name);
             e.printStackTrace();
         }
     }

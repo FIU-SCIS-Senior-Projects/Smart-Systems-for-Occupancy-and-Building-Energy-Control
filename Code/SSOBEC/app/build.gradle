@@ -9,6 +9,8 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -21,6 +23,7 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'LICENSE.txt'
     }
 }
 
@@ -37,4 +40,6 @@ dependencies {
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.androidplot:androidplot:0.6.1'
     compile 'com.androidplot:androidplot-core:0.6.1'
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.0')
+    androidTestCompile ('com.android.support.test:testing-support-lib:0.1')
 }

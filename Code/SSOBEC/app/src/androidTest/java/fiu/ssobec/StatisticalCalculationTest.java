@@ -10,16 +10,16 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 /**
- * Created by Maria on 2/12/2015.
+ * Created by Maria on 4/4/2015.
  */
-public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZonesActivity> {
+public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2<MyZonesActivity> {
+
 
     private MyZonesActivity mActivity;
 
-    public MyZonesActivityTest() {
+    public StatisticalCalculationTest() {
         super(MyZonesActivity.class);
     }
-
 
     //Set Up Method
     @Override
@@ -29,21 +29,21 @@ public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZon
     }
 
     @MediumTest
-    public void testText() {
+    public void testStats() {
 
         onView(withId(1)).perform(ViewActions.click());
-        onView(withId(R.id.TemperatureButton)).perform(ViewActions.click());
-        onView(withId(R.id.temp_ac_performance)).perform(ViewActions.click());
-        onView(withId(R.id.today_temperature_textfield)).perform(ViewActions.typeText("60"));
-        onView(withId(R.id.predict_button)).perform(ViewActions.click());
+        //onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
+
+        //onView(withId(R.id.TemperatureButton)).perform(ViewActions.click());
+        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
 
         try {
-            Thread.sleep(6500);
+            Thread.sleep(7500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-    }
 
+    }
 
 }

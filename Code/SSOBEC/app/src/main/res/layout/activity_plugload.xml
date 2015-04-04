@@ -7,6 +7,47 @@
     tools:context="fiu.ssobec.Activity.EnergyActivity"
     android:orientation="vertical">
 
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="1dp"
+            android:id="@+id/appliance_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Appliance\n Name"
+            android:id="@+id/appliance_name"
+            android:textSize="12sp"
+            android:textIsSelectable="false"
+            android:typeface="monospace"
+            android:layout_marginRight="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Appliance\nStatus"
+            android:id="@+id/appliance_status"
+            android:textSize="12sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Energy\nConsumption"
+            android:id="@+id/energy_consumed_today"
+            android:textSize="11sp"
+            android:layout_marginLeft="20dp" />
+    </LinearLayout>
+
+
+    <!-- PlugLoad Table -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,56 +55,11 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp">
 
-        <!--Current PlugLoad-->
-        <TextView
+
+        <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/CurrPlugTextView"
-            android:text="Current PlugLoad: "/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/CurrPlugValue"
-            android:text="value" />
-
-        <!--
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/time_stamp_view"
-            android:text="time_stamp" /> -->
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp">
-
-    </LinearLayout>
-
-    <!-- Graph View -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_weight="0.00"
-        android:layout_marginTop="20dp"
-        android:paddingBottom="30dp">
-
-        <com.jjoe64.graphview.GraphView
-            android:layout_width="match_parent"
-            android:layout_height="200dip"
-            android:id="@+id/occupancy_graph"
-            android:background="@color/light_blue_background" />
-
-
+            android:id="@+id/my_plugload_listview" />
     </LinearLayout>
 
 
@@ -71,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/prediction_consumption"
-        android:id="@+id/button"
+        android:id="@+id/predict_consumption_button"
         android:onClick="predictConsumption"
         android:padding="20dp" />
 

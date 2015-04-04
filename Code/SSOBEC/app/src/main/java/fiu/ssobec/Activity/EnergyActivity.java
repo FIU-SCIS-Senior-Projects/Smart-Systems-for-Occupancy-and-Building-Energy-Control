@@ -3,24 +3,30 @@ package fiu.ssobec.Activity;
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.PredictPlugLoadConsumption;
+import fiu.ssobec.MyPlugLoadListAdapter;
+import fiu.ssobec.PlugLoadListParent;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -30,12 +36,16 @@ public class EnergyActivity extends ActionBarActivity {
 
 
     private DataAccessUser data_access;
-    TextView mTextView;
     TextView mTextView1;
     TextView mTextView2;
     TextView time_stamp_text;
     private Menu mOptionsMenu;
     private Object mSyncObserverHandle;
+    String app_title = "Energy View";
+
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static final String title = "activity_title";
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +57,25 @@ public class EnergyActivity extends ActionBarActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         Intent intent = getIntent();
         System.out.println("Activity Intent: "+intent.toString());
 
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, this.MODE_PRIVATE);
+
         //Get the title of the activity
-        String app_title = getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME);
+        if(intent.getExtras() != null)
+        {
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString(title, getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME));
+            editor.commit();
+        }
+
+        if (sharedpreferences.contains(title))
+        {
+            app_title = sharedpreferences.getString(title, "");
+        }
 
         this.setTitle(app_title);
-
-        setContentView(R.layout.activity_energy);
-        mTextView = (TextView) findViewById(R.id.CurrOccupValue);
-        time_stamp_text = (TextView) findViewById(R.id.time_stamp_view);
 
         switch (app_title)
         {
@@ -79,7 +96,10 @@ public class EnergyActivity extends ActionBarActivity {
                 getPlugLoad();
                 break;
 
-            case "Lighting": getLighting(); break;
+            case "Lighting":
+                setContentView(R.layout.activity_lighting);
+                getLighting();
+                break;
         }
 
     }
@@ -91,116 +111,121 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getOccupancy()
     {
-        ((TextView) findViewById(R.id.CurrOccupValue)).setText("2");
-        ((TextView) findViewById(R.id.AvgOccupValue)).setText("4");
-
 
         GraphView graph = (GraphView) findViewById(R.id.occupancy_graph);
 
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<DataPoint>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
+        ArrayList<String> dates = data_access.getLastFewHoursofOccupancyDates(ZonesDescriptionActivity.regionID);
+        ArrayList<Integer> occ_vals = data_access.getLastFewHoursofOccupancy(ZonesDescriptionActivity.regionID);
+
+        //((TextView) findViewById(R.id.CurrOccupValue)).setText(occ_vals.get(occ_vals.size()-1));
+        ((TextView) findViewById(R.id.AvgOccupValue)).setText("2");
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, occ_vals.get(4)),
+                new DataPoint(1, occ_vals.get(3)),
+                new DataPoint(2, occ_vals.get(2)),
+                new DataPoint(3, occ_vals.get(1)),
+                new DataPoint(4, occ_vals.get(0))
         });
         graph.addSeries(series);
+        series.setColor(getResources().getColor(R.color.occupancy_red));
+        series.setSpacing(15);
+        series.setDrawValuesOnTop(true);
 
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+        staticLabelsFormatter.setHorizontalLabels(new String[]{dates.get(4),
+                                                                dates.get(3),dates.get(2),
+                                                                dates.get(1), dates.get(0)});
+        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
-        /*
-        System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setHorizontalAxisTitle("Time");
+        graph.getGridLabelRenderer().setVerticalAxisTitle("Occupancy");
+        graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
 
-        int zone_id = ZonesDescriptionActivity.regionID;
-
-        ArrayList<String> info = data_access.getLatestOccupancy(zone_id);
-
-        if(info == null)
-        {
-            mTextView.setText("No Data");
-        }
-        else
-        {
-            mTextView.setText("Current Occupancy: "+info.get(1));
-            time_stamp_text.setText("Time:"+info.get(0));
-        }*/
+        graph.getGridLabelRenderer().setTextSize(20);
     }
 
     private void getTemperature()
     {
         int zone_id = ZonesDescriptionActivity.regionID;
 
+        ((TextView) findViewById(R.id.Fahrenheit)).setText("78"+(char) 0x00B0+"F");
+        ((TextView) findViewById(R.id.Celsius)).setText("24"+(char) 0x00B0+"C");
+        ((TextView) findViewById(R.id.max_outside_temp_f)).setText("78" + (char) 0x00B0 + "F");
+        ((TextView) findViewById(R.id.max_outside_temp_c)).setText("24" + (char) 0x00B0 + "C");
+
         ArrayList<String> info = data_access.getLatestTemperature(zone_id);
 
-        if(info == null)
-        {
-            mTextView1.setText("No Data");
-        }
-        else
-        {
-            TextView time_stamp = (TextView) findViewById(R.id.temperatureTimeStamp);
+        GraphView graph = (GraphView) findViewById(R.id.temperature_graph);
 
-            ((TextView) findViewById(R.id.Fahrenheit)).setText(info.get(1)+""+(char) 0x00B0+"F");
-            ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(Float.parseFloat(info.get(1)))+""+(char) 0x00B0+"C");
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 78),
+                new DataPoint(1, 90),
+                new DataPoint(2, 78),
+                new DataPoint(3, 76),
+                new DataPoint(4, 79),
+                new DataPoint(5, 80),
+                new DataPoint(6, 70)
+        });
 
-            String temp;
-
-            if((temp = data_access.getOutsideTemperature()) != "No Data")
-            {
-                ((TextView) findViewById(R.id.max_outside_temp_f)).setText(temp+(char) 0x00B0+"F");
-                ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(Float.parseFloat(temp))
-                        +""+(char) 0x00B0+"C");
-            }
-
-            time_stamp.setText(info.get(0)); //set time stamp
-        }
-
+        graph.addSeries(series);
 
     }
 
     private void getPlugLoad()
     {
-        ((TextView) findViewById(R.id.CurrPlugValue)).setText("2");
-       /* System.out.println("Get plug load from region_id: "+ZonesDescriptionActivity.regionID);
+        //((TextView) findViewById(R.id.CurrPlugValue)).setText("2");
 
-        int zone_id = ZonesDescriptionActivity.regionID;
+        ArrayList<PlugLoadListParent> parents = data_access.getPlugLoadParentData(ZonesDescriptionActivity.regionID);
 
-        ArrayList<String> info = data_access.getLatestPlugLoad(zone_id);
-
-        if(info == null)
-        {
-            mTextView.setText("No Data");
-        }
-        else
-        {
-            mTextView.setText("Current PlugLoad: "+info.get(1));
-            time_stamp_text.setText("Time:"+info.get(0));
-        }*/
+        //
+        //parents = newParents;
+        ListView mListView = (ListView) findViewById(R.id.my_plugload_listview);
+        MyPlugLoadListAdapter myPlugLoadListAdapter = new MyPlugLoadListAdapter(this);
+        myPlugLoadListAdapter.setParents(parents);
+        mListView.setAdapter(myPlugLoadListAdapter);
+        //ButtonAdapter m_badapter = new ButtonAdapter(this);
+        //m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
     }
 
     private void getLighting()
     {
-        System.out.println("Get occupancy from region_id: "+ZonesDescriptionActivity.regionID);
+        ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
+        GraphView graph = (GraphView) findViewById(R.id.lighting_graph);
 
-        int zone_id = ZonesDescriptionActivity.regionID;
+        String[] stat = {"OFF", "ON"};
 
-        ArrayList<String> info = data_access.getLatestLighting(zone_id);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 0),
+                new DataPoint(2, 0),
+                new DataPoint(3, 1),
+                new DataPoint(4, 1),
+                new DataPoint(5, 1),
+                new DataPoint(6, 1)
+        });
 
-        if(info == null)
-        {
-            mTextView.setText("No Data");
-        }
-        else
-        {
-            mTextView.setText("The Lighting in the room is: "+info.get(1)
-                                +"\nCloud Percentage: "+data_access.getCloudPercentage()+"%");
-            time_stamp_text.setText("Time:"+info.get(0));
-        }
+        graph.addSeries(series);
+
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+        staticLabelsFormatter.setVerticalLabels(new String[]{stat[1],
+                stat[0],stat[0],
+                stat[1],stat[1], stat[1], stat[1]});
+
+        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_energy, menu);
+        if(app_title.equalsIgnoreCase("Temperature"))
+            getMenuInflater().inflate(R.menu.menu_temperature, menu);
+        else
+            getMenuInflater().inflate(R.menu.menu_energy, menu);
         mOptionsMenu = menu;
         return true;
     }
@@ -222,10 +247,13 @@ public class EnergyActivity extends ActionBarActivity {
                 return true;
 
             case R.id.menu_refresh:
-                System.out.println("Refresh!");
                 SyncUtils.TriggerRefresh();
-
                 return true;
+
+            case R.id.temp_ac_performance:
+                predictAC(null);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -306,12 +334,6 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
-    public void predictConsumption (View view)
-    {
-        Intent intent = new Intent(this,ConsumptionAppliances.class);
-        Log.i("EnergyActivity", "Starting my new prediction table");
-        startActivity(intent);
-    }
     public void predictAC (View view)
     {
         Intent intent = new Intent(this,ACConsumptionPrediction.class);

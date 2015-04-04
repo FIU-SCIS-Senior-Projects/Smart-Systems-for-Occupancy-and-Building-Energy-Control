@@ -133,7 +133,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String STAT_PLUGLOAD_ENERGYWASTE = "plugload_energy_waste";
     public static final String STAT_PLUGLOAD_ENERGYUSAGE = "plugload_energy_usage";
     public static final String STAT_AC_ENERGYUSAGE = "ac_energy_usage";
-    public static final String STAT_OCCUP_TIME_AVG = "occupancy_avg_time";
+    public static final String STAT_OCCUP_TIME_AVG = "avg_occupancy_in_room";
     public static final String STAT_OUTSIDE_TEMP_AVG = "outside_temperature_avg";
 
     private static final String STAT_TABLE_CREATE = "create table "

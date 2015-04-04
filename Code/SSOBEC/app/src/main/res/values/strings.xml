@@ -35,6 +35,8 @@
 
     <!-- Occupancy Energy Activity -->
     <string name="current_occupancy">Occupants currently in the room </string>
+    <string name="current_lighting">Light status in the room </string>
+
     <string name="average_occupancy">Average Occupancy Per Day: </string>
 
     <string name="prediction_consumption">Predict Consumption</string>
@@ -48,7 +50,7 @@
 
     <string name="title_activity_acconsumption_prediction">ACConsumptionPrediction</string>
 
-    <string name="ac_mean_low_temperature_inside">Mean Low Temperature Inside: </string>
+    <string name="forecast_temperature_outside">Forecast Temperature Today: </string>
     <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>
     <string name="ac_mean_high_temperature_inside">Mean High Temperature Inside: </string>
 
@@ -58,9 +60,7 @@
 
     <string name="ac_inside_temperature_today">Enter Inside Temperature: </string>
 
-
-
-
+    <string name="temperature_inside_editext">todays building temperature</string>
 
 
 </resources>

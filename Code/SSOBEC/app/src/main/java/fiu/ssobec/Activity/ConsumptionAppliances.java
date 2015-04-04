@@ -99,10 +99,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         String[] app_names_children = Arrays.copyOf(hmap.keySet().toArray(), hmap.keySet().toArray().length, String[].class);
 
-        Log.i("ConsumptionAppliances", "Hmap: " + hmap.toString() + " Childs Size: " + num_childs);
-
-        Log.i("ConsumptionAppliances", "Region ID: "+ZonesDescriptionActivity.regionID);
-
         for (int i = 0; i < 6; i++) {
 
             //Create parent class object
@@ -242,11 +238,9 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
 
         private LayoutInflater inflater;
-        private int fieldVisibility;
 
         public MyExpandableListAdapter() {
             inflater = LayoutInflater.from(ConsumptionAppliances.this);
-            fieldVisibility = View.INVISIBLE;
         }
 
         // This Function used to inflate parent rows view

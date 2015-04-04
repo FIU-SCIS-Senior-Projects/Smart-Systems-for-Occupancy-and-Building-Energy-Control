@@ -37,6 +37,7 @@ public class PredictPlugLoadConsumption {
 
             totalConsumption = powerKw.get(i)*quantity.get(i)*hoursUse.get(i)*daysUse.get(i)+totalConsumption;
         }
+
         totalCost = totalConsumption * 0.12;
 
         System.out.println("Total Consumption is: "+totalConsumption+ " kWh");
