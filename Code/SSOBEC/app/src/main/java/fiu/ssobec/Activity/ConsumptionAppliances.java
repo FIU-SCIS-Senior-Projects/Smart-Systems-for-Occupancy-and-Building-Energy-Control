@@ -61,6 +61,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
     private static DataAccessUser data_access;
 
+    HashMap<String, Double> appl_info_hmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,13 +95,13 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         // Creating ArrayList of type parent class to store parent class objects
         final ArrayList<Parent> list = new ArrayList<>();
 
-        HashMap<String, Double> hmap = data_access.getAllApplianceInformation(ZonesDescriptionActivity.regionID);
+        appl_info_hmap = data_access.getAllApplianceInformation(ZonesDescriptionActivity.regionID);
 
-        num_childs = hmap.size();
+        num_childs = appl_info_hmap.size();
 
-        String[] app_names_children = Arrays.copyOf(hmap.keySet().toArray(), hmap.keySet().toArray().length, String[].class);
+        String[] app_names_children = Arrays.copyOf(appl_info_hmap.keySet().toArray(), appl_info_hmap.keySet().toArray().length, String[].class);
 
-        Log.i("ConsumptionAppliances", "Hmap: " + hmap.toString() + " Childs Size: " + num_childs);
+        Log.i("ConsumptionAppliances", "Hmap: " + appl_info_hmap.toString() + " Childs Size: " + num_childs);
 
         Log.i("ConsumptionAppliances", "Region ID: "+ZonesDescriptionActivity.regionID);
 
@@ -138,6 +140,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             //Adding Parent class object to ArrayList
             list.add(parent);
         }
+
+        num_childs--;
         return list;
     }
 
@@ -275,7 +279,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             final Parent parent = parents.get(groupPosition);
             final Child child = parent.getChildren().get(childPosition);
 
-
             ArrayList<Double> powerKw = new ArrayList<>();
             ArrayList<Integer> quantity = new ArrayList<>();
             ArrayList<Integer> hoursUse = new ArrayList<>();
@@ -395,16 +398,23 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 final Parent parent = parents.get(i);
 
                 for (int j = 0; j < num_childs; j++) {
+
+
                     Child otherchilds = parent.getChildren().get(j);
                     switch(i)
                     {
                         case 0:
                             if(otherchilds.isChecked())
                             {
-                                powerKw.add(20.0);
+                                Log.i("ConsumptionAppliances"," For: "+otherchilds.getText1());
+                                Log.i("ConsumptionAppliances"," For: "+appl_info_hmap.toString());
+
+                                // Log.i("ConsumptionAppliances"," Value: "+appl_info_hmap.get(otherchilds.getText1()));
+                                powerKw.add(appl_info_hmap.get(otherchilds.getText1()));
                             }
                             else
                                 powerKw.add(0.0);
+
                             break;
                         case 1:
                             quantity.add(otherchilds.getEditTextChildNumField());

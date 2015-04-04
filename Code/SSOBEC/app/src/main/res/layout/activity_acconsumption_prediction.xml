@@ -16,14 +16,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ac_mean_low_temperature_inside"
-            android:id="@+id/mean_low_temp_ins"/>
+            android:text="forecast_temperature_outside"
+            android:id="@+id/forecast_temperature"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/result_mean_low_temp_ins"
+            android:id="@+id/forecast_temperature_val"
             android:layout_marginLeft="60dp" />
 
 
@@ -33,100 +33,38 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:layout_margin="20dp"
+        android:weightSum="1">
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ac_mean_medium_temperature_inside"
-            android:id="@+id/mean_medium_temp_ins" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/result_mean_medium_temp_ins"
-            android:layout_marginLeft="30dp" />
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/today_temperature_textfield"
+            android:textAlignment="center"
+            android:layout_weight="0.78" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="predict"
+            android:id="@+id/predict_button"
+            android:layout_margin="20dp"
+            android:onClick="predictTemperatureEnergy" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ac_mean_high_temperature_inside"
-            android:id="@+id/mean_high_temp_ins" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/result_mean_high_ins"
-            android:layout_marginLeft="60dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ac_mean_low_temperature_outside"
-            android:id="@+id/mean_low_temp_out" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/result_mean_low_temp_out"
-            android:layout_marginLeft="50dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ac_mean_medium_temperature_outside"
-            android:id="@+id/mean_medium_temp_out" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/result_mean_medium_temp_out"
-            android:layout_marginLeft="50dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ac_mean_high_temperature_outside"
-            android:id="@+id/mean_high_temp_out" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/result_mean_high_out"
-            android:layout_marginLeft="50dp" />
+            android:text="result"
+            android:id="@+id/prediction_result"
+            android:layout_margin="20dp" />
     </LinearLayout>
 
 

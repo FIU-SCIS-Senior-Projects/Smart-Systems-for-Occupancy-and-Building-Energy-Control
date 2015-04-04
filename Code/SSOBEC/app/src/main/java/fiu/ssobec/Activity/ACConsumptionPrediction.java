@@ -1,21 +1,30 @@
 package fiu.ssobec.Activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import fiu.ssobec.NaiveBayesTemperature;
 import fiu.ssobec.R;
 
 public class ACConsumptionPrediction extends ActionBarActivity {
+
+
+    int outside_temperature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
 
-        //((EditText) findViewById(R.id.result_mean_low_temp_ins)).setText("78");
+        outside_temperature = 80;
+        ((TextView) findViewById(R.id.forecast_temperature_val)).setText(""+outside_temperature);
+
+
     }
 
 
@@ -39,5 +48,23 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    String res;
+    public void predictTemperatureEnergy(View view)
+    {
+        NaiveBayesTemperature mnaive = new NaiveBayesTemperature(this);
+        mnaive.training();
+        String inside_temp = ((EditText) findViewById(R.id.today_temperature_textfield)).getText().toString();
+
+        res = mnaive.predict(outside_temperature, Integer.parseInt(inside_temp));
+
+        runOnUiThread(new Runnable() {
+
+            public void run() { ((TextView) findViewById(R.id.prediction_result)).setText(res);
+            }
+
+        });
+
     }
 }
