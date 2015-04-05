@@ -38,10 +38,9 @@ public class EnergyActivity extends ActionBarActivity {
     private DataAccessUser data_access;
     TextView mTextView1;
     TextView mTextView2;
-    TextView time_stamp_text;
     private Menu mOptionsMenu;
     private Object mSyncObserverHandle;
-    String app_title = "Energy View";
+    String app_title;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String title = "activity_title";
@@ -338,6 +337,13 @@ public class EnergyActivity extends ActionBarActivity {
     {
         Intent intent = new Intent(this,ACConsumptionPrediction.class);
         Log.i("EnergyActivity", "Starting my new prediction for AC");
+        startActivity(intent);
+    }
+
+    public void predictConsumption(View view)
+    {
+        Intent intent = new Intent(this,ConsumptionAppliances.class);
+        Log.i("EnergyActivity", "Starting my new prediction for ConsumptionAppliances");
         startActivity(intent);
     }
 }
