@@ -59,6 +59,9 @@
     <string name="ac_mean_high_temperature_outside">Mean High Temperature Outside: </string>
 
     <string name="ac_inside_temperature_today">Enter Inside Temperature: </string>
+    <string name="title_activity_antivity_acconsumption_prediction2">
+        antivity_acconsumption_prediction2
+    </string>
 
     <string name="temperature_inside_editext">todays building temperature</string>
 

@@ -211,7 +211,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     private static Zones getZoneFromCursor(Cursor cursor) {
         return new Zones(cursor.getInt(0),       //ID
-                                cursor.getString(1));
+                cursor.getString(1));
     }
 
     /****************************** TEMPERATURE ************************************/
@@ -261,8 +261,8 @@ public class DataAccessUser implements DataAccessInterface {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
                 TEMP_COLS,
                 UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + zone_id
-                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
-                +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
+                        +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                        +" AND "+UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -466,8 +466,8 @@ public class DataAccessUser implements DataAccessInterface {
 
     private static Occupancy getOccupancyFromCursor(Cursor cursor) {
         return new Occupancy( cursor.getString(1),    //Datetime
-                                        cursor.getInt(0),       //Zone_ID
-                                        cursor.getInt(2));
+                cursor.getInt(0),       //Zone_ID
+                cursor.getInt(2));
     }
 
     //Get the occupancy imformation, when the room is empty
@@ -556,9 +556,9 @@ public class DataAccessUser implements DataAccessInterface {
 
     private static Lighting getLightingFromCursor(Cursor cursor) {
         Lighting light = new Lighting( cursor.getInt(0),            //Datetime
-                                        cursor.getString(1),       //Zone_ID
-                                        cursor.getString(2),       //Lighting_state
-                                        cursor.getDouble(3));         //Energy
+                cursor.getString(1),       //Zone_ID
+                cursor.getString(2),       //Lighting_state
+                cursor.getDouble(3));         //Energy
         return light;
     }
 
@@ -590,9 +590,9 @@ public class DataAccessUser implements DataAccessInterface {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
                 UserSQLiteDatabase.LIGHT_COLUMN_ID + " = " + zone_id
-                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
-                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
-                +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_STATE+ " = 'ON'"
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
+                        +" AND "+UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -648,8 +648,8 @@ public class DataAccessUser implements DataAccessInterface {
     //String dataTime, int cloudPercentage, int maxTemperature, int minTemperature
     private static OutsideWeather getOWFromCursor(Cursor cursor) {
         return new OutsideWeather( cursor.getString(0),    //Datetime
-                                                cursor.getInt(1),       //cloud
-                                                cursor.getInt(2));
+                cursor.getInt(1),       //cloud
+                cursor.getInt(2));
     }
 
     public String getCloudPercentage() {
@@ -958,6 +958,5 @@ public class DataAccessUser implements DataAccessInterface {
 
         return parents;
     }
-
 
 }
