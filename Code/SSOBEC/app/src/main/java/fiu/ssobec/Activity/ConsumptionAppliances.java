@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -266,12 +267,15 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         }
 
 
+
+        DecimalFormat df = new DecimalFormat("#.##");
         // This Function used to inflate child rows view
         @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+        public View getChildView(int groupPosition, final int childPosition, boolean isLastChild,
                                  View convertView, ViewGroup parentView) {
             final Parent parent = parents.get(groupPosition);
             final Child child = parent.getChildren().get(childPosition);
+
 
             ArrayList<Double> powerKw = new ArrayList<>();
             ArrayList<Integer> quantity = new ArrayList<>();
@@ -302,12 +306,23 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
                     final View finalConvertView1 = convertView;
+
                     b.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v)
                         {
                             System.out.println("Button Clicked");
+
+
                             mypredict.getTotalConsumption();
-                            ((TextView) finalConvertView1.findViewById(R.id.total_consumption_textview)).setText(mypredict.getTotalConsumption() + "");
+                            ((TextView) finalConvertView1.findViewById(R.id.total_consumption_textview)).setText(child.getTotal_res());
+                            ArrayList<Child> otherchildren = parent.getChildren();
+                            child.setTotal_res(df.format(mypredict.getTotalConsumption())+" KWH");
+                            for(int i=0; i < num_childs; i++)
+                            {
+                                otherchildren.get(i).setAppliance_calc_res(df.format(mypredict.getApplConsumption(i))+" KWH");
+
+                            }
+                            notifyDataSetChanged();
 
                         }
                     });
@@ -319,6 +334,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                     image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
                             + parent.getName(), null, null));
+                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(child.getAppliance_calc_res());
                 }
             }
             else if (parent.getName().equals("5"))
@@ -329,11 +345,22 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
                     b.setText(MONTHLY_COST);
                     final View finalConvertView = convertView;
+
                     b.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v)
                         {
                             System.out.println("Button Clicked");
-                            ((TextView) finalConvertView.findViewById(R.id.total_consumption_textview)).setText( mypredict.getTotalCost()+"");
+
+
+                            child.setTotal_res("$"+df.format(mypredict.getTotalCost())+"");
+                            ((TextView) finalConvertView.findViewById(R.id.total_consumption_textview)).setText(child.getTotal_res());
+
+                            ArrayList<Child> otherchildren = parent.getChildren();
+                            for(int i=0; i < num_childs; i++)
+                            {
+                                otherchildren.get(i).setAppliance_calc_res("$" + df.format(mypredict.getApplCost(i)));
+                            }
+                            notifyDataSetChanged();
 
                         }
                     });
@@ -345,6 +372,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                     image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
                             + parent.getName(), null, null));
+                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(child.getAppliance_calc_res());
                 }
             }
             else
@@ -400,10 +428,6 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                         case 0:
                             if(otherchilds.isChecked())
                             {
-                                Log.i("ConsumptionAppliances"," For: "+otherchilds.getText1());
-                                Log.i("ConsumptionAppliances"," For: "+appl_info_hmap.toString());
-
-                                // Log.i("ConsumptionAppliances"," Value: "+appl_info_hmap.get(otherchilds.getText1()));
                                 powerKw.add(appl_info_hmap.get(otherchilds.getText1()));
                             }
                             else
@@ -422,6 +446,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                     }
                 }
             }
+
+            //Calculate for each appliance
 
         }
 

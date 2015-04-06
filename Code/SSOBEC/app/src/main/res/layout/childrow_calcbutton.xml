@@ -20,7 +20,6 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="total"
             android:id="@+id/total_consumption_textview"
             android:layout_column="12"
             android:textSize="20sp"

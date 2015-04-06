@@ -13,6 +13,7 @@ public class PredictPlugLoadConsumption {
     private ArrayList<Integer> daysUse;
     private double totalConsumption;
     private double totalCost;
+    private double ENERGYCOST = 0.12;
 
     public PredictPlugLoadConsumption(ArrayList<Double> powerKw, ArrayList<Integer> quantity, ArrayList<Integer> hoursUse, ArrayList<Integer> daysUse) {
         this.powerKw = powerKw;
@@ -33,14 +34,25 @@ public class PredictPlugLoadConsumption {
 
         System.out.println("Power Size: "+powerKw.size());
         System.out.println("Power KW: "+powerKw.toString());
+        totalConsumption=0;
         for (int i=0; i < powerKw.size(); i++){
 
             totalConsumption = powerKw.get(i)*quantity.get(i)*hoursUse.get(i)*daysUse.get(i)+totalConsumption;
         }
 
-        totalCost = totalConsumption * 0.12;
+        totalCost = totalConsumption * ENERGYCOST;
 
         System.out.println("Total Consumption is: "+totalConsumption+ " kWh");
+    }
+
+    public Double getApplConsumption(int p)
+    {
+        return  powerKw.get(p)*quantity.get(p)*hoursUse.get(p)*daysUse.get(p);
+    }
+
+    public Double getApplCost(int p)
+    {
+        return  getApplConsumption(p)*ENERGYCOST;
     }
 
 }
