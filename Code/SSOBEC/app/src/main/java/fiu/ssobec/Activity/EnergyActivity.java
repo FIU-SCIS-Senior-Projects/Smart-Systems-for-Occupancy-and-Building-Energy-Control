@@ -13,9 +13,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.androidplot.pie.PieChart;
+import com.androidplot.pie.PieRenderer;
+import com.androidplot.pie.Segment;
+import com.androidplot.pie.SegmentFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
@@ -130,11 +136,13 @@ public class EnergyActivity extends ActionBarActivity {
         series.setColor(getResources().getColor(R.color.occupancy_red));
         series.setSpacing(15);
         series.setDrawValuesOnTop(true);
+        series.setTitle("Occupancy");
 
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
         staticLabelsFormatter.setHorizontalLabels(new String[]{dates.get(4),
                                                                 dates.get(3),dates.get(2),
                                                                 dates.get(1), dates.get(0)});
+
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
         graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
@@ -144,77 +152,137 @@ public class EnergyActivity extends ActionBarActivity {
         graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
         graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
 
-        graph.getGridLabelRenderer().setTextSize(20);
+        graph.getGridLabelRenderer().setTextSize(22);
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
     }
 
     private void getTemperature()
     {
-        int zone_id = ZonesDescriptionActivity.regionID;
-
-        ((TextView) findViewById(R.id.Fahrenheit)).setText("78"+(char) 0x00B0+"F");
-        ((TextView) findViewById(R.id.Celsius)).setText("24"+(char) 0x00B0+"C");
-        ((TextView) findViewById(R.id.max_outside_temp_f)).setText("78" + (char) 0x00B0 + "F");
-        ((TextView) findViewById(R.id.max_outside_temp_c)).setText("24" + (char) 0x00B0 + "C");
-
-        ArrayList<String> info = data_access.getLatestTemperature(zone_id);
+        int inside_temperature = 78;
+        float outside_temperature = 89;
 
         GraphView graph = (GraphView) findViewById(R.id.temperature_graph);
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 78),
-                new DataPoint(1, 90),
-                new DataPoint(2, 78),
-                new DataPoint(3, 76),
-                new DataPoint(4, 79),
-                new DataPoint(5, 80),
-                new DataPoint(6, 70)
-        });
+        ArrayList<Integer> temp_vals = data_access.getLatestManyTemperature(ZonesDescriptionActivity.regionID);
 
+
+       inside_temperature = temp_vals.get(temp_vals.size()-1);
+
+        /*
+       if(DataAccessOwm.getMyForecast() != null)
+            outside_temperature = Float.parseFloat(DataAccessOwm.getMyForecast());*/
+
+        ((TextView) findViewById(R.id.Fahrenheit)).setText(inside_temperature + "" + (char) 0x00B0 + "F");
+        ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(inside_temperature)+""+(char) 0x00B0+"C");
+        ((TextView) findViewById(R.id.max_outside_temp_f)).setText(outside_temperature+"" + (char) 0x00B0 + "F");
+        ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(outside_temperature)+"" + (char) 0x00B0 + "C");
+
+        DataPoint[] points = new DataPoint[50];
+
+        for (int i = 0; i < 50; i++) {
+            points[i] = new DataPoint(i, temp_vals.get(i));
+        }
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(points);
+
+        // set manual X bounds
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(5);
+        graph.onDataChanged(false, false);
+
+        // enable scrolling
+        graph.getViewport().setScrollable(true);
         graph.addSeries(series);
 
     }
 
     private void getPlugLoad()
     {
-        //((TextView) findViewById(R.id.CurrPlugValue)).setText("2");
-
         ArrayList<PlugLoadListParent> parents = data_access.getPlugLoadParentData(ZonesDescriptionActivity.regionID);
 
-        //
-        //parents = newParents;
         ListView mListView = (ListView) findViewById(R.id.my_plugload_listview);
         MyPlugLoadListAdapter myPlugLoadListAdapter = new MyPlugLoadListAdapter(this);
         myPlugLoadListAdapter.setParents(parents);
         mListView.setAdapter(myPlugLoadListAdapter);
-        //ButtonAdapter m_badapter = new ButtonAdapter(this);
-        //m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+
+        GraphView graph = (GraphView) findViewById(R.id.plugload_graph);
+
+        DataPoint[] points = new DataPoint[parents.size()];
+        String[] appl_names = new String[parents.size()];
+
+        for (int i = 0; i < parents.size(); i++) {
+            points[i] = new DataPoint(i, Double.parseDouble(parents.get(i).getEnergy_consumed()));
+            appl_names[i] = parents.get(i).getName();
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(points);
+        graph.addSeries(series);
+
+        graph.addSeries(series);
+        series.setColor(getResources().getColor(R.color.plugload_green));
+        series.setSpacing(15);
+        series.setDrawValuesOnTop(true);
+
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+        staticLabelsFormatter.setHorizontalLabels(appl_names);
+
+        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setHorizontalAxisTitle("Appliances");
+        graph.getGridLabelRenderer().setVerticalAxisTitle("Energy Usage in Watts");
+        graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
+
+        graph.getGridLabelRenderer().setTextSize(22);
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+
+        TabHost tabs = (TabHost)findViewById(R.id.tabHost);
+
+        tabs.setup();
+
+        TabHost.TabSpec spec = tabs.newTabSpec("tag1");
+        spec.setContent(R.id.tab1);
+        spec.setIndicator("Appliances");
+        tabs.addTab(spec);
+
+        spec = tabs.newTabSpec("tag2");
+        spec.setContent(R.id.tab2);
+        spec.setIndicator("Energy Usage Comparison");
+        tabs.addTab(spec);
     }
 
     private void getLighting()
     {
         ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
-        GraphView graph = (GraphView) findViewById(R.id.lighting_graph);
 
-        String[] stat = {"OFF", "ON"};
+        double myval = data_access.getLightingAverageDay(ZonesDescriptionActivity.regionID);
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 0),
-                new DataPoint(2, 0),
-                new DataPoint(3, 1),
-                new DataPoint(4, 1),
-                new DataPoint(5, 1),
-                new DataPoint(6, 1)
-        });
+        ((TextView) findViewById(R.id.AvgLightValue)).setText(myval+"");
 
-        graph.addSeries(series);
+        PieChart pie = (PieChart) findViewById(R.id.myLightingChart);
 
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setVerticalLabels(new String[]{stat[1],
-                stat[0],stat[0],
-                stat[1],stat[1], stat[1], stat[1]});
+        // Get lighting from stat DB
+        Segment s1 = new Segment("", data_access.getLightingEnergyUsage(ZonesDescriptionActivity.regionID));
+        Segment s2  = new Segment("", data_access.getLightingEnergyWaste(ZonesDescriptionActivity.regionID));
 
-        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        SegmentFormatter sf1 = new SegmentFormatter();
+        sf1.configure(getApplicationContext(), R.xml.lighting_pie_segment_formatter1);
+        sf1.getLabelPaint().setColor(Color.BLACK);
+
+        SegmentFormatter sf2 = new SegmentFormatter();
+        sf2.configure(getApplicationContext(), R.xml.lighting_pie_segment_formatter2);
+        sf2.getLabelPaint().setColor(Color.BLACK);
+
+        pie.addSeries(s1, sf1);
+        pie.addSeries(s2, sf2);
+        pie.getBorderPaint().setColor(Color.TRANSPARENT);
+        pie.getBackgroundPaint().setColor(Color.TRANSPARENT);
+
+        pie.getRenderer(PieRenderer.class).setDonutSize(.90f, PieRenderer.DonutMode.PERCENT);
 
     }
 

@@ -65,6 +65,11 @@
 
     <string name="temperature_inside_editext">todays building temperature</string>
 
+    <string name="average_lighting">Average Time the Light is ON in a day: </string>
+
+    <string name="lighting_legend_label_wasted">Lighting Energy Wasted </string>
+    <string name="lighting_legend_label_consumed">Lighting Energy Efficiently Consumed </string>
+
 
 </resources>
 

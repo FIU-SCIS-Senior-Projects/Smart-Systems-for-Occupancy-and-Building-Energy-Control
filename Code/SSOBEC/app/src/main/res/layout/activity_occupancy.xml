@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/CurrOccupValue"
-            android:text="@string/n_a"
+            android:text="2"
             android:textColor="@color/default_font_color"
             android:textSize="45sp"
             android:paddingRight="10dp"

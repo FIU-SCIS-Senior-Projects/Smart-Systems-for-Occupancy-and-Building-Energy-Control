@@ -40,6 +40,7 @@ public class StatisticalCalculation {
     double plugload_energywaste;
     double ac_energyusage;
     double outside_temp_avg;
+    ArrayList<Integer> region_id;
 
     Context mcontext;
     DataAccessUser mdata_access;
@@ -47,8 +48,9 @@ public class StatisticalCalculation {
     //Data is given every hour.
     private static int DB_TIME_INTERVAL = 1;
 
-    public StatisticalCalculation(Context context)
+    public StatisticalCalculation(Context context, ArrayList<Integer> zones)
     {
+        region_id = zones;
         mcontext = context;
         mdata_access = new DataAccessUser(mcontext);
         try {
@@ -84,7 +86,7 @@ public class StatisticalCalculation {
 
 
         boolean there_is_data = true;
-        List<Integer> region_id = mdata_access.getAllZoneID();
+        //List<Integer> region_id = mdata_access.getAllZoneID();
 
         upperbound_date = earliest_timestamp;
 
@@ -125,12 +127,6 @@ public class StatisticalCalculation {
                 Log.i(LOG_TAG, "Plug load Energy Usage: "+plugload_energyusage);
 
                 String date = getDateFromDateTime(upperbound_date);
-
-                if(lighting_energyusage < lighting_energywaste)
-                {
-                    Log.e("StatisticalCalculation", "Something went wrong");
-                }
-
                 if(id.equals(region_id.get(0)))
                     getOutsideTempAndACEnergy(date);
 
@@ -179,9 +175,9 @@ public class StatisticalCalculation {
 
     }
 
-    public int calculateLightWaste(int region_id, ArrayList<String> datetimesRoomIsEmpty)
+    public double calculateLightWaste(int region_id, ArrayList<String> datetimesRoomIsEmpty)
     {
-        int lightwaste=0;
+        double lightwaste=0;
 
         if(!datetimesRoomIsEmpty.isEmpty()) {
             String datetimes_arr = sqlArrayFormat(datetimesRoomIsEmpty);

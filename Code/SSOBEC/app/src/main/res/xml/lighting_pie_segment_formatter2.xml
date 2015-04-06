@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config
-    fillPaint.color="@color/temperature_blue"
+    fillPaint.color="@color/warning_red"
     labelPaint.textSize="@dimen/pie_segment_label_font_size"
     labelPaint.color="@color/default_font_color"
-    innerEdgePaint.color = "@color/temperature_blue"
-    outerEdgePaint.color = "@color/temperature_blue"
+    innerEdgePaint.color = "@color/warning_red"
+    outerEdgePaint.color = "@color/warning_red"
     radialEdgePaint.color="#00000000"/>

@@ -10,6 +10,7 @@ import org.hamcrest.Matcher;
 import fiu.ssobec.Activity.LoginActivity;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -64,8 +65,6 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
         //onData(hasToString(startsWith("Ana")));
 
-        onView(allOf(withId(R.id.text1),withText("Ana Laptop"))).check(matches(isDisplayed()));
-
         //onView(allOf(withId(R.id.checkbox_child_row),hasSibling(allOf(withId(R.id.text1), withText("Ana Laptop"))))).check(matches(isDisplayed()));
 
         /*
@@ -73,6 +72,24 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
                 .inAdapterView(withId(R.id.checkbox_child_row))
                 .check(matches(isDisplayed()))
                 .perform(ViewActions.click());*/
+
+        onView(allOf(withId(R.id.text1),withText("Ana Laptop"))).check(matches(isDisplayed()));
+
+        pressBack();
+
+        pressBack();
+
+        pressBack();
+
+        onView(withId(2)).perform(ViewActions.click());
+        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
+        onView(withId(R.id.predict_consumption_button)).perform(ViewActions.click());
+        //Espresso.onView(withText("Electric")).perform(ViewActions.click());
+
+        onView(allOf(withId(R.id.text1), withText("Electric Appliances"))).perform(ViewActions.click());
+
+        //onView(allOf(withId(R.id.text1),withText("Ana Laptop"))).check(matches(isDisplayed()));
+
     }
 
     public static Matcher<Object> withChildName(String name) {

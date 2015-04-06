@@ -136,10 +136,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.EnergyActivity" />
         </activity>
-        <activity
-            android:name=".antivity_acconsumption_prediction2"
-            android:label="@string/title_activity_antivity_acconsumption_prediction2" >
-        </activity>
     </application>
 
 </manifest>

@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import fiu.ssobec.Model.Lighting;
@@ -23,6 +24,7 @@ import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.PlugLoadListParent;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
+import fiu.ssobec.StatisticalCalculation;
 
 /**
  * Created by Dalaidis on 2/10/2015.
@@ -563,7 +565,7 @@ public class DataAccessUser implements DataAccessInterface {
     }
 
 
-    public int getLightingWaste(int zone_id, String datearr)
+    public double getLightingWaste(int zone_id, String datearr)
     {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
                 LIGHT_COLS,
@@ -574,15 +576,17 @@ public class DataAccessUser implements DataAccessInterface {
 
         cursor.moveToFirst();
         int count = cursor.getCount();
+        Lighting light;
+        double res = 0.0;
         while (!cursor.isAfterLast()) {
-            Lighting light = getLightingFromCursor(cursor);
+            light = getLightingFromCursor(cursor);
             Log.i(LOG_TAG, "getLightingWaste, Light: " + light.toString());
             cursor.moveToNext();
+            res = light.getEnergy_usage_kwh();
         }
-
         // make sure to close the cursor
         cursor.close();
-        return count;
+        return count*res;
     }
 
     public int getTotalTimeLightWasON(int zone_id, String upperbound_date, String lowerbound_date)
@@ -654,6 +658,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     public String getCloudPercentage() {
 
+        String cloud_p;
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
                 OW_COLS,
                 null,
@@ -662,14 +667,19 @@ public class DataAccessUser implements DataAccessInterface {
         if (cursor.moveToLast())
         {
             OutsideWeather ow = getOWFromCursor(cursor);
-            return ow.getCloudPercentage()+"";
+            cloud_p = ow.getCloudPercentage()+"";
         }
         else
-            return "No Data";
+            cloud_p = "No Data";
+
+        cursor.close();
+
+        return cloud_p;
     }
 
     public String getOutsideTemperature() {
 
+        int outside_temperature=0;
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
                 OW_COLS,
                 null,
@@ -678,10 +688,24 @@ public class DataAccessUser implements DataAccessInterface {
         if (cursor.moveToLast())
         {
             OutsideWeather ow = getOWFromCursor(cursor);
-            return ow.getTemperature()+"";
+            outside_temperature =  ow.getTemperature();
         }
-        else
-            return "No Data";
+        cursor.close();
+
+        if(outside_temperature == 0)
+        {
+            cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                    new String[]{UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG},
+                    null,
+                    null, null, null, null);
+
+            if (cursor.moveToLast())
+            {
+                outside_temperature = cursor.getInt(0);
+            }
+        }
+
+        return outside_temperature+"";
     }
 
     /****************************** MISC ************************************/
@@ -847,26 +871,6 @@ public class DataAccessUser implements DataAccessInterface {
         return myList;
     }
 
-    public ArrayList<Double> getACEnergyUsage()
-    {
-        ArrayList<Double> myList = new ArrayList<>();
-        Cursor cursor;
-
-        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
-                new String[]{UserSQLiteDatabase.STAT_AC_ENERGYUSAGE}, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            //myList.add(cursor.getDouble(cursor.getColumnIndex(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG)));
-            myList.add(cursor.getDouble(0));
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-        return myList;
-    }
-
-
     public ArrayList<Integer> getLastFewHoursofOccupancy(int region_id)
     {
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
@@ -957,6 +961,146 @@ public class DataAccessUser implements DataAccessInterface {
         }
 
         return parents;
+    }
+
+    public double getLightingEnergyUsage(int regionID)
+    {
+        Cursor cursor;
+        double energyusage = 0.0;
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_LIGHTING_ENERGYUSAGE},
+                UserSQLiteDatabase.STAT_ID + " = " + regionID+
+                " AND "+ UserSQLiteDatabase.STAT_LIGHTING_ENERGYUSAGE + " != 0", null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            energyusage = cursor.getDouble(0)+ energyusage;
+            System.out.println("getLightingEnergyUsage: "+energyusage);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return energyusage;
+    }
+
+    public double getLightingEnergyWaste(int regionID)
+    {
+        Cursor cursor;
+        double energywaste = 0.0;
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_LIGHTING_ENERGYWASTE},
+                UserSQLiteDatabase.STAT_ID + " = " + regionID+
+                        " AND "+ UserSQLiteDatabase.STAT_LIGHTING_ENERGYWASTE + " != 0", null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            energywaste = cursor.getDouble(0)+ energywaste;
+            System.out.println("getLightingEnergyWaste: "+energywaste);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return energywaste;
+    }
+
+    public double getLightingAverageDay(int regionID)
+    {
+        ArrayList<Double> lighting_vals = new ArrayList<>();
+
+        Cursor cursor;
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_LIGHTING_TIME_AVG},
+                UserSQLiteDatabase.STAT_ID + " = " + regionID+
+                        " AND "+ UserSQLiteDatabase.STAT_LIGHTING_TIME_AVG + " != 0", null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            lighting_vals.add(cursor.getDouble(0));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return StatisticalCalculation.avg(lighting_vals);
+    }
+
+    public ArrayList<Integer> getLatestManyTemperature(int region_id)
+    {
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                TEMP_COLS,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + region_id,
+                null, null, null, UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" DESC");
+
+        cursor.moveToFirst();
+        int counter = 50;
+        ArrayList<Integer> temp_vals = new ArrayList<>();
+
+        while (!cursor.isAfterLast()&&counter>=0) {
+            Temperature temp = getTemperatureFromCursor(cursor);
+            System.out.println("Date: " + temp.getDatetime() + " Temperature: " + temp.getTemperature());
+            temp_vals.add(temp.getTemperature());
+
+            cursor.moveToNext();
+            counter--;
+        }
+
+        cursor.close();
+        Collections.reverse(temp_vals);
+
+        return temp_vals;
+    }
+
+    public HashMap<String, Double> getInfoForZonesDescription(int region_id)
+    {
+        double plug=0.0;
+        double ac=0.0;
+        double light=0.0;
+        Cursor cursor;
+
+        HashMap<String, Double> info = new HashMap<>();
+
+        cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
+                new String[]{UserSQLiteDatabase.PLUG_COLUMN_APPENERGY},
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + region_id
+                        + " AND " + UserSQLiteDatabase.PLUG_COLUMN_STATE + " = 'PLUGGED'",
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            plug = cursor.getDouble(0) + plug;
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_AC_ENERGYUSAGE},
+                UserSQLiteDatabase.STAT_ID + " = " + region_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            ac = cursor.getDouble(0) + ac;
+            cursor.moveToNext();
+        }
+        ac = ac/30;
+        cursor.close();
+
+        cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
+                new String[]{UserSQLiteDatabase.STAT_LIGHTING_ENERGYUSAGE},
+                UserSQLiteDatabase.STAT_ID + " = " + region_id,
+                null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            light = cursor.getDouble(0) + light;
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+
+        info.put("plugload", plug);
+        info.put("ac", ac);
+        info.put("light", light);
+        return info;
     }
 
 }

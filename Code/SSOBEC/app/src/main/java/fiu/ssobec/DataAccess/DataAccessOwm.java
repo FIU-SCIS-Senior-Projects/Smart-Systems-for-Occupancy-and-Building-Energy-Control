@@ -1,9 +1,11 @@
 package fiu.ssobec.DataAccess;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import net.aksingh.owmjapis.CurrentWeather;
+import net.aksingh.owmjapis.DailyForecast;
 import net.aksingh.owmjapis.OpenWeatherMap;
 
 import org.json.JSONException;
@@ -22,6 +24,10 @@ public class DataAccessOwm {
     private OpenWeatherMap owm;
     private CurrentWeather cwd;
     private Context context;
+    public static final String myweatherpreferences = "myprefs";
+    public static final String temperature_forecast = "temp_forecast";
+    static SharedPreferences sharedpreferences;
+
 
     public DataAccessOwm(Context context) throws JSONException
     {
@@ -33,6 +39,11 @@ public class DataAccessOwm {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sharedpreferences = context.getSharedPreferences(myweatherpreferences, context.MODE_PRIVATE);
+
+
+        getForeCastWeather();
     }
 
     public void saveWeatherData()
@@ -67,9 +78,36 @@ public class DataAccessOwm {
         data_access.close();
     }
 
-    public void testingWeatherData()
+    private float getForeCastWeather()  throws JSONException
     {
-        Log.i(LOG_TAG, "Fake Weather Data");
+        byte mByte = 1;
+        float forecast_temperature = 0;
+
+        try {
+            DailyForecast fr = owm.dailyForecastByCityName("Miami", mByte);
+            if(fr.getForecastInstance(0).getTemperatureInstance().hasDayTemperature())
+            {
+                forecast_temperature = fr.getForecastInstance(0).getTemperatureInstance().getDayTemperature();
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(temperature_forecast, forecast_temperature+"");
+                editor.commit();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return forecast_temperature;
+    }
+
+    public static String getMyForecast()
+    {
+        if(sharedpreferences.contains(temperature_forecast))
+        {
+            return sharedpreferences.getString(temperature_forecast, "");
+        }
+        else
+            return null;
     }
 
 }

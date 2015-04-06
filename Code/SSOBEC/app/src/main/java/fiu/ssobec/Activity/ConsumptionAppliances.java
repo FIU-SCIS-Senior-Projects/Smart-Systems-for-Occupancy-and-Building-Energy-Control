@@ -297,7 +297,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             }
             else if (parent.getName().equals("4"))
             {
-                if(child.getName().equals((num_childs-1)+""))
+                if(child.getName().equals((num_childs)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
@@ -323,7 +323,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             }
             else if (parent.getName().equals("5"))
             {
-                if(child.getName().equals((num_childs-1)+""))
+                if(child.getName().equals((num_childs)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
@@ -522,7 +522,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                         final Parent parent = parents.get(i); //get parent from position 'i'.
                         System.out.println("Checked, Parent: " + parent.getText1());
 
-                        for (int j = 0; j < 4; j++) {
+                        for (int j = 0; j < num_childs; j++) {
                             Child otherchilds = parent.getChildren().get(j);
                             System.out.println("Checked, Other Childs: " + otherchilds.getText1());
                         }

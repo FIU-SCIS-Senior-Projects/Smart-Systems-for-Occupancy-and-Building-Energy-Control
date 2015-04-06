@@ -68,7 +68,7 @@ public class MyZonesActivity extends ActionBarActivity{
         else
         {
             SyncUtils.CreateSyncAccount(this);
-            //SyncUtils.TriggerRefresh();
+            SyncUtils.TriggerRefresh();
             user_id = user.getId(); //Get the ID of the user
 
             List<NameValuePair> userId = new ArrayList<>(1);

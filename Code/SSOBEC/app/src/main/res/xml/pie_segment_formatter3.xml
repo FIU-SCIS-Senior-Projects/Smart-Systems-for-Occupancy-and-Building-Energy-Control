@@ -4,4 +4,5 @@
     labelPaint.textSize="@dimen/pie_segment_label_font_size"
     labelPaint.color="@color/default_font_color"
     innerEdgePaint.color = "@color/plugload_green"
-    outerEdgePaint.color = "@color/plugload_green"/>
+    outerEdgePaint.color = "@color/plugload_green"
+    radialEdgePaint.color="#00000000"/>

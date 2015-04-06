@@ -40,7 +40,7 @@
             android:id="@+id/Fahrenheit"
             android:textSize="@dimen/login_textfield_size"
             android:text="@string/fahrenheit"
-            android:layout_marginLeft="140dp" />
+            android:layout_marginLeft="180dp" />
 
     </LinearLayout>
 

@@ -53,6 +53,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private DataAccessUser data_access;
     private StatisticalCalculation sc;
     String sqlRegionIdArr;
+    private ArrayList<Integer> zones_with_new_data;
 
     /**
      * Creates an {@link android.content.AbstractThreadedSyncAdapter}.
@@ -61,6 +62,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         data_access = new DataAccessUser(context);
         mcontext = context;
+        zones_with_new_data = new ArrayList<>();
 
     }
 
@@ -97,7 +99,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         data_access.close();
         Log.i(LOG_TAG, "Finishing network synchronization");
 
-        sc = new StatisticalCalculation(mcontext);
+        sc = new StatisticalCalculation(mcontext, zones_with_new_data);
         if(sc.getNewest_timestamp() != null)
         {
             Log.i(LOG_TAG, "Calculate Data");
@@ -146,6 +148,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         myobj = obj.getJSONObject(j + "");
                         data_access.createOccupancy(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
                                 myobj.getInt(OCCUPANCY_COLUMN));
+                        if(!zones_with_new_data.contains(myobj.getInt(ZONEID_COLUMN)))
+                            zones_with_new_data.add(myobj.getInt(ZONEID_COLUMN));
+
                         j++;
                     }
 
@@ -155,6 +160,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         myobj = obj.getJSONObject(j + "");
                         data_access.createLighting(myobj.getInt(ZONEID_COLUMN), myobj.getString(TIME_STAMP),
                                 myobj.getString(LIGHTSTATUS_COLUMN), myobj.getDouble(ENERGY_USAGE));
+                        if(!zones_with_new_data.contains(myobj.getInt(ZONEID_COLUMN)))
+                            zones_with_new_data.add(myobj.getInt(ZONEID_COLUMN));
+
                         j++;
                     }
 
@@ -167,6 +175,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                 myobj.getString(PLUG_APPLIANCE_NAME),
                                 myobj.getString(PLUG_APPLIANCE_TYPE),
                                 myobj.getDouble(ENERGY_USAGE));
+                        if(!zones_with_new_data.contains(myobj.getInt(ZONEID_COLUMN)))
+                            zones_with_new_data.add(myobj.getInt(ZONEID_COLUMN));
+
                         j++;
                     }
 
@@ -177,6 +188,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                         data_access.createTemperature(myobj.getInt(ZONEID_COLUMN),
                                 myobj.getString(TIME_STAMP),
                                 myobj.getInt(TEMPERATURE_COLUMN));
+                        if(!zones_with_new_data.contains(myobj.getInt(ZONEID_COLUMN)))
+                            zones_with_new_data.add(myobj.getInt(ZONEID_COLUMN));
 
                         j++;
                     }

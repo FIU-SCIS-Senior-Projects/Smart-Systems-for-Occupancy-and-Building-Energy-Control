@@ -14,6 +14,8 @@ import com.androidplot.pie.Segment;
 import com.androidplot.pie.SegmentFormatter;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
@@ -49,15 +51,23 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_zones_description2);
 
+        DecimalFormat df = new DecimalFormat("#.#");
+
         PieChart pie = (PieChart) findViewById(R.id.mySimplePieChart);
 
-        Segment s1 = new Segment("Cooling", 7);
-        Segment s2  = new Segment("Lighting", 20);
-        Segment s3 = new Segment("PlugLoad", 15);
+        HashMap<String, Double> info = data_access.getInfoForZonesDescription(regionID);
+
+        double total_energy = info.get("ac") + info.get("light") + info.get("plugload");
+        double percentage_ac = (info.get("ac")/(total_energy))*100;
+        double percentage_light = (info.get("light")/(total_energy))*100;
+        double percentage_plug = (info.get("plugload")/(total_energy))*100;
+
+        Segment s1 = new Segment("Cooling "+df.format(percentage_ac)+"%", info.get("ac"));
+        Segment s2  = new Segment("Lighting "+df.format(percentage_light)+"%", info.get("light"));
+        Segment s3 = new Segment("PlugLoad "+df.format(percentage_plug)+"%", info.get("plugload"));
 
         SegmentFormatter sf1 = new SegmentFormatter();
         sf1.configure(getApplicationContext(), R.xml.pie_segment_formatter1);
-        //sf1.getLabelPaint().set
         sf1.getLabelPaint().setColor(Color.BLACK);
 
         SegmentFormatter sf2 = new SegmentFormatter();
@@ -77,6 +87,7 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         pie.setPlotMargins(0, 0, 0, 0);
         pie.getRenderer(PieRenderer.class).setDonutSize(.90f, PieRenderer.DonutMode.PERCENT);
+        
     }
 
 
