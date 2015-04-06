@@ -89,7 +89,16 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/my_plugload_listview" />
-                    </LinearLayout>
+
+                        </LinearLayout>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/prediction_consumption"
+                        android:id="@+id/predict_consumption_button"
+                        android:onClick="predictConsumption"
+                        android:padding="20dp" />
 
 
                 </LinearLayout>
@@ -121,15 +130,6 @@
             </FrameLayout>
         </LinearLayout>
     </TabHost>
-
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/prediction_consumption"
-        android:id="@+id/predict_consumption_button"
-        android:onClick="predictConsumption"
-        android:padding="20dp" />
 
 
 </LinearLayout>

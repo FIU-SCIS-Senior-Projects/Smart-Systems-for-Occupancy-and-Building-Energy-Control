@@ -33,7 +33,7 @@ public class NaiveBayesTemperature {
     private double sd_otemp_low;
     private double sd_otemp_med;
     private double sd_otemp_high;
-    private int TEMP_LOW=70;
+    private int TEMP_LOW=68;
     private int TEMP_HIGH=100;
     private Context context;
     double probability_low;
@@ -68,8 +68,6 @@ public class NaiveBayesTemperature {
             ArrayList<Double> allvals_otemp_low = dataAccessUser.getOutsideTemperatureByZone(id, 0, TEMP_LOW);
             ArrayList<Double> allvals_otemp_med = dataAccessUser.getOutsideTemperatureByZone(id, TEMP_LOW, TEMP_HIGH);
             ArrayList<Double> allvals_otemp_high = dataAccessUser.getOutsideTemperatureByZone(id, TEMP_HIGH, 0);//Return temp range from temp high to no upper bound
-
-            //allvals_otemp_high.add(89.0);
 
             Log.i(LOG_TAG, "Naive Vals:");
             Log.i(LOG_TAG, allvals_itemp_low.toString());
@@ -140,7 +138,7 @@ public class NaiveBayesTemperature {
         double P_high= normal_high_out*normal_high_ins*probability_high;
 
         double max = P_low;
-        String str_max ="HIGH";
+        String str_max ="LOW";
         if (max < P_med)
         {
             max=P_med;
@@ -149,7 +147,7 @@ public class NaiveBayesTemperature {
         else if (max < P_high)
         {
             max=P_high;
-            str_max = "LOW";
+            str_max = "HIGH";
         }
 
         Log.i(LOG_TAG, "Outside: "+out_temp+", Inside: "+ins_temp+", P-low: "+P_low+", P-med: "+P_med+", P-high: "+P_high);
