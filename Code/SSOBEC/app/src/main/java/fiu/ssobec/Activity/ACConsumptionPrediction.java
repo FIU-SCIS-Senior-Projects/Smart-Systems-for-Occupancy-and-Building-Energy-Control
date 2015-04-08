@@ -21,7 +21,7 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
 
-        outside_temperature = 80;
+        outside_temperature = 78;
         ((TextView) findViewById(R.id.forecast_temperature_val)).setText(""+outside_temperature);
 
     }
