@@ -28,6 +28,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
@@ -257,11 +258,12 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getLighting()
     {
+        DecimalFormat df = new DecimalFormat("#.#");
         ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
 
         double myval = data_access.getLightingAverageDay(ZonesDescriptionActivity.regionID);
 
-        ((TextView) findViewById(R.id.AvgLightValue)).setText(myval+"");
+        ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+"");
 
         PieChart pie = (PieChart) findViewById(R.id.myLightingChart);
 

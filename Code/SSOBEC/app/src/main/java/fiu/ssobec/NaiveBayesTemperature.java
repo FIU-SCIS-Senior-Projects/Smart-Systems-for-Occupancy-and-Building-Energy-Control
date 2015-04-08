@@ -139,13 +139,6 @@ public class NaiveBayesTemperature {
         double P_med= normal_med_out*normal_med_ins*probability_med;
         double P_high= normal_high_out*normal_high_ins*probability_high;
 
-        /*
-        double max=P_low;
-        if (max<P_med)
-            max=P_med;
-        else if (max < P_high)
-            max = P_high;*/
-
         double max=P_low;
         String str_max ="HIGH";
         if (max<P_med)

@@ -42,8 +42,6 @@ public class DataAccessOwm {
 
         sharedpreferences = context.getSharedPreferences(myweatherpreferences, context.MODE_PRIVATE);
 
-
-        getForeCastWeather();
     }
 
     public void saveWeatherData()

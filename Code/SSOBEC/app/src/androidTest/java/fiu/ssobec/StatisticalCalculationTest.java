@@ -35,10 +35,17 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
     public void testStats() {
 
         onView(withId(1)).perform(ViewActions.click());
+
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -46,7 +53,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         onView(allOf(withText("Energy Usage Comparison"))).perform(ViewActions.click());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -55,7 +62,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         pressBack();
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -63,7 +70,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         onView(withId(R.id.ArticialLightingButton)).perform(ViewActions.click());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -78,7 +85,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         onView(withId(R.id.temperature_graph)).perform(ViewActions.swipeRight());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -87,7 +94,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -98,14 +105,14 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
         onView(withId(2)).perform(ViewActions.click());
 
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
