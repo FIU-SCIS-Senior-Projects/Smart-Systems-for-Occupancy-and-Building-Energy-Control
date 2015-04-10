@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
+import android.widget.ListView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -25,7 +26,11 @@ import fiu.ssobec.ButtonAdapter;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
+import fiu.ssobec.MyPlugLoadListAdapter;
+import fiu.ssobec.MyRewardListAdapter;
+import fiu.ssobec.PlugLoadListParent;
 import fiu.ssobec.R;
+import fiu.ssobec.RewardListParent;
 import fiu.ssobec.Synchronization.SyncUtils;
 
 
@@ -111,11 +116,31 @@ public class MyZonesActivity extends ActionBarActivity{
             m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridViewButtons.setAdapter(m_badapter);
 
+            //Set the rewards list from the user's rewards
+            ArrayList<RewardListParent> parents = buildDummyData();
+
+            ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
+            MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
+            myRewardListAdapter.setParents(parents);
+            mListView.setAdapter(myRewardListAdapter);
+
         }
-        ActionBar bar = getActionBar();
-        if (bar != null) {
-            bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("FF729AD1")));
+
+    }
+
+    public ArrayList<RewardListParent> buildDummyData(){
+        ArrayList<RewardListParent> dummy_parents = new ArrayList<>();
+
+        for(int i=0; i<10; i++)
+        {
+            RewardListParent parent = new RewardListParent();
+            parent.setName("RewardName"+i);
+            parent.setDescription("RewardDescription"+i);
+            parent.setPoints("+"+i);
+            dummy_parents.add(parent);
         }
+
+        return dummy_parents;
     }
 
     @Override

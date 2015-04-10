@@ -12,17 +12,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import fiu.ssobec.R;
+import fiu.ssobec.RewardListParent;
+
 /**
- * Created by Maria on 4/4/2015.
+ * Created by Fresa on 4/10/2015.
  */
-public class MyPlugLoadListAdapter implements ListAdapter {
+public class MyRewardListAdapter  implements ListAdapter {
 
     private LayoutInflater inflater;
-    private ArrayList<PlugLoadListParent> parents; //Each button will have an id according to each zone
+    private ArrayList<RewardListParent> parents;
 
     private Context mContext;
 
-    public MyPlugLoadListAdapter(Context context) {
+    public MyRewardListAdapter(Context context) {
         inflater = LayoutInflater.from(context);
         mContext = context;
     }
@@ -72,16 +75,18 @@ public class MyPlugLoadListAdapter implements ListAdapter {
 
 
         ViewHolder mViewHolder = null;
-        final PlugLoadListParent mparent = parents.get(position);
+        final RewardListParent mparent = parents.get(position);
 
         if(convertView == null) {
 
             mViewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.row_plugload_list, parent, false);
-            mViewHolder.appliance_name = (TextView) convertView.findViewById(R.id.appliance_name);
-            mViewHolder.appliance_status = (TextView) convertView.findViewById(R.id.appliance_status);
-            mViewHolder.energy_consumed_today = (TextView) convertView.findViewById(R.id.energy_consumed_today);
-            mViewHolder.appliance_icon = (ImageView) convertView.findViewById(R.id.appliance_icon);
+            convertView = inflater.inflate(R.layout.row_rewards_list, parent, false);
+
+
+            mViewHolder.appliance_name = (TextView) convertView.findViewById(R.id.reward_name);
+            mViewHolder.appliance_description = (TextView) convertView.findViewById(R.id.reward_description);
+            mViewHolder.points = (TextView) convertView.findViewById(R.id.reward_points);
+            mViewHolder.appliance_icon = (ImageView) convertView.findViewById(R.id.reward_icon);
             convertView.setTag(mViewHolder);
 
         }
@@ -90,10 +95,10 @@ public class MyPlugLoadListAdapter implements ListAdapter {
         }
 
         mViewHolder.appliance_name.setText(mparent.getName());
-        mViewHolder.appliance_status.setText(mparent.getStatus());
-        mViewHolder.energy_consumed_today.setText(mparent.getEnergy_consumed());
+        mViewHolder.appliance_description.setText(mparent.getDescription());
+        mViewHolder.points.setText(mparent.getPoints());
 
-        int imageResource = mContext.getResources().getIdentifier("@drawable/plug", null, mContext.getPackageName());
+        int imageResource = mContext.getResources().getIdentifier("@drawable/shape_yellow_circle", null, mContext.getPackageName());
         Drawable res = mContext.getResources().getDrawable(imageResource);
         mViewHolder.appliance_icon.setImageDrawable(res);
 
@@ -115,7 +120,7 @@ public class MyPlugLoadListAdapter implements ListAdapter {
         return  ((parents == null) || parents.isEmpty());
     }
 
-    public void setParents(ArrayList<PlugLoadListParent> newparent){
+    public void setParents(ArrayList<RewardListParent> newparent){
         parents = newparent;
     }
 
@@ -123,9 +128,10 @@ public class MyPlugLoadListAdapter implements ListAdapter {
     static class ViewHolder {
 
         private  TextView appliance_name;
-        private  TextView appliance_status;
-        private  TextView energy_consumed_today;
+        private  TextView appliance_description;
+        private  TextView points;
         private ImageView appliance_icon;
 
     }
+
 }
