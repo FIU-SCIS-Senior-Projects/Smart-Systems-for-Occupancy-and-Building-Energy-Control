@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+//import fiu.ssobec.Calculations.NaiveBayesTemperature;
 import fiu.ssobec.NaiveBayesTemperature;
 import fiu.ssobec.R;
 
@@ -21,11 +22,9 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
 
-        outside_temperature = 78;
+        outside_temperature = 95;
         ((TextView) findViewById(R.id.forecast_temperature_val)).setText(""+outside_temperature);
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

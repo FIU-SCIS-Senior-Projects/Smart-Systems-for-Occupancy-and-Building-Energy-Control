@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.AdaptersUtil;
 
 /**
  * Created by Fresa on 4/10/2015.
