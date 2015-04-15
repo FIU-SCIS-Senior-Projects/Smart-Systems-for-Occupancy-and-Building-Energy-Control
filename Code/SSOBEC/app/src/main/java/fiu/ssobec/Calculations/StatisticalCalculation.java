@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Calculations;
 
 import android.content.Context;
 import android.util.Log;
@@ -31,7 +31,6 @@ public class StatisticalCalculation {
 
 
     public static final String LOG_TAG = "StatisticalCalculation";
-    private static String currdatetime;
     private static String earliest_timestamp;
     private static String last_timestamp;
 
@@ -40,6 +39,7 @@ public class StatisticalCalculation {
     double plugload_energywaste;
     double ac_energyusage;
     double outside_temp_avg;
+    double ac_setpoint;
     ArrayList<Integer> region_id;
 
     Context mcontext;
@@ -60,6 +60,8 @@ public class StatisticalCalculation {
         }
 
         earliest_timestamp = mdata_access.getFirstTimeStamp();
+        Log.i(LOG_TAG, "First Time Stamp: "+earliest_timestamp);
+        //earliest_timestamp="2014-01-02 00:00:00";
         last_timestamp = mdata_access.getLastTimeStamp();
     }
 
@@ -83,23 +85,28 @@ public class StatisticalCalculation {
         double lighting_energywaste=0;
         double plugload_energyusage=0;
         double occup_time_avg=0;
-
+        ac_setpoint=0;
 
         boolean there_is_data = true;
-        //List<Integer> region_id = mdata_access.getAllZoneID();
 
         upperbound_date = earliest_timestamp;
-
 
         while(there_is_data)
         {
             there_is_data = false;
 
             getDateWithoutTime(upperbound_date);
-            Log.i(LOG_TAG, "Original Timestamp: "+earliest_timestamp+", Upper: "+upperbound_date+", Lower: "+lowerbound_date);
+            Log.i(LOG_TAG, "Original Timestamp: " + earliest_timestamp + ", Upper: " + upperbound_date + ", Lower: " + lowerbound_date);
+
+            Log.i(LOG_TAG, "Region IDs: "+region_id.toString());
+
 
             for (Integer id : region_id) {
 
+                if(mdata_access.dateExistsInStatTable(upperbound_date, id))
+                    continue;
+
+                //
                 //Average of temperature in a day
                 inside_temp_avg = avg(mdata_access.getAllTemperatureOnDateInterval(id, upperbound_date, lowerbound_date));
 
@@ -130,12 +137,12 @@ public class StatisticalCalculation {
                 if(id.equals(region_id.get(0)))
                     getOutsideTempAndACEnergy(date);
 
-                if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugload_energyusage+occup_time_avg > 0)
+                if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugload_energyusage+occup_time_avg+ac_setpoint > 0)
                 {
                     //save it in the database
                     mdata_access.createStat(id,date, inside_temp_avg, lighting_time_avg,
                     lighting_energyusage, lighting_energywaste, plugload_energyusage,
-                    plugload_energywaste, ac_energyusage, occup_time_avg, outside_temp_avg);
+                    plugload_energywaste, ac_energyusage, occup_time_avg, outside_temp_avg, ac_setpoint);
                     there_is_data = true;
                 }
             }
@@ -157,22 +164,6 @@ public class StatisticalCalculation {
         {
             return 0;
         }
-    }
-
-    public static double sum(ArrayList<Double> vals)
-    {
-        if(!vals.isEmpty())
-        {
-            Double[] d = new Double[vals.size()];
-            vals.toArray(d);
-            double[] valsarr = ArrayUtils.toPrimitive(d);
-            return StatUtils.sum(valsarr);
-        }
-        else
-        {
-            return 0;
-        }
-
     }
 
     public double calculateLightWaste(int region_id, ArrayList<String> datetimesRoomIsEmpty)
@@ -212,7 +203,6 @@ public class StatisticalCalculation {
 
     public static void addDay()
     {
-        DateTimeFormatter dateStringFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter dateStringFormat2 = DateTimeFormat.forPattern("yyyy-MM-dd 00:00:00");
         DateTime up_time = dateStringFormat2.parseDateTime(upperbound_date);
         DateTime low_time = dateStringFormat2.parseDateTime(lowerbound_date);
@@ -258,7 +248,9 @@ public class StatisticalCalculation {
     private void getOutsideTempAndACEnergy(String date)
     {
         List<NameValuePair> id_and_timestamp = new ArrayList<>(1);
-
+        outside_temp_avg=0;
+        ac_energyusage=0;
+        ac_setpoint=0;
         id_and_timestamp.add(new BasicNameValuePair("date", (date).trim()));
 
         try {
@@ -271,7 +263,8 @@ public class StatisticalCalculation {
             JSONObject myobj = obj.getJSONObject("0");
             outside_temp_avg = myobj.getDouble("outside_temperature");
             ac_energyusage = myobj.getDouble("ac_energy_usage");
-            System.out.println(" OutsideTemperature: "+outside_temp_avg+" AC_Energy: "+ac_energyusage);
+            ac_setpoint = myobj.getDouble("ac_setpoint");
+            Log.i(LOG_TAG, "Outside Temperature: "+outside_temp_avg+", AC_Energy: "+ac_energyusage+", AC_setpoint: "+ac_setpoint);
 
         } catch (InterruptedException | JSONException e) {
             e.printStackTrace();

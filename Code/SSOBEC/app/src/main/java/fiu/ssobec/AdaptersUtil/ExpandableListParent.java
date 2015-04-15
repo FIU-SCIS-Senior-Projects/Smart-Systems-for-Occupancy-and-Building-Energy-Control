@@ -1,18 +1,20 @@
-package fiu.ssobec;
+package fiu.ssobec.AdaptersUtil;
 
 import java.util.ArrayList;
+
+import fiu.ssobec.AdaptersUtil.ExpandableListChild;
 
 /**
  * Created by Dalaidis on 3/20/2015.
  */
-public class Parent {
+public class ExpandableListParent {
     private String name;
     private String text1;
     private String text2;
     private String checkedtype;
 
     private boolean checked;
-    private ArrayList<Child> children;
+    private ArrayList<ExpandableListChild> expandableListChildren;
 
     public String getName()
     {
@@ -63,13 +65,13 @@ public class Parent {
         this.checked = checked;
     }
 
-    public ArrayList<Child> getChildren()
+    public ArrayList<ExpandableListChild> getExpandableListChildren()
     {
-        return children;
+        return expandableListChildren;
     }
 
-    public void setChildren(ArrayList<Child> children)
+    public void setExpandableListChildren(ArrayList<ExpandableListChild> expandableListChildren)
     {
-        this.children = children;
+        this.expandableListChildren = expandableListChildren;
     }
 }

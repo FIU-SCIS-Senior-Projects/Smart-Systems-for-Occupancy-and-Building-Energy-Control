@@ -32,8 +32,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.MyPlugLoadListAdapter;
-import fiu.ssobec.PlugLoadListParent;
+import fiu.ssobec.Adapters.MyPlugLoadListAdapter;
+import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -123,6 +123,12 @@ public class EnergyActivity extends ActionBarActivity {
         ArrayList<String> dates = data_access.getLastFewHoursofOccupancyDates(ZonesDescriptionActivity.regionID);
         ArrayList<Integer> occ_vals = data_access.getLastFewHoursofOccupancy(ZonesDescriptionActivity.regionID);
 
+        if(dates.isEmpty())
+        {
+            this.setContentView(R.layout.empty_activity_message);
+            return;
+        }
+
         //((TextView) findViewById(R.id.CurrOccupValue)).setText(occ_vals.get(occ_vals.size()-1));
         ((TextView) findViewById(R.id.AvgOccupValue)).setText("2");
 
@@ -160,15 +166,20 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getTemperature()
     {
-        int inside_temperature = 78;
+        int inside_temperature;
         float outside_temperature = 89;
 
         GraphView graph = (GraphView) findViewById(R.id.temperature_graph);
 
         ArrayList<Integer> temp_vals = data_access.getLatestManyTemperature(ZonesDescriptionActivity.regionID);
 
+        if(temp_vals.isEmpty())
+        {
+            this.setContentView(R.layout.empty_activity_message);
+            return;
+        }
 
-       inside_temperature = temp_vals.get(temp_vals.size()-1);
+        inside_temperature = temp_vals.get(temp_vals.size()-1);
 
         /*
        if(DataAccessOwm.getMyForecast() != null)
@@ -203,6 +214,12 @@ public class EnergyActivity extends ActionBarActivity {
     {
         ArrayList<PlugLoadListParent> parents = data_access.getPlugLoadParentData(ZonesDescriptionActivity.regionID);
 
+        if(parents.isEmpty())
+        {
+            this.setContentView(R.layout.empty_activity_message);
+            return;
+        }
+
         ListView mListView = (ListView) findViewById(R.id.my_plugload_listview);
         MyPlugLoadListAdapter myPlugLoadListAdapter = new MyPlugLoadListAdapter(this);
         myPlugLoadListAdapter.setParents(parents);
@@ -226,10 +243,12 @@ public class EnergyActivity extends ActionBarActivity {
         series.setSpacing(15);
         series.setDrawValuesOnTop(true);
 
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(appl_names);
+        if(parents.size() >= 2) {
+            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+            staticLabelsFormatter.setHorizontalLabels(appl_names);
+            graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        }
 
-        graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
         graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
         graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
         graph.getGridLabelRenderer().setHorizontalAxisTitle("Appliances");
@@ -262,6 +281,12 @@ public class EnergyActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
 
         double myval = data_access.getLightingAverageDay(ZonesDescriptionActivity.regionID);
+
+        if(myval == 0)
+        {
+            this.setContentView(R.layout.empty_activity_message);
+            return;
+        }
 
         ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+"");
 
@@ -340,7 +365,7 @@ public class EnergyActivity extends ActionBarActivity {
 
         // Watch for sync state changes
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
-                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+                         ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
     }
 

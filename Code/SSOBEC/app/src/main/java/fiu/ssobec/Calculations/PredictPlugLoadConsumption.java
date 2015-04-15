@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Calculations;
 
 import java.util.ArrayList;
 

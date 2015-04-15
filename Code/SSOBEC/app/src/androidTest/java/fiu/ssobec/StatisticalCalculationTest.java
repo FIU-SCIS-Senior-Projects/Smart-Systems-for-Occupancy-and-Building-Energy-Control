@@ -67,7 +67,7 @@ public class StatisticalCalculationTest extends ActivityInstrumentationTestCase2
             e.printStackTrace();
         }
 
-        onView(withId(R.id.ArticialLightingButton)).perform(ViewActions.click());
+        onView(withId(R.id.ArtificialLightingButton)).perform(ViewActions.click());
 
         try {
             Thread.sleep(2500);

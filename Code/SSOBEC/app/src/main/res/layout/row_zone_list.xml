@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <TextView android:id="@+id/zone_name"
+            android:layout_width="250dip"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:textSize="16dip"
+            android:textStyle="bold"
+            android:text="Zone Name"
+            android:layout_marginRight="150dip" />
+
+        <ImageView
+            android:layout_width="32dip"
+            android:layout_height="32dip"
+            android:id="@+id/zoneplus_icon"
+            android:src="@drawable/addicon"
+            android:layout_gravity="center|right"
+            android:layout_margin="5dp"
+            android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+
+</LinearLayout>

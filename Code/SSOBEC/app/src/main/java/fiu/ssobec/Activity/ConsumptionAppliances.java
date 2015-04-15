@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import fiu.ssobec.Child;
+import fiu.ssobec.AdaptersUtil.ExpandableListChild;
 import fiu.ssobec.DataAccess.DataAccessUser;
-import fiu.ssobec.Parent;
-import fiu.ssobec.PredictPlugLoadConsumption;
+import fiu.ssobec.AdaptersUtil.ExpandableListParent;
+import fiu.ssobec.Calculations.PredictPlugLoadConsumption;
 import fiu.ssobec.R;
 
 
@@ -38,7 +38,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
     //Initialize variables
     private int ParentClickStatus = -1;
     private int ChildClickStatus = -1;
-    private ArrayList<Parent> parents;
+    private ArrayList<ExpandableListParent> expandableListParents;
     static String ELECTRIC_APPL = "Electric Appliances";
     static String AMOUNT_APPL = "Amount of Appliances";
     static String HOURS_USE = "Hours of Use";
@@ -85,16 +85,16 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         registerForContextMenu(getExpandableListView());
 
         //Create one  Static Data in Arraylist
-        final ArrayList<Parent> mydummyList = getDBData();
+        final ArrayList<ExpandableListParent> mydummyList = getDBData();
 
         // Adding ArrayList data to ExpandableListView values
         loadHosts(mydummyList);
     }
 
 
-    private ArrayList<Parent> getDBData() {
+    private ArrayList<ExpandableListParent> getDBData() {
         // Creating ArrayList of type parent class to store parent class objects
-        final ArrayList<Parent> list = new ArrayList<>();
+        final ArrayList<ExpandableListParent> list = new ArrayList<>();
 
         appl_info_hmap = data_access.getAllApplianceInformation(ZonesDescriptionActivity.regionID);
 
@@ -105,12 +105,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         for (int i = 0; i < 6; i++) {
 
             //Create parent class object
-            final Parent parent = new Parent();
+            final ExpandableListParent expandableListParent = new ExpandableListParent();
 
-            parent.setName("" + i);
-            parent.setText1(parent_text1[i]);
-            parent.setText2(parent_text2[i]);
-            parent.setChildren(new ArrayList<Child>());
+            expandableListParent.setName("" + i);
+            expandableListParent.setText1(parent_text1[i]);
+            expandableListParent.setText2(parent_text2[i]);
+            expandableListParent.setExpandableListChildren(new ArrayList<ExpandableListChild>());
 
             if(i == 4)
                 num_childs = num_childs + 1;
@@ -122,20 +122,20 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 if((i == 4 || i == 5) && (j == num_childs-1))
                 {
                     System.out.println("button child: i = "+i+", j = "+j);
-                    final Child child = new Child();
-                    child.setName("" + j);
-                    parent.getChildren().add(child);
+                    final ExpandableListChild expandableListChild = new ExpandableListChild();
+                    expandableListChild.setName("" + j);
+                    expandableListParent.getExpandableListChildren().add(expandableListChild);
                 }
                 else
                 {
-                    final Child child = new Child();
-                    child.setName("" + j);
-                    child.setText1(app_names_children[j]);
-                    parent.getChildren().add(child);
+                    final ExpandableListChild expandableListChild = new ExpandableListChild();
+                    expandableListChild.setName("" + j);
+                    expandableListChild.setText1(app_names_children[j]);
+                    expandableListParent.getExpandableListChildren().add(expandableListChild);
                 }
             }
             //Adding Parent class object to ArrayList
-            list.add(parent);
+            list.add(expandableListParent);
         }
 
         num_childs--;
@@ -145,19 +145,19 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
     //Data Service Implementation
 
-    private ArrayList<Parent> buildDummyData() {
+    private ArrayList<ExpandableListParent> buildDummyData() {
         // Creating ArrayList of type parent class to store parent class objects
-        final ArrayList<Parent> list = new ArrayList<Parent>();
+        final ArrayList<ExpandableListParent> list = new ArrayList<ExpandableListParent>();
         int numChilds = 4;
 
         for (int i = 0; i < 6; i++) {
             //Create parent class object
-            final Parent parent = new Parent();
+            final ExpandableListParent expandableListParent = new ExpandableListParent();
 
-            parent.setName("" + i);
-            parent.setText1(parent_text1[i]);
-            parent.setText2(parent_text2[i]);
-            parent.setChildren(new ArrayList<Child>());
+            expandableListParent.setName("" + i);
+            expandableListParent.setText1(parent_text1[i]);
+            expandableListParent.setText2(parent_text2[i]);
+            expandableListParent.setExpandableListChildren(new ArrayList<ExpandableListChild>());
 
             if(i == 4 || i == 5)
                 numChilds = 5;
@@ -166,32 +166,32 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             {
                 if((i == 4 || i == 5) && j == numChilds - 1)
                 {
-                    final Child child = new Child();
-                    child.setName("" + j);
-                    parent.getChildren().add(child);
+                    final ExpandableListChild expandableListChild = new ExpandableListChild();
+                    expandableListChild.setName("" + j);
+                    expandableListParent.getExpandableListChildren().add(expandableListChild);
                 }
                 else
                 {
-                    final Child child = new Child();
-                    child.setName("" + j);
-                    child.setText1(appl_names[j]);
-                    parent.getChildren().add(child);
+                    final ExpandableListChild expandableListChild = new ExpandableListChild();
+                    expandableListChild.setName("" + j);
+                    expandableListChild.setText1(appl_names[j]);
+                    expandableListParent.getExpandableListChildren().add(expandableListChild);
                 }
 
             }
 
             //Adding Parent class object to ArrayList
-            list.add(parent);
+            list.add(expandableListParent);
         }
         return list;
     }
 
-    private void loadHosts(final ArrayList<Parent> newParents) {
+    private void loadHosts(final ArrayList<ExpandableListParent> newExpandableListParents) {
 
-        if (newParents == null)
+        if (newExpandableListParents == null)
             return;
 
-        parents = newParents;
+        expandableListParents = newExpandableListParents;
 
         // Check for ExpandableListAdapter object
         if (this.getExpandableListAdapter() == null) {
@@ -252,17 +252,17 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parentView) {
-            final Parent parent = parents.get(groupPosition);
+            final ExpandableListParent expandableListParent = expandableListParents.get(groupPosition);
 
             // Inflate grouprow.xml file for parent rows
             convertView = inflater.inflate(R.layout.grouprow, parentView, false);
 
             // Get grouprow.xml file elements and set values
-            ((TextView) convertView.findViewById(R.id.text1)).setText(parent.getText1());
-            ((TextView) convertView.findViewById(R.id.text)).setText(parent.getText2());
+            ((TextView) convertView.findViewById(R.id.text1)).setText(expandableListParent.getText1());
+            ((TextView) convertView.findViewById(R.id.text)).setText(expandableListParent.getText2());
             ImageView image = (ImageView) convertView.findViewById(R.id.imageParent);
             image.setImageResource(getResources().getIdentifier("fiu.ssobec:drawable/consumption"
-                    + parent.getName(), null, null));
+                    + expandableListParent.getName(), null, null));
             return convertView;
         }
 
@@ -273,8 +273,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         @Override
         public View getChildView(int groupPosition, final int childPosition, boolean isLastChild,
                                  View convertView, ViewGroup parentView) {
-            final Parent parent = parents.get(groupPosition);
-            final Child child = parent.getChildren().get(childPosition);
+            final ExpandableListParent expandableListParent = expandableListParents.get(groupPosition);
+            final ExpandableListChild expandableListChild = expandableListParent.getExpandableListChildren().get(childPosition);
 
 
             ArrayList<Double> powerKw = new ArrayList<>();
@@ -288,20 +288,20 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             mypredict.MonthlyConsumption();
 
             // Inflate childrow.xml file for child rows
-            if (parent.getName().equals("0")) {
+            if (expandableListParent.getName().equals("0")) {
                 convertView = inflater.inflate(R.layout.childrow, parentView, false);
                 CheckBox checkbox = (CheckBox) convertView.findViewById(R.id.checkbox_child_row);
-                checkbox.setChecked(child.isChecked());
-                checkbox.setOnCheckedChangeListener(new CheckUpdateListener(child));
+                checkbox.setChecked(expandableListChild.isChecked());
+                checkbox.setOnCheckedChangeListener(new CheckUpdateListener(expandableListChild));
 
-                ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                ((TextView) convertView.findViewById(R.id.text1)).setText(expandableListChild.getText1());
                 ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                 image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
-                        + parent.getName(), null, null));
+                        + expandableListParent.getName(), null, null));
             }
-            else if (parent.getName().equals("4"))
+            else if (expandableListParent.getName().equals("4"))
             {
-                if(child.getName().equals((num_childs)+""))
+                if(expandableListChild.getName().equals((num_childs)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
@@ -314,9 +314,9 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
 
                             mypredict.getTotalConsumption();
-                            ((TextView) finalConvertView1.findViewById(R.id.total_consumption_textview)).setText(child.getTotal_res());
-                            ArrayList<Child> otherchildren = parent.getChildren();
-                            child.setTotal_res(df.format(mypredict.getTotalConsumption())+" KWH");
+                            ((TextView) finalConvertView1.findViewById(R.id.total_consumption_textview)).setText(expandableListChild.getTotal_res());
+                            ArrayList<ExpandableListChild> otherchildren = expandableListParent.getExpandableListChildren();
+                            expandableListChild.setTotal_res(df.format(mypredict.getTotalConsumption())+" KWH");
                             for(int i=0; i < num_childs; i++)
                             {
                                 otherchildren.get(i).setAppliance_calc_res(df.format(mypredict.getApplConsumption(i))+" KWH");
@@ -330,16 +330,16 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 else
                 {
                     convertView = inflater.inflate(R.layout.childrow_result_textfield, parentView, false);
-                    ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                    ((TextView) convertView.findViewById(R.id.text1)).setText(expandableListChild.getText1());
                     ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                     image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
-                            + parent.getName(), null, null));
-                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(child.getAppliance_calc_res());
+                            + expandableListParent.getName(), null, null));
+                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(expandableListChild.getAppliance_calc_res());
                 }
             }
-            else if (parent.getName().equals("5"))
+            else if (expandableListParent.getName().equals("5"))
             {
-                if(child.getName().equals((num_childs)+""))
+                if(expandableListChild.getName().equals((num_childs)+""))
                 {
                     convertView = inflater.inflate(R.layout.childrow_calcbutton, parentView, false);
                     Button b = (Button) convertView.findViewById(R.id.monthly_cons_button);
@@ -352,10 +352,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                             System.out.println("Button Clicked");
 
 
-                            child.setTotal_res("$"+df.format(mypredict.getTotalCost())+"");
-                            ((TextView) finalConvertView.findViewById(R.id.total_consumption_textview)).setText(child.getTotal_res());
+                            expandableListChild.setTotal_res("$"+df.format(mypredict.getTotalCost())+"");
+                            ((TextView) finalConvertView.findViewById(R.id.total_consumption_textview)).setText(expandableListChild.getTotal_res());
 
-                            ArrayList<Child> otherchildren = parent.getChildren();
+                            ArrayList<ExpandableListChild> otherchildren = expandableListParent.getExpandableListChildren();
                             for(int i=0; i < num_childs; i++)
                             {
                                 otherchildren.get(i).setAppliance_calc_res("$" + df.format(mypredict.getApplCost(i)));
@@ -368,24 +368,24 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                 else
                 {
                     convertView = inflater.inflate(R.layout.childrow_result_textfield, parentView, false);
-                    ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                    ((TextView) convertView.findViewById(R.id.text1)).setText(expandableListChild.getText1());
                     ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                     image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
-                            + parent.getName(), null, null));
-                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(child.getAppliance_calc_res());
+                            + expandableListParent.getName(), null, null));
+                    ((TextView) convertView.findViewById(R.id.textview_child_row)).setText(expandableListChild.getAppliance_calc_res());
                 }
             }
             else
             {
                 convertView = inflater.inflate(R.layout.childrow_num_field, parentView, false);
-                ((TextView) convertView.findViewById(R.id.text1)).setText(child.getText1());
+                ((TextView) convertView.findViewById(R.id.text1)).setText(expandableListChild.getText1());
                 ImageView image = (ImageView) convertView.findViewById(R.id.childImage);
                 image.setImageResource(getResources().getIdentifier("com.androidexample.customexpandablelist:drawable/setting"
-                        + parent.getName(), null, null));
+                        + expandableListParent.getName(), null, null));
 
                 //get field...
                 EditText my_num_text = (EditText) convertView.findViewById(R.id.numField_child_row);
-                my_num_text.setText(child.getEditTextChildNumField()+"");
+                my_num_text.setText(expandableListChild.getEditTextChildNumField()+"");
                 my_num_text.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -399,7 +399,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
                         try
                         {
                             result = Integer.parseInt(s.toString());
-                            child.setEditTextChildNumField(result);
+                            expandableListChild.setEditTextChildNumField(result);
                         }
                         catch (NumberFormatException e)
                         {
@@ -417,12 +417,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
             for (int i = 0; i < 4; i++) {
                 //Create parent class object
-                final Parent parent = parents.get(i);
+                final ExpandableListParent expandableListParent = expandableListParents.get(i);
 
                 for (int j = 0; j < num_childs; j++) {
 
 
-                    Child otherchilds = parent.getChildren().get(j);
+                    ExpandableListChild otherchilds = expandableListParent.getExpandableListChildren().get(j);
                     switch(i)
                     {
                         case 0:
@@ -453,7 +453,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
-            return parents.get(groupPosition).getChildren().get(childPosition);
+            return expandableListParents.get(groupPosition).getExpandableListChildren().get(childPosition);
         }
 
         //Call when child row clicked
@@ -472,8 +472,8 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         @Override
         public int getChildrenCount(int groupPosition) {
             int size = 0;
-            if (parents.get(groupPosition).getChildren() != null)
-                size = parents.get(groupPosition).getChildren().size();
+            if (expandableListParents.get(groupPosition).getExpandableListChildren() != null)
+                size = expandableListParents.get(groupPosition).getExpandableListChildren().size();
             return size;
         }
 
@@ -481,12 +481,12 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         @Override
         public Object getGroup(int groupPosition) {
             //Log.i("Parent", groupPosition + "=  getGroup ");
-            return parents.get(groupPosition);
+            return expandableListParents.get(groupPosition);
         }
 
         @Override
         public int getGroupCount() {
-            return parents.size();
+            return expandableListParents.size();
         }
 
         //Call when parent row clicked
@@ -509,7 +509,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         @Override
         public boolean isEmpty() {
-            return ((parents == null) || parents.isEmpty());
+            return ((expandableListParents == null) || expandableListParents.isEmpty());
         }
 
         @Override
@@ -531,25 +531,25 @@ public class ConsumptionAppliances extends ExpandableListActivity {
          * **************** Checkbox Checked Change Listener *******************
          */
         private final class CheckUpdateListener implements OnCheckedChangeListener {
-            private final Child child;
+            private final ExpandableListChild expandableListChild;
 
-            private CheckUpdateListener(Child child) {
-                this.child = child;
+            private CheckUpdateListener(ExpandableListChild expandableListChild) {
+                this.expandableListChild = expandableListChild;
             }
 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i("onCheckedChanged", "isChecked: " + isChecked);
 
-                child.setChecked(isChecked);
-                final Boolean checked = child.isChecked();
+                expandableListChild.setChecked(isChecked);
+                final Boolean checked = expandableListChild.isChecked();
                 if(checked)
                 {
                     for (int i=1; i < 5; i++) {
-                        final Parent parent = parents.get(i); //get parent from position 'i'.
-                        System.out.println("Checked, Parent: " + parent.getText1());
+                        final ExpandableListParent expandableListParent = expandableListParents.get(i); //get parent from position 'i'.
+                        System.out.println("Checked, Parent: " + expandableListParent.getText1());
 
                         for (int j = 0; j < num_childs; j++) {
-                            Child otherchilds = parent.getChildren().get(j);
+                            ExpandableListChild otherchilds = expandableListParent.getExpandableListChildren().get(j);
                             System.out.println("Checked, Other Childs: " + otherchilds.getText1());
                         }
                     }

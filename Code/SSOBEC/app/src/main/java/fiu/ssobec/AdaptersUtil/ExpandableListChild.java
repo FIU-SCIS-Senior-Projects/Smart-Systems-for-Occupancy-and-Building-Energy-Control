@@ -1,9 +1,9 @@
-package fiu.ssobec;
+package fiu.ssobec.AdaptersUtil;
 
 /**
  * Created by Dalaidis on 3/20/2015.
  */
-public class Child {
+public class ExpandableListChild {
 
     private String name;
     private String text1;

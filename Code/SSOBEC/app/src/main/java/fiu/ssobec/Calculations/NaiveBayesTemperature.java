@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Calculations;
 
 import android.content.Context;
 import android.util.Log;
@@ -33,8 +33,8 @@ public class NaiveBayesTemperature {
     private double sd_otemp_low;
     private double sd_otemp_med;
     private double sd_otemp_high;
-    private int TEMP_LOW=44;
-    private int TEMP_HIGH=60;
+    private int TEMP_LOW=54;
+    private int TEMP_HIGH=56;
     private Context context;
     double probability_low;
     double probability_med;
@@ -57,8 +57,6 @@ public class NaiveBayesTemperature {
 
         //get values from table
         //calculate mean and standard deviation for outside/inside temperature
-
-        double[] values= new double[1];
         List<Integer> region_id = dataAccessUser.getAllZoneID();
         int id = region_id.get(0);
 
@@ -68,8 +66,6 @@ public class NaiveBayesTemperature {
             ArrayList<Double> allvals_otemp_low = dataAccessUser.getOutsideTemperatureByZone(id, 0, TEMP_LOW);
             ArrayList<Double> allvals_otemp_med = dataAccessUser.getOutsideTemperatureByZone(id, TEMP_LOW, TEMP_HIGH);
             ArrayList<Double> allvals_otemp_high = dataAccessUser.getOutsideTemperatureByZone(id, TEMP_HIGH, 0);//Return temp range from temp high to no upper bound
-
-            //allvals_otemp_high.add(78.0);
 
             Log.i(LOG_TAG, "Naive Vals:");
             Log.i(LOG_TAG, allvals_itemp_low.toString());
@@ -141,7 +137,7 @@ public class NaiveBayesTemperature {
 
         double max=P_low;
         String str_max ="LOW";
-        if (max<P_med)
+        if (max < P_med)
         {
             max=P_med;
             str_max = "MEDIUM";
@@ -151,7 +147,7 @@ public class NaiveBayesTemperature {
             max=P_high;
             str_max = "HIGH";
         }
-
+        Log.i(LOG_TAG, "MAX: "+str_max+", P_LOW: "+P_low+", P_MED: "+P_med+", P_HIGH: "+P_high);
 
         return str_max;
     }

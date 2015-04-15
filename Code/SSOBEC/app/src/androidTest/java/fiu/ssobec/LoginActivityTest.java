@@ -52,7 +52,6 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
         //onView(allOf(withId(R.id.text1), withText("Ana Laptop")));
 
-
 /*        onView(allOf(withId(R.id.checkbox_child_row), hasSibling(allOf(withId(R.id.text1), withText("Ana Laptop")))))
                 .perform(ViewActions.click());*/
 

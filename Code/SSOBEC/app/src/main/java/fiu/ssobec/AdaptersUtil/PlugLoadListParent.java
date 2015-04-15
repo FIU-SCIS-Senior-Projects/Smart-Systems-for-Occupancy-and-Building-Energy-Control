@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.AdaptersUtil;
 
 /**
  * Created by Maria on 4/4/2015.

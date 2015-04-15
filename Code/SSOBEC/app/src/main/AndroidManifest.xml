@@ -136,6 +136,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.EnergyActivity" />
         </activity>
+        <activity
+            android:name=".Activity.AddZoneActivity"
+            android:label="@string/title_activity_add_zone"
+            android:parentActivityName=".Activity.MyZonesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.MyZonesActivity" />
+        </activity>
     </application>
 
 </manifest>

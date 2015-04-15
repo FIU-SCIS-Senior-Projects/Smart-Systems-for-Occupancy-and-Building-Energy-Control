@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 
 import java.util.ArrayList;
 
 import fiu.ssobec.Activity.ZonesDescriptionActivity;
+import fiu.ssobec.R;
+import info.hoang8f.widget.FButton;
 
 /**
  * Created by Maria on 2/4/2015.
@@ -48,26 +49,29 @@ public class ButtonAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Button b;
+        FButton b;
         if (convertView == null) {
-            b = new Button(mContext);
+            b = new FButton(mContext);
             b.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-            b.setPadding(5, 5, 5, 5);
-            b.setTextSize(0xa);
-            b.setTextColor(Color.BLACK);
+            b.setPadding(3, 8, 3, 8);
+            b.setTextColor(Color.WHITE);
 
         } else {
-            b = (Button) convertView;
+            b = (FButton) convertView;
         }
 
-        b.setBackgroundColor(Color.parseColor("#ff6bb3ff"));
+        b.setButtonColor(mContext.getResources().getColor(R.color.login_background));
+        b.setShadowColor(mContext.getResources().getColor(R.color.login_button_background));
 
         //set name of the button as name of the region
         b.setText((String) zone_names.get(position));
 
         //set id of the button as region_id
         b.setId((int) zone_id.get(position));
-        b.setTextSize(12);
+        b.setTextSize(16);
+        b.setShadowEnabled(true);
+        b.setShadowHeight(6);
+        b.setCornerRadius(5);
 
         final int button_id = b.getId();
         b.setOnClickListener(new View.OnClickListener() {

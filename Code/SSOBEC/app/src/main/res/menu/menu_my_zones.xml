@@ -13,5 +13,11 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_addzone"
+        android:icon="@drawable/houseplus"
+        android:title="@string/action_addzone"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
+
 
 </menu>

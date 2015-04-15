@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Adapters;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -11,6 +11,9 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
+import fiu.ssobec.R;
 
 /**
  * Created by Maria on 4/4/2015.

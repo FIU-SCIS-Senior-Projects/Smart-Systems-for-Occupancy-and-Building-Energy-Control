@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -11,82 +11,125 @@
     tools:context="fiu.ssobec.Activity.ZonesDescriptionActivity"
     android:background="@color/default_background">
 
-    <com.androidplot.pie.PieChart
-        android:id="@+id/mySimplePieChart"
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_weight="1">
+
+        <org.eazegraph.lib.charts.PieChart
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/mySimplePieChart"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="8dp"
+            app:egLegendTextSize="18sp"
+            app:egUsePieRotation="true"
+            app:egValueTextSize="36sp"
+            android:layout_marginBottom="40dip" />
+
+     </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/temperature"
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_peter_river"
+            fbutton:shadowColor="@color/fbutton_color_belize_hole"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallthermometer"
+            android:drawablePadding="20dip"
             android:id="@+id/TemperatureButton"
+            android:padding="90dip"
             android:onClick="getTemperature"
-            android:background="@color/temperature_blue"
-            android:paddingLeft="20dp"
-            android:paddingTop="20dp"
-            android:layout_margin="20dp"
-            android:padding="20dp"
-            android:src="@drawable/thermometer"
-            android:baselineAlignBottom="false" />
+            android:text="@string/temperature"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
 
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/occupancy"
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_alizarin"
+            fbutton:shadowColor="@color/fbutton_color_pomegranate"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallgrouppeople"
+            android:drawablePadding="20dip"
             android:id="@+id/OccupancyButton"
-            android:background="@color/occupancy_red"
+            android:padding="90dip"
             android:onClick="getOccupancy"
-            android:layout_gravity="top"
-            android:layout_weight="0.50"
-            android:paddingLeft="20dp"
-            android:paddingTop="20dp"
-            android:paddingRight="20dp"
-            android:layout_margin="20dp"
-            android:padding="20dp"
-            android:src="@drawable/grouppeople"/>
+            android:text="@string/occupancy"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
 
     </LinearLayout>
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/status"
+
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_turquoise"
+            fbutton:shadowColor="@color/fbutton_color_green_sea"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallplug"
+            android:drawablePadding="20dip"
             android:id="@+id/PludLoadButton"
-            android:background="#ff22d053"
+            android:padding="90dip"
             android:onClick="getPlugLoad"
-            android:layout_margin="20dp"
-            android:padding="20dp"
-            android:src="@drawable/plug"/>
+            android:text="@string/status"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
 
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/artificialLighting"
-            android:id="@+id/ArticialLightingButton"
-            android:background="#fffff30f"
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_sun_flower"
+            fbutton:shadowColor="@color/fbutton_color_orange"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smalllightbulb"
+            android:drawablePadding="20dip"
+            android:id="@+id/ArtificialLightingButton"
+            android:padding="90dip"
             android:onClick="getLighting"
-            android:layout_weight="0.50"
-            android:layout_margin="20dp"
-            android:padding="20dp"
-            android:src="@drawable/lightbulb"/>
-
+            android:text="@string/artificialLighting"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
+        </LinearLayout>
 
 
 

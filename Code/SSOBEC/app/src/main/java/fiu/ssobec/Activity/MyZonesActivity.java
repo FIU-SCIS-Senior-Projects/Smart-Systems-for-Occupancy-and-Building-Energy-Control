@@ -1,12 +1,11 @@
 package fiu.ssobec.Activity;
 
-import android.app.ActionBar;
+import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -22,15 +21,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fiu.ssobec.ButtonAdapter;
+import fiu.ssobec.Adapters.ButtonAdapter;
+import fiu.ssobec.Adapters.MyRewardListAdapter;
+import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
-import fiu.ssobec.MyPlugLoadListAdapter;
-import fiu.ssobec.MyRewardListAdapter;
-import fiu.ssobec.PlugLoadListParent;
 import fiu.ssobec.R;
-import fiu.ssobec.RewardListParent;
+import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
+import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
 
 
@@ -39,13 +38,14 @@ import fiu.ssobec.Synchronization.SyncUtils;
     Our application will only need that the user log in once.
     A column in the UserSQLiteDatabase 'loggedIn'
 * */
-
 public class MyZonesActivity extends ActionBarActivity{
 
     public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
-    private static DataAccessUser data_access; //data access variable for user
+    private static DataAccessUser data_access;
+
+    private Object mSyncObserverHandle;
 
     public static int user_id;
 
@@ -55,6 +55,15 @@ public class MyZonesActivity extends ActionBarActivity{
 
         setContentView(R.layout.activity_my_zones);
 
+        //Synchronize Data
+        SyncUtils.CreateSyncAccount(this);
+        SyncUtils.TriggerRefresh();
+        setTheContentViewContent();
+
+    }
+
+    private void setTheContentViewContent()
+    {
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
 
@@ -72,23 +81,16 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
-            SyncUtils.CreateSyncAccount(this);
-            SyncUtils.TriggerRefresh();
             user_id = user.getId(); //Get the ID of the user
-
             List<NameValuePair> userId = new ArrayList<>(1);
-
             String res = null;
             userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
 
             //send the user_id to zonepost.php and get the zones
             try {
                 res = new ExternalDatabaseController((ArrayList<NameValuePair>) userId, GETZONES_PHP).send();
-                Log.i(LOG_TAG, "Zone Response is: "+res);
             } catch (InterruptedException e) {
-                Log.e(LOG_TAG, "Database Interrupted Exception thrown: "+e.getMessage());
                 e.printStackTrace();
-
             }
 
             if(res != null) {
@@ -118,7 +120,6 @@ public class MyZonesActivity extends ActionBarActivity{
 
             //Set the rewards list from the user's rewards
             ArrayList<RewardListParent> parents = buildDummyData();
-
             ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
             myRewardListAdapter.setParents(parents);
@@ -155,22 +156,26 @@ public class MyZonesActivity extends ActionBarActivity{
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        Intent intent;
         switch(item.getItemId()) {
             case R.id.action_logout:
-                Intent intent = new Intent(this,LoginActivity.class);
+                intent = new Intent(this,LoginActivity.class);
 
                 //Clean the Activity Stack
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ;
 
                 //Logout the user from the system by declaring the
-                //loggedIn column as '0'.
                 data_access.userLogout(user_id);
 
                 //when the user logs out, take him/her to the login activity
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
+                return true;
+            case R.id.action_addzone:
+                intent = new Intent(this,AddZoneActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -187,6 +192,13 @@ public class MyZonesActivity extends ActionBarActivity{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        mSyncStatusObserver.onStatusChanged(0);
+
+        // Watch for sync state changes
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
     }
 
     //When an Activity is left, close the
@@ -195,6 +207,53 @@ public class MyZonesActivity extends ActionBarActivity{
     protected void onPause() {
         super.onPause();
         data_access.close();
+
+        if (mSyncObserverHandle != null) {
+            ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
+            mSyncObserverHandle = null;
+        }
+    }
+
+    private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
+        /** Callback invoked with the sync adapter status changes. */
+        @Override
+        public void onStatusChanged(int which) {
+            runOnUiThread(new Runnable() {
+                /**
+                 * The SyncAdapter runs on a background thread. To update the UI, onStatusChanged()
+                 * runs on the UI thread.
+                 */
+                @Override
+                public void run() {
+                    // Create a handle to the account that was created by
+                    // SyncService.CreateSyncAccount(). This will be used to query the system to
+                    // see how the sync status has changed.
+                    Account account = AuthenticatorService.GetAccount();
+                    if (account == null) {
+                        // GetAccount() returned an invalid value. This shouldn't happen, but
+                        // we'll set the status to "not refreshing".
+                        setRefreshActionButtonState(false);
+                        return;
+                    }
+                    // Test the ContentResolver to see if the sync adapter is active or pending.
+                    // Set the state of the refresh button accordingly.
+                    boolean syncActive = ContentResolver.isSyncActive(
+                            account, SyncConstants.AUTHORITY);
+                    boolean syncPending = ContentResolver.isSyncPending(
+                            account, SyncConstants.AUTHORITY);
+                    setRefreshActionButtonState(syncActive || syncPending);
+                }
+            });
+        }
+    };
+
+    public void setRefreshActionButtonState(boolean refreshing) {
+        if (refreshing) {
+            setContentView(R.layout.activity_loading);
+        } else {
+            setContentView(R.layout.activity_my_zones);
+            setTheContentViewContent();
+        }
     }
 
 }

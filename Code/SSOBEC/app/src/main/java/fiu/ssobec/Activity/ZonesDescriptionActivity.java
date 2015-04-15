@@ -1,17 +1,15 @@
 package fiu.ssobec.Activity;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.androidplot.pie.PieChart;
-import com.androidplot.pie.PieRenderer;
-import com.androidplot.pie.Segment;
-import com.androidplot.pie.SegmentFormatter;
+import org.eazegraph.lib.charts.PieChart;
+import org.eazegraph.lib.models.PieModel;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -19,8 +17,6 @@ import java.util.HashMap;
 
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
-
-
 
 public class ZonesDescriptionActivity extends ActionBarActivity {
 
@@ -53,6 +49,7 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         DecimalFormat df = new DecimalFormat("#.#");
 
+
         PieChart pie = (PieChart) findViewById(R.id.mySimplePieChart);
 
         HashMap<String, Double> info = data_access.getInfoForZonesDescription(regionID);
@@ -62,39 +59,23 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         double percentage_light = (info.get("light")/(total_energy))*100;
         double percentage_plug = (info.get("plugload")/(total_energy))*100;
 
-        Segment s1 = new Segment("Cooling "+df.format(percentage_ac)+"%", info.get("ac"));
-        Segment s2  = new Segment("Lighting "+df.format(percentage_light)+"%", info.get("light"));
-        Segment s3 = new Segment("PlugLoad "+df.format(percentage_plug)+"%", info.get("plugload"));
+        PieChart mPieChart = (PieChart) findViewById(R.id.mySimplePieChart);
 
-        SegmentFormatter sf1 = new SegmentFormatter();
-        sf1.configure(getApplicationContext(), R.xml.pie_segment_formatter1);
-        sf1.getLabelPaint().setColor(Color.BLACK);
+        mPieChart.addPieSlice(new PieModel("Cooling", (float) percentage_ac, getResources().getColor(R.color.temperature_blue)));
+        mPieChart.addPieSlice(new PieModel("Lighting", (float) percentage_light, getResources().getColor(R.color.lighting_yellow)));
+        mPieChart.addPieSlice(new PieModel("Plug Load", (float) percentage_plug, getResources().getColor(R.color.plugload_green)));
 
-        SegmentFormatter sf2 = new SegmentFormatter();
-        sf2.configure(getApplicationContext(), R.xml.pie_segment_formatter2);
-        sf2.getLabelPaint().setColor(Color.BLACK);
+        mPieChart.startAnimation();
 
-        SegmentFormatter sf3 = new SegmentFormatter();
-        sf3.configure(getApplicationContext(), R.xml.pie_segment_formatter3);
-        sf3.getLabelPaint().setColor(Color.BLACK);
 
-        pie.addSeries(s1, sf1);
-        pie.addSeries(s2, sf2);
-        pie.addSeries(s3, sf3);
-
-        pie.getBorderPaint().setColor(Color.TRANSPARENT);
-        pie.getBackgroundPaint().setColor(Color.TRANSPARENT);
-
-        pie.setPlotMargins(0, 0, 0, 0);
-        pie.getRenderer(PieRenderer.class).setDonutSize(.90f, PieRenderer.DonutMode.PERCENT);
-        
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_my_zones, menu);
+        getMenuInflater().inflate(R.menu.menu_zones_description, menu);
         return true;
     }
 

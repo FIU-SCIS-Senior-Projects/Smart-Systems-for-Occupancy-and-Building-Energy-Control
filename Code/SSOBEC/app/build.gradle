@@ -37,10 +37,12 @@ dependencies {
     compile 'org.apache.commons:commons-math3:3.4.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'joda-time:joda-time:2.7'
-    //compile files('C:/Smart-Building/Code/SSOBEC/libs/androidplot-core-0.6.1.jar')
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.androidplot:androidplot:0.6.1'
     compile 'com.androidplot:androidplot-core:0.6.1'
-    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.0')
-    androidTestCompile ('com.android.support.test:testing-support-lib:0.1')
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
+    compile 'com.github.blackfizz:eazegraph:1.2.2@aar'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'info.hoang8f:fbutton:1.0.5'
 }

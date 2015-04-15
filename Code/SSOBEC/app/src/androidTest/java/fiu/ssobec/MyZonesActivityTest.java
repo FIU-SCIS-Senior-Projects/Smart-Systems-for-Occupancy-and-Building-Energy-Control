@@ -7,6 +7,7 @@ import android.test.suitebuilder.annotation.MediumTest;
 import fiu.ssobec.Activity.MyZonesActivity;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 /**
@@ -14,7 +15,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
  */
 public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZonesActivity> {
 
-    private MyZonesActivity mActivity;
 
     public MyZonesActivityTest() {
         super(MyZonesActivity.class);
@@ -29,19 +29,45 @@ public class MyZonesActivityTest  extends ActivityInstrumentationTestCase2<MyZon
     }
 
     @MediumTest
-    public void testText() {
+    public void testDifferentZones() {
+
+
+        //onView(withId(R.id.email_text_field)).perform(ViewActions.typeText("mandy@yahoo.com"));
+        //onView(withId(R.id.password_text_field)).perform(ViewActions.typeText("mandy123"));
+        //onView(withId(R.id.login_button)).perform(ViewActions.click());
 
         onView(withId(1)).perform(ViewActions.click());
         onView(withId(R.id.TemperatureButton)).perform(ViewActions.click());
-        onView(withId(R.id.temp_ac_performance)).perform(ViewActions.click());
-        onView(withId(R.id.today_temperature_textfield)).perform(ViewActions.typeText("60"));
-        onView(withId(R.id.predict_button)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.ArtificialLightingButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
+        pressBack();
+        pressBack();
 
-        try {
-            Thread.sleep(6500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        onView(withId(3)).perform(ViewActions.click());
+        onView(withId(R.id.TemperatureButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.ArtificialLightingButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
+        pressBack();
+        pressBack();
+
+        onView(withId(5)).perform(ViewActions.click());
+        onView(withId(R.id.TemperatureButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.ArtificialLightingButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.OccupancyButton)).perform(ViewActions.click());
+        pressBack();
+        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
+        pressBack();
+
 
     }
 

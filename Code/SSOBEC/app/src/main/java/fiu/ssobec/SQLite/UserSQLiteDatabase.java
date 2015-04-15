@@ -115,7 +115,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     private static final String OW_TABLE_CREATE = "create table "
             + TABLE_OW + " ("
-            + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP UNIQUE        , "
+            + OW_DATETIME + " datetime NOT NULL DEFAULT CURRENT_TIMESTAMP UNIQUE, "
             + OW_CLOUDPERCENTAGE + " int NULL, "
             + OW_TEMPERATURE + " int NULL, "
             + "CONSTRAINT cloud_temp_pk PRIMARY KEY (" + OW_CLOUDPERCENTAGE+" , "+ OW_TEMPERATURE + ") "
@@ -135,6 +135,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String STAT_AC_ENERGYUSAGE = "ac_energy_usage";
     public static final String STAT_OCCUP_TIME_AVG = "avg_occupancy_in_room";
     public static final String STAT_OUTSIDE_TEMP_AVG = "outside_temperature_avg";
+    public static final String STAT_AC_SETPOINT = "ac_setpoint";
 
     private static final String STAT_TABLE_CREATE = "create table "
             + TABLE_STAT + " ("
@@ -149,6 +150,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + STAT_AC_ENERGYUSAGE + " double NULL, "
             + STAT_OCCUP_TIME_AVG + " double NULL, "
             + STAT_OUTSIDE_TEMP_AVG + " double NULL, "
+            + STAT_AC_SETPOINT + " double NULL, "
             + "CONSTRAINT energy_statistics_pk PRIMARY KEY (" + STAT_ID+" , "+STAT_DATE+"), "
             + "FOREIGN KEY ("+STAT_ID+") REFERENCES "+TABLE_ZONES+" ("+ZONES_COLUMN_ID+") "+
             ");";

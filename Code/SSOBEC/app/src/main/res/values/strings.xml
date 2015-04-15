@@ -11,8 +11,9 @@
     <string name="temperature">Temperature</string>
     <string name="occupancy">Occupancy</string>
     <string name="status">Plug Load</string>
-    <string name="artificialLighting">Artificial Lighting</string>
+    <string name="artificialLighting">Lighting</string>
     <string name="action_logout">Logout</string>
+    <string name="action_addzone">Add Zone</string>
     <string name="celsius">Celsius</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="outside_temperature">Temperature Outside the Building:</string>
@@ -69,6 +70,10 @@
 
     <string name="lighting_legend_label_wasted">Lighting Energy Wasted </string>
     <string name="lighting_legend_label_consumed">Lighting Energy Efficiently Consumed </string>
+
+    <string name="empty_room_msg">It seems this room has no data yet.</string>
+    <string name="title_activity_add_zone">AddZoneActivity</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
 
 
 </resources>

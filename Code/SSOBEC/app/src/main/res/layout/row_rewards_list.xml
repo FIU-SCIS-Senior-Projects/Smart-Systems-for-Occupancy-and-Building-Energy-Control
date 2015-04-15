@@ -9,8 +9,8 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:id="@+id/reward_icon"
             android:layout_gravity="center"
             android:layout_margin="5dp" />

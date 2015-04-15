@@ -10,19 +10,21 @@ import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import fiu.ssobec.Calculations.StatisticalCalculation;
 import fiu.ssobec.DataAccess.DataAccessOwm;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.SQLite.UserSQLiteDatabase;
-import fiu.ssobec.StatisticalCalculation;
 
 /**
  * Created by Dalaidis on 2/17/2015.
@@ -35,11 +37,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String TEMPERATURE_PHP = "http://smartsystems-dev.cs.fiu.edu/temperaturepost.php";
     public static final String LIGHTING_PHP = "http://smartsystems-dev.cs.fiu.edu/lightingpost.php";
     public static final String PLUGLOAD_PHP = "http://smartsystems-dev.cs.fiu.edu/plugloadpost.php";
+    public static final String CHECKUPDATE_PHP = "http://smartsystems-dev.cs.fiu.edu/checkforupdate.php";
 
     public static final String ZONE_COLUMN_ID = "region_id";
     public static final String LAST_TIME_STAMP = "last_time_stamp";
     public static final String TIME_STAMP = "time_stamp";
-
     public static final String PLUG_APPLIANCE_TYPE = "appliance_type";
     public static final String PLUG_STATUS = "status";
     public static final String PLUG_APPLIANCE_NAME = "appliance_name";
@@ -54,6 +56,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private StatisticalCalculation sc;
     String sqlRegionIdArr;
     private ArrayList<Integer> zones_with_new_data;
+    JSONArray zone_list;
 
     /**
      * Creates an {@link android.content.AbstractThreadedSyncAdapter}.
@@ -62,8 +65,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         data_access = new DataAccessUser(context);
         mcontext = context;
-        zones_with_new_data = new ArrayList<>();
-
+        zone_list = new JSONArray();
     }
 
     /**
@@ -73,6 +75,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
         Log.i(LOG_TAG, "Beginning network synchronization");
+        zones_with_new_data = new ArrayList<>();
 
         try {
             data_access.open();
@@ -81,12 +84,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         List<Integer> region_id = data_access.getAllZoneID();
-        sqlRegionIdArr = sqlArrayFormat(region_id);
-        Log.i(LOG_TAG, "Region ID: "+sqlRegionIdArr);
+        for(int i = 0; i< region_id.size(); i++)
+        {
+            zone_list.put(region_id.get(i));
+        }
 
+        sqlRegionIdArr = sqlArrayFormat(region_id);
+        Log.i(LOG_TAG, "Region ID: " + sqlRegionIdArr);
+
+        getDatabaseData(UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP);
         getDatabaseData(UserSQLiteDatabase.TABLE_OCCUPANCY, OCCUPANCY_PHP);
         getDatabaseData(UserSQLiteDatabase.TABLE_LIGHTING, LIGHTING_PHP);
-        getDatabaseData(UserSQLiteDatabase.TABLE_TEMPERATURE, TEMPERATURE_PHP);
         getDatabaseData(UserSQLiteDatabase.TABLE_PLUGLOAD, PLUGLOAD_PHP);
 
         try {
@@ -97,36 +105,65 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         data_access.close();
-        Log.i(LOG_TAG, "Finishing network synchronization");
-
         sc = new StatisticalCalculation(mcontext, zones_with_new_data);
-        if(sc.getNewest_timestamp() != null)
-        {
+        if (sc.getNewest_timestamp() != null) {
             Log.i(LOG_TAG, "Calculate Data");
             sc.calculateData();
+            sc.close();
+        }
+        Log.i(LOG_TAG, "Finishing network synchronization");
+
+    }
+
+    //TODO: Erase
+    private boolean checkDBUpdate()
+    {
+        List<NameValuePair> ids_and_numrows = new ArrayList<>(5);
+
+        HashMap<String, Integer> info = data_access.getRowCount();
+        Log.i(LOG_TAG, "Zone PlugLoad row count: "+(info.get("zone_plugload")).toString());
+        Log.i(LOG_TAG, "Zone Lighting row count: "+(info.get("zone_lighting")).toString());
+        Log.i(LOG_TAG, "Zone Temperature row count: "+(info.get("zone_temperature")).toString());
+        Log.i(LOG_TAG, "Zone Occupancy row count: "+(info.get("zone_occupancy")).toString());
+
+        ids_and_numrows.add(new BasicNameValuePair(ZONE_COLUMN_ID, (sqlRegionIdArr).trim()));
+        ids_and_numrows.add(new BasicNameValuePair("zone_plugload", (info.get("zone_plugload")).toString().trim()));
+        ids_and_numrows.add(new BasicNameValuePair("zone_lighting",  (info.get("zone_lighting")).toString().trim()));
+        ids_and_numrows.add(new BasicNameValuePair("zone_temperature",  (info.get("zone_temperature")).toString().trim()));
+        ids_and_numrows.add(new BasicNameValuePair("zone_occupancy", (info.get("zone_occupancy")).toString().trim()));
+
+        try {
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) ids_and_numrows, CHECKUPDATE_PHP).send();
+            Log.i(LOG_TAG, "checkDBUpdate() Response from Database for checkDBUpdate: " + res);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        sc.close();
 
+        return false;
     }
 
     private void getDatabaseData(String table_name, String php_file_name)
     {
-        //"0000-00-00 00:00:00"
-        String last_time_stamp = data_access.getLastTimeStamp(table_name);
+
+        JSONArray last_time_stamp = data_access.getLastTimeStampByID(table_name, zone_list);
 
         List<NameValuePair> id_and_timestamp = new ArrayList<>(2);
 
-        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (sqlRegionIdArr).trim()));
-        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp).trim()));
+        id_and_timestamp.add(new BasicNameValuePair(ZONE_COLUMN_ID, (zone_list+"").trim()));
+        id_and_timestamp.add(new BasicNameValuePair(LAST_TIME_STAMP, (last_time_stamp+"").trim()));
         Log.i(LOG_TAG, "Table name: "+table_name+", time_stamp: "+last_time_stamp);
 
         try {
             String res = new ExternalDatabaseController((ArrayList<NameValuePair>) id_and_timestamp, php_file_name).send();
-            Log.i(LOG_TAG, "Response from Database for table: "+table_name+": "+res);
+            Log.i(LOG_TAG, " Response from Database for table: " + table_name + ": " + res);
 
-            new JSONObject(res);
-            saveDataOnInternalDB(table_name, res);
+            if(res != null)
+            {
+                new JSONObject(res);
+                saveDataOnInternalDB(table_name, res);
+            }
 
         } catch (InterruptedException | JSONException e) {
             Log.e(LOG_TAG, "There was an error while getting the: "+table_name);

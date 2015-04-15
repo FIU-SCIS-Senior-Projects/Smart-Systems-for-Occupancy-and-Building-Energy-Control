@@ -1,4 +1,4 @@
-package fiu.ssobec;
+package fiu.ssobec.Adapters;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import fiu.ssobec.R;
-import fiu.ssobec.RewardListParent;
+import fiu.ssobec.AdaptersUtil.RewardListParent;
 
 /**
  * Created by Fresa on 4/10/2015.
