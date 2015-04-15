@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import fiu.ssobec.Calculations.NaiveBayesTemperature2;
+import fiu.ssobec.Calculations.NaiveBayesTemperature;
 import fiu.ssobec.R;
 
 public class ACConsumptionPrediction extends ActionBarActivity {
@@ -50,7 +50,7 @@ public class ACConsumptionPrediction extends ActionBarActivity {
     String res;
     public void predictTemperatureEnergy(View view)
     {
-        NaiveBayesTemperature2 mnaive = new NaiveBayesTemperature2(this);
+        NaiveBayesTemperature mnaive = new NaiveBayesTemperature(this);
         mnaive.training();
         String inside_temp = ((EditText) findViewById(R.id.today_temperature_textfield)).getText().toString();
 
