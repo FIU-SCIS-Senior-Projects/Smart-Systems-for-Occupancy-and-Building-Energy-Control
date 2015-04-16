@@ -53,7 +53,11 @@ public class MyZonesActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_my_zones);
+        //Declare the access to the SQLite table for user
+        data_access = new DataAccessUser(this);
+
+        //Open the data access to the tables
+        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
 
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);
@@ -63,11 +67,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     private void setTheContentViewContent()
     {
-        //Declare the access to the SQLite table for user
-        data_access = new DataAccessUser(this);
-
-        //Open the data access to the tables
-        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
+        setContentView(R.layout.activity_my_zones);
 
         User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
 
