@@ -73,7 +73,8 @@ public class EnergyActivity extends ActionBarActivity {
         {
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(title, getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME));
-            editor.commit();
+            //editor.commit();
+            editor.apply();
         }
 
         if (sharedpreferences.contains(title))
@@ -288,7 +289,7 @@ public class EnergyActivity extends ActionBarActivity {
             return;
         }
 
-        ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+"");
+        ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+" hours");
 
         PieChart pie = (PieChart) findViewById(R.id.myLightingChart);
 

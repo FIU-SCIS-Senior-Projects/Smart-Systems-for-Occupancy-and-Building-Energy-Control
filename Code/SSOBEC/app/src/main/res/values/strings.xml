@@ -49,7 +49,7 @@
     <string name="consumption_appliances_childrow_image">An image that represents the appliance name</string>
     <string name="calculate_consumption">Monthly Consumption</string>
 
-    <string name="title_activity_acconsumption_prediction">ACConsumptionPrediction</string>
+    <string name="title_activity_acconsumption_prediction">Predict the AC Consumption</string>
 
     <string name="forecast_temperature_outside">Forecast Temperature Today: </string>
     <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>
@@ -60,11 +60,12 @@
     <string name="ac_mean_high_temperature_outside">Mean High Temperature Outside: </string>
 
     <string name="ac_inside_temperature_today">Enter Inside Temperature: </string>
+
     <string name="title_activity_antivity_acconsumption_prediction2">
         antivity_acconsumption_prediction2
     </string>
 
-    <string name="temperature_inside_editext">todays building temperature</string>
+    <string name="temperature_inside_editext">today\'s building temperature</string>
 
     <string name="average_lighting">Average Time the Light is ON in a day: </string>
 
@@ -72,8 +73,12 @@
     <string name="lighting_legend_label_consumed">Lighting Energy Efficiently Consumed </string>
 
     <string name="empty_room_msg">It seems this room has no data yet.</string>
-    <string name="title_activity_add_zone">AddZoneActivity</string>
+
+    <string name="title_activity_add_zone">Add Zone</string>
+
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+
+    <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
 
 
 </resources>

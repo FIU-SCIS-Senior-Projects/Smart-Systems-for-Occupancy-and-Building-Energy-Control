@@ -38,6 +38,7 @@ public class AlgorithmTest extends ActivityInstrumentationTestCase2<MyZonesActiv
     public void testNaiveAlgorithm() {
 
         onView(withId(1)).perform(click());
+
         onView(withId(R.id.TemperatureButton)).perform(click());
 
         // Open the overflow menu OR open the options menu,

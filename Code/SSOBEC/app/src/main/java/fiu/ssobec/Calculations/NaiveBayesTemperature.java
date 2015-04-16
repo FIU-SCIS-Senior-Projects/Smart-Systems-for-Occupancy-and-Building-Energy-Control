@@ -27,12 +27,6 @@ public class NaiveBayesTemperature {
     private double sd_diff_low;
     private double sd_diff_med;
     private double sd_diff_high;
-    private double mean_otemp_low;
-    private double mean_otemp_med;
-    private double mean_otemp_high;
-    private double sd_otemp_low;
-    private double sd_otemp_med;
-    private double sd_otemp_high;
     private int TEMP_LOW=54;
     private int TEMP_HIGH=56;
     private Context context;
@@ -72,8 +66,11 @@ public class NaiveBayesTemperature {
         ArrayList<Double> allvals_diffs_med = getDiffs(allvals_itemp_med, allvals_otemp_med);
         ArrayList<Double> allvals_diffs_high = getDiffs(allvals_itemp_high, allvals_otemp_high);
 
+        assert allvals_diffs_low != null;
         mean_diff_low = StatUtils.mean(ArrayUtils.toPrimitive(allvals_diffs_low.toArray(new Double[allvals_itemp_low.size()])));
+        assert allvals_diffs_med != null;
         mean_diff_med = StatUtils.mean(ArrayUtils.toPrimitive(allvals_diffs_med.toArray(new Double[allvals_itemp_med.size()])));
+        assert allvals_diffs_high != null;
         mean_diff_high = StatUtils.mean(ArrayUtils.toPrimitive(allvals_diffs_high.toArray(new Double[allvals_itemp_high.size()])));
 
         sd_diff_low = FastMath.sqrt(StatUtils.variance(ArrayUtils.toPrimitive(allvals_diffs_low.toArray(new Double[allvals_itemp_low.size()])))) ;
@@ -112,9 +109,6 @@ public class NaiveBayesTemperature {
 
     public String predict(int out_temp, int ins_temp){
 
-        //double normal_low_out = NormalDistribution(out_temp, mean_otemp_low, sd_otemp_low);
-        //double normal_med_out = NormalDistribution(out_temp, mean_otemp_med, sd_otemp_med);
-        //double normal_high_out = NormalDistribution(out_temp, mean_otemp_high, sd_otemp_high);
         Log.i(LOG_TAG, "Outside temp: "+out_temp+" Inside temp: "+ins_temp+" Difference: "+Math.abs(out_temp - ins_temp));
 
         double normal_low_ins = NormalDistribution(Math.abs(out_temp - ins_temp), mean_diff_low, sd_diff_low);

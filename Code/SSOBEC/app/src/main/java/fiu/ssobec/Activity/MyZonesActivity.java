@@ -58,7 +58,6 @@ public class MyZonesActivity extends ActionBarActivity{
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);
         SyncUtils.TriggerRefresh();
-        setTheContentViewContent();
 
     }
 

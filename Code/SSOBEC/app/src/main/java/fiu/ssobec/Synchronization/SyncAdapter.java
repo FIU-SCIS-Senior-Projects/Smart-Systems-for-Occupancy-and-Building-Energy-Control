@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -115,34 +114,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
-    //TODO: Erase
-    private boolean checkDBUpdate()
-    {
-        List<NameValuePair> ids_and_numrows = new ArrayList<>(5);
-
-        HashMap<String, Integer> info = data_access.getRowCount();
-        Log.i(LOG_TAG, "Zone PlugLoad row count: "+(info.get("zone_plugload")).toString());
-        Log.i(LOG_TAG, "Zone Lighting row count: "+(info.get("zone_lighting")).toString());
-        Log.i(LOG_TAG, "Zone Temperature row count: "+(info.get("zone_temperature")).toString());
-        Log.i(LOG_TAG, "Zone Occupancy row count: "+(info.get("zone_occupancy")).toString());
-
-        ids_and_numrows.add(new BasicNameValuePair(ZONE_COLUMN_ID, (sqlRegionIdArr).trim()));
-        ids_and_numrows.add(new BasicNameValuePair("zone_plugload", (info.get("zone_plugload")).toString().trim()));
-        ids_and_numrows.add(new BasicNameValuePair("zone_lighting",  (info.get("zone_lighting")).toString().trim()));
-        ids_and_numrows.add(new BasicNameValuePair("zone_temperature",  (info.get("zone_temperature")).toString().trim()));
-        ids_and_numrows.add(new BasicNameValuePair("zone_occupancy", (info.get("zone_occupancy")).toString().trim()));
-
-        try {
-            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) ids_and_numrows, CHECKUPDATE_PHP).send();
-            Log.i(LOG_TAG, "checkDBUpdate() Response from Database for checkDBUpdate: " + res);
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        return false;
-    }
 
     private void getDatabaseData(String table_name, String php_file_name)
     {

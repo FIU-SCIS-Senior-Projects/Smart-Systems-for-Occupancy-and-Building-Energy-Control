@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import fiu.ssobec.DataAccess.DataAccessInterface;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 
@@ -61,7 +62,6 @@ public class StatisticalCalculation {
 
         earliest_timestamp = mdata_access.getFirstTimeStamp();
         Log.i(LOG_TAG, "First Time Stamp: "+earliest_timestamp);
-        //earliest_timestamp="2014-01-02 00:00:00";
         last_timestamp = mdata_access.getLastTimeStamp();
     }
 
@@ -83,7 +83,7 @@ public class StatisticalCalculation {
         double lighting_time_avg=0;
         double lighting_energyusage=0;
         double lighting_energywaste=0;
-        double plugload_energyusage=0;
+        double plugloadplugged_time_avg=0;
         double occup_time_avg=0;
         ac_setpoint=0;
 
@@ -91,7 +91,7 @@ public class StatisticalCalculation {
 
         upperbound_date = earliest_timestamp;
 
-        while(there_is_data)
+        while(there_is_data && (upperbound_date != DataAccessInterface.TIME_STAMP_FORMAT))
         {
             there_is_data = false;
 
@@ -101,12 +101,14 @@ public class StatisticalCalculation {
             Log.i(LOG_TAG, "Region IDs: "+region_id.toString());
 
 
+            //List<Integer> region_id = mdata_access.getAllZoneID();
             for (Integer id : region_id) {
 
-                if(mdata_access.dateExistsInStatTable(upperbound_date, id))
+                String date = getDateFromDateTime(upperbound_date);
+
+                if(mdata_access.dateExistsInStatTable(date, id))
                     continue;
 
-                //
                 //Average of temperature in a day
                 inside_temp_avg = avg(mdata_access.getAllTemperatureOnDateInterval(id, upperbound_date, lowerbound_date));
 
@@ -130,19 +132,26 @@ public class StatisticalCalculation {
                 Log.i(LOG_TAG, "Lighting Energy Wasted: "+lighting_energywaste);
 
                 //How much energy was used by plug load in a day
-                plugload_energyusage = mdata_access.getAllPlugLoadEnergyBefore(id, upperbound_date, lowerbound_date);
-                Log.i(LOG_TAG, "Plug load Energy Usage: "+plugload_energyusage);
+                plugloadplugged_time_avg = mdata_access.getnHoursApplIsPlugged(id, upperbound_date, lowerbound_date);
+                Log.i(LOG_TAG, "Plug load Time avg: "+plugloadplugged_time_avg);
 
-                String date = getDateFromDateTime(upperbound_date);
                 if(id.equals(region_id.get(0)))
                     getOutsideTempAndACEnergy(date);
 
-                if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugload_energyusage+occup_time_avg+ac_setpoint > 0)
+
+                if(inside_temp_avg+lighting_time_avg+lighting_energyusage+lighting_energywaste+plugloadplugged_time_avg+occup_time_avg+
+                        ac_setpoint+plugload_energywaste+ac_energyusage > 0)
                 {
                     //save it in the database
                     mdata_access.createStat(id,date, inside_temp_avg, lighting_time_avg,
-                    lighting_energyusage, lighting_energywaste, plugload_energyusage,
+                    lighting_energyusage, lighting_energywaste, plugloadplugged_time_avg,
                     plugload_energywaste, ac_energyusage, occup_time_avg, outside_temp_avg, ac_setpoint);
+
+                    //Save on JSON Array.
+                    //then send datainformation to the external database
+                    if(lighting_energyusage + lighting_energywaste != 0)
+                        insertEnergyInfoInExternalDB(date, id, lighting_energyusage, lighting_energywaste);
+
                     there_is_data = true;
                 }
             }
@@ -240,7 +249,6 @@ public class StatisticalCalculation {
         DateTimeFormatter dateStringFormat2 = DateTimeFormat.forPattern("yyyy-MM-dd 00:00:00");
         DateTimeFormatter dateStringFormat = DateTimeFormat.forPattern("yyyy-MM-dd");
         DateTime date_time = dateStringFormat2.parseDateTime(datetime);
-
         return dateStringFormat.print(date_time);
     }
 
@@ -259,7 +267,6 @@ public class StatisticalCalculation {
             Log.i(LOG_TAG, "Response from Database for table: "+res);
 
             JSONObject obj =  new JSONObject(res);
-
             JSONObject myobj = obj.getJSONObject("0");
             outside_temp_avg = myobj.getDouble("outside_temperature");
             ac_energyusage = myobj.getDouble("ac_energy_usage");
@@ -270,5 +277,41 @@ public class StatisticalCalculation {
             e.printStackTrace();
         }
 
+    }
+
+    private void insertEnergyInfoInExternalDB(String date, int id, double light_total, double light_waste)
+    {
+        List<NameValuePair> lightingValuePairs = new ArrayList<>(4);
+        lightingValuePairs.add(new BasicNameValuePair("date", (date).trim()));
+        lightingValuePairs.add(new BasicNameValuePair("zone_description_region_id", (id + "").trim()));
+        lightingValuePairs.add(new BasicNameValuePair("lighting_total_kw", (light_total + "").trim()));
+        lightingValuePairs.add(new BasicNameValuePair("lighting_waste_kw", (light_waste + "").trim()));
+
+        try {
+            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) lightingValuePairs,
+                    "http://smartsystems-dev.cs.fiu.edu/lighting_energy_performance.php").send();
+
+            Log.i(LOG_TAG, "Response from database from lighting perf table: "+res);
+
+            ArrayList<BasicNameValuePair> arrayList = mdata_access.getPlugLoadPerformance(id, upperbound_date, lowerbound_date);
+            Iterator iterator = arrayList.iterator();
+            while (iterator.hasNext())
+            {
+                BasicNameValuePair basicNameValuePair = (BasicNameValuePair) iterator.next();
+
+                List<NameValuePair> plugloadValuePairs = new ArrayList<>(4);
+                plugloadValuePairs.add(new BasicNameValuePair("date", (date).trim()));
+                plugloadValuePairs.add(new BasicNameValuePair("zone_description_region_id", (id + "").trim()));
+                plugloadValuePairs.add(new BasicNameValuePair("appliance_time_plugged", basicNameValuePair.getValue()));
+                plugloadValuePairs.add(new BasicNameValuePair("appliance_type", basicNameValuePair.getName()));
+                res = new ExternalDatabaseController((ArrayList<NameValuePair>) plugloadValuePairs,
+                        "http://smartsystems-dev.cs.fiu.edu/plugload_energy_performance.php").send();
+
+                Log.i(LOG_TAG, "Response from database from plugload performance table: "+res);
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

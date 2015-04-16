@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -147,7 +148,7 @@ public class DataAccessUser implements DataAccessInterface {
 
         System.out.println("Zone Name in vals: "+vals.getAsString(zone_name));
 
-        db.insert(UserSQLiteDatabase.TABLE_ZONES,null ,vals);
+        db.insert(UserSQLiteDatabase.TABLE_ZONES, null, vals);
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
                 ZONE_COLS,
                 UserSQLiteDatabase.ZONES_COLUMN_ID+" = "+id,
@@ -227,7 +228,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, date_time);
         vals.put(UserSQLiteDatabase.TEMP_COLUMN_TEMPERATURE, temperature);
 
-        db.insert(UserSQLiteDatabase.TABLE_TEMPERATURE,null ,vals);
+        db.insert(UserSQLiteDatabase.TABLE_TEMPERATURE, null, vals);
     }
 
     public ArrayList<String> getLatestTemperature(int zone_id)
@@ -347,13 +348,13 @@ public class DataAccessUser implements DataAccessInterface {
         return cnt;
     }
 
-    public double getAllPlugLoadEnergyBefore(int zone_id, String upperbound_date, String lowerbound_date)
+    public double getnHoursApplIsPlugged(int zone_id, String upperbound_date, String lowerbound_date)
     {
         //Get only information for the AC
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
                 PLUG_COLS,
                 UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
-                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+" = 'ON'"
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_STATE+" = 'PLUGGED'"
                 +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" >= Datetime('"+upperbound_date+"')"
                 +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" < Datetime('"+lowerbound_date+"')",
                 null, null, null, null);
@@ -363,8 +364,8 @@ public class DataAccessUser implements DataAccessInterface {
         while (!cursor.isAfterLast()) {
             PlugLoad plug = getPlugLoadFromCursor(cursor);
 
-            res = res + plug.getEnergy_usage_kwh();
-
+            //res = res + plug.getEnergy_usage_kwh();
+            res = res + 1;
             cursor.moveToNext();
         }
 
@@ -796,7 +797,7 @@ public class DataAccessUser implements DataAccessInterface {
         {
             case UserSQLiteDatabase.TABLE_OCCUPANCY:
                 region_timestamp_list = getLastTimeStampArray(UserSQLiteDatabase.OCC_COLUMN_DATETIME, UserSQLiteDatabase.OCC_COLUMN_ID,
-                                        UserSQLiteDatabase.TABLE_OCCUPANCY, region_arr );
+                        UserSQLiteDatabase.TABLE_OCCUPANCY, region_arr);
                 break;
             case UserSQLiteDatabase.TABLE_LIGHTING:
                 region_timestamp_list = getLastTimeStampArray(UserSQLiteDatabase.LIGHT_COLUMN_DATETIME, UserSQLiteDatabase.LIGHT_COLUMN_ID,
@@ -804,7 +805,7 @@ public class DataAccessUser implements DataAccessInterface {
                 break;
             case UserSQLiteDatabase.TABLE_PLUGLOAD:
                 region_timestamp_list = getLastTimeStampArray(UserSQLiteDatabase.PLUG_COLUMN_DATETIME, UserSQLiteDatabase.PLUG_COLUMN_ID,
-                        UserSQLiteDatabase.TABLE_PLUGLOAD, region_arr );
+                        UserSQLiteDatabase.TABLE_PLUGLOAD, region_arr);
                 break;
             case UserSQLiteDatabase.TABLE_TEMPERATURE:
                 region_timestamp_list = getLastTimeStampArray(UserSQLiteDatabase.TEMP_COLUMN_DATETIME, UserSQLiteDatabase.TEMP_COLUMN_ID,
@@ -870,7 +871,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG, outside_temp_avg);
         vals.put(UserSQLiteDatabase.STAT_AC_SETPOINT, ac_setpoint);
 
-        db.insert(UserSQLiteDatabase.TABLE_STAT, null ,vals);
+        db.insert(UserSQLiteDatabase.TABLE_STAT, null, vals);
     }
 
     //TODO: After finish testing add option to only calculate a month
@@ -931,7 +932,7 @@ public class DataAccessUser implements DataAccessInterface {
                             + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " > " + ac_energy_upper
                             + " AND " + UserSQLiteDatabase.STAT_AC_ENERGYUSAGE + " <= " + ac_energy_lower
                             + " AND " + UserSQLiteDatabase.STAT_OUTSIDE_TEMP_AVG + " != 0",
-                    null, null, null, null);
+            null, null, null, null);
         }
 
         cursor.moveToFirst();
@@ -945,6 +946,42 @@ public class DataAccessUser implements DataAccessInterface {
         return myList;
     }
 
+
+    //Select the total time
+    //SELECT `appliance_type`, COUNT(*) FROM zone_plugload GROUP BY `appliance_type`;
+    public ArrayList<BasicNameValuePair> getPlugLoadPerformance(int zone_id, String upperbound_date, String lowerbound_date)
+    {
+        ArrayList<BasicNameValuePair> basicNameValuePair = new ArrayList<>();
+
+//        Cursor cursor = db.rawQuery("SELECT "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+
+//                                    ", COUNT(*) FROM "+UserSQLiteDatabase.TABLE_PLUGLOAD+
+//                                    " WHERE "+
+//                                    UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
+//                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " >= Datetime('"+upperbound_date+"')"
+//                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " < Datetime('"+lowerbound_date+"')"
+//                                    +" GROUP BY "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+";", null);
+
+        Cursor cursor = db.rawQuery("SELECT "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+
+                ", SUM("+UserSQLiteDatabase.PLUG_COLUMN_APPENERGY+") FROM "+UserSQLiteDatabase.TABLE_PLUGLOAD+
+                " WHERE "+
+                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " >= Datetime('"+upperbound_date+"')"
+                +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " < Datetime('"+lowerbound_date+"')"
+                +" GROUP BY "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+";", null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            basicNameValuePair.add(new BasicNameValuePair(cursor.getString(0),cursor.getDouble(1)+""));
+            Log.i(LOG_TAG, "getPlugLoadPerformance, Appliance Name: " + cursor.getString(0) + ", Hours: " + cursor.getDouble(1));
+            cursor.moveToNext();
+        }
+
+        // make sure to close the cursor
+        cursor.close();
+
+        return basicNameValuePair;
+    }
+
     public boolean dateExistsInStatTable(String date, int id)
     {
         Cursor cursor;
@@ -955,10 +992,15 @@ public class DataAccessUser implements DataAccessInterface {
                 null, null, null, null);
         cursor.moveToFirst();
 
-        if(cursor.getString(0) != null)
-            return true;
+       if(cursor.moveToFirst())
+       {
+           if(cursor.getString(0) != null)
+               return true;
+           else
+               return false;
+       }
         else
-            return false;
+           return false;
     }
 
     public ArrayList<Integer> getLastFewHoursofOccupancy(int region_id)
@@ -1083,7 +1125,7 @@ public class DataAccessUser implements DataAccessInterface {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             energywaste = cursor.getDouble(0)+ energywaste;
-            System.out.println("getLightingEnergyWaste: "+energywaste);
+            System.out.println("getLightingEnergyWaste: " + energywaste);
             cursor.moveToNext();
         }
 
@@ -1141,11 +1183,10 @@ public class DataAccessUser implements DataAccessInterface {
 
     /*Get total energy usage by plugLoad, air conditioning and lighting of a zone
     * */
-    public HashMap<String, Double> getInfoForZonesDescription(int region_id)
-    {
-        double plug=0.0;
-        double ac=0.0;
-        double light=0.0;
+    public HashMap<String, Double> getInfoForZonesDescription(int region_id) {
+        double plug = 0.0;
+        double ac = 0.0;
+        double light = 0.0;
         Cursor cursor;
 
         HashMap<String, Double> info = new HashMap<>();
@@ -1173,8 +1214,6 @@ public class DataAccessUser implements DataAccessInterface {
             ac = cursor.getDouble(0) + ac;
             cursor.moveToNext();
         }
-        //TODO: get rid of the '30' when finished testing
-        ac = ac/30;
         cursor.close();
 
         cursor = db.query(UserSQLiteDatabase.TABLE_STAT,
@@ -1192,44 +1231,6 @@ public class DataAccessUser implements DataAccessInterface {
         info.put("plugload", plug);
         info.put("ac", ac);
         info.put("light", light);
-        return info;
-    }
-
-
-
-    public HashMap<String, Integer> getRowCount()
-    {
-        HashMap<String, Integer> info = new HashMap<>();
-        Cursor cursor;
-
-        cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
-                PLUG_COLS, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        info.put("zone_plugload", cursor.getCount());
-        cursor.close();
-
-        cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
-                LIGHT_COLS, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        info.put("zone_lighting", cursor.getCount());
-        cursor.close();
-
-        cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
-                TEMP_COLS, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        info.put("zone_temperature", cursor.getCount());
-        cursor.close();
-
-        cursor = db.query(UserSQLiteDatabase.TABLE_OCCUPANCY,
-                OCC_COLS, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        info.put("zone_occupancy", cursor.getCount());
-        cursor.close();
-
         return info;
     }
 
