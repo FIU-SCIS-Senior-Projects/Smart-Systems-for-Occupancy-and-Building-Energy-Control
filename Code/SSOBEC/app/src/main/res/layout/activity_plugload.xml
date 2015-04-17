@@ -100,6 +100,12 @@
                         android:onClick="predictConsumption"
                         android:padding="20dp" />
 
+                    <pl.droidsonroids.gif.GifImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/plugloadeducation"
+                        android:layout_marginTop="50dp" />
+
 
                 </LinearLayout>
 

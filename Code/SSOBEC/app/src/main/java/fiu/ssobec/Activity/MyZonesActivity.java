@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -27,6 +28,7 @@ import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
+import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -46,8 +48,9 @@ public class MyZonesActivity extends ActionBarActivity{
     private static DataAccessUser data_access;
 
     private Object mSyncObserverHandle;
-
     public static int user_id;
+    private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,8 +124,10 @@ public class MyZonesActivity extends ActionBarActivity{
             gridViewButtons.setAdapter(m_badapter);
 
             //Set the rewards list from the user's rewards
-            ArrayList<RewardListParent> parents = buildDummyData();
+           // ArrayList<RewardListParent> parents = buildDummyData();
+            ArrayList<RewardListParent> parents = getZones();
 
+            getZones();
 
             ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
@@ -152,15 +157,46 @@ public class MyZonesActivity extends ActionBarActivity{
     public ArrayList<RewardListParent> getZones(){
         ArrayList<RewardListParent> parents = new ArrayList<>();
 
-        for(int i=0; i<10; i++)
-        {
-            RewardListParent parent = new RewardListParent();
-            parent.setName("RewardName"+i);
-            parent.setDescription("RewardDescription"+i);
-            parent.setZone_name("Zone"+i);
-            parent.setPoints("+"+i);
-            parents.add(parent);
+        List<NameValuePair> emptyarr = new ArrayList<>(1);
+        String res=null;
+
+
+
+        //send the user_id to zonepost.php and get the zones
+        try {
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr,
+                    "http://smartsystems-dev.cs.fiu.edu/getroomlightingwaste.php").send();
+
+            Log.i(LOG_TAG, "Result: " + res);
+            JSONObject obj =  new JSONObject(res);
+            JSONObject myobj;
+            int j=0;
+            while (obj.has(j + "")&&(j<5)) {
+                myobj = obj.getJSONObject(j + "");
+                int id = myobj.getInt("zone_description_region_id");
+                myobj.getDouble("lighting_waste_kw");
+
+                if(data_access.getZone(id)!=null)
+                {
+                    Zones zones = data_access.getZone(id);
+                    Log.i(LOG_TAG, "Get Zone: "+id);
+
+                    RewardListParent parent = new RewardListParent();
+                    parent.setName(rewardNames[j]+" Place");
+                    parent.setDescription("Reward for turning off the lights before leaving the room");
+                    parent.setZone_name(zones.getZone_name());
+                    parent.setPoints("+"+(1000-j*100));
+                    parents.add(parent);
+                }
+
+                j++;
+            }
+
+
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
         }
+
 
         return parents;
     }
