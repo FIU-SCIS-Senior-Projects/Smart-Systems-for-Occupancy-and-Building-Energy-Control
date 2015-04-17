@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 import fiu.ssobec.R;
@@ -88,6 +90,7 @@ public class MyRewardListAdapter  implements ListAdapter {
             mViewHolder.appliance_description = (TextView) convertView.findViewById(R.id.reward_description);
             mViewHolder.points = (TextView) convertView.findViewById(R.id.reward_points);
             mViewHolder.appliance_icon = (ImageView) convertView.findViewById(R.id.reward_icon);
+            mViewHolder.zone_name = (TextView) convertView.findViewById(R.id.reward_room_name);
             convertView.setTag(mViewHolder);
 
         }
@@ -98,10 +101,10 @@ public class MyRewardListAdapter  implements ListAdapter {
         mViewHolder.appliance_name.setText(mparent.getName());
         mViewHolder.appliance_description.setText(mparent.getDescription());
         mViewHolder.points.setText(mparent.getPoints());
-
-        int imageResource = mContext.getResources().getIdentifier("@drawable/shape_yellow_circle", null, mContext.getPackageName());
+        int imageResource = mContext.getResources().getIdentifier("@drawable/award_transparent", null, mContext.getPackageName());
         Drawable res = mContext.getResources().getDrawable(imageResource);
         mViewHolder.appliance_icon.setImageDrawable(res);
+        mViewHolder.zone_name.setText(mparent.getZone_name());
 
         return convertView;
     }
@@ -132,6 +135,7 @@ public class MyRewardListAdapter  implements ListAdapter {
         private  TextView appliance_description;
         private  TextView points;
         private ImageView appliance_icon;
+        private TextView zone_name;
 
     }
 

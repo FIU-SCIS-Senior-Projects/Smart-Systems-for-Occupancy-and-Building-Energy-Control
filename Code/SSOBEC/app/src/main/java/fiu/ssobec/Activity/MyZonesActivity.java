@@ -62,7 +62,6 @@ public class MyZonesActivity extends ActionBarActivity{
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);
         SyncUtils.TriggerRefresh();
-
     }
 
     private void setTheContentViewContent()
@@ -77,6 +76,7 @@ public class MyZonesActivity extends ActionBarActivity{
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+
         //User that is currently logged in is found
         else
         {
@@ -102,8 +102,9 @@ public class MyZonesActivity extends ActionBarActivity{
                     for (int i = 0; i < arr.length(); i++) {
                         int region_id = arr.getJSONObject(i).getInt("region_id");
                         String region_name = arr.getJSONObject(i).getString("region_name");
+
                         if (!region_name.equalsIgnoreCase("null")&&(data_access.getZone(region_id)==null))
-                            data_access.createZones(region_name,region_id);
+                            data_access.createZones(region_name, region_id);
                     }
 
                 } catch (JSONException e) {
@@ -119,6 +120,8 @@ public class MyZonesActivity extends ActionBarActivity{
 
             //Set the rewards list from the user's rewards
             ArrayList<RewardListParent> parents = buildDummyData();
+
+
             ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
             myRewardListAdapter.setParents(parents);
@@ -136,11 +139,28 @@ public class MyZonesActivity extends ActionBarActivity{
             RewardListParent parent = new RewardListParent();
             parent.setName("RewardName"+i);
             parent.setDescription("RewardDescription"+i);
+            parent.setZone_name("Zone" + i);
             parent.setPoints("+"+i);
             dummy_parents.add(parent);
         }
 
         return dummy_parents;
+    }
+
+    public ArrayList<RewardListParent> getZones(){
+        ArrayList<RewardListParent> parents = new ArrayList<>();
+
+        for(int i=0; i<10; i++)
+        {
+            RewardListParent parent = new RewardListParent();
+            parent.setName("RewardName"+i);
+            parent.setDescription("RewardDescription"+i);
+            parent.setZone_name("Zone"+i);
+            parent.setPoints("+"+i);
+            parents.add(parent);
+        }
+
+        return parents;
     }
 
     @Override
@@ -162,7 +182,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                 //Clean the Activity Stack
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ;
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 //Logout the user from the system by declaring the
                 data_access.userLogout(user_id);

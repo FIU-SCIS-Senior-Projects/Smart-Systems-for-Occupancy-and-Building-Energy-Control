@@ -9,6 +9,7 @@ public class RewardListParent {
     private String description;
     private String icon;
     private String points;
+    private String zone_name;
 
     public String getName() {
         return name;
@@ -41,4 +42,15 @@ public class RewardListParent {
     public void setPoints(String points) {
         this.points = points;
     }
+
+
+    public String getZone_name() {
+        return zone_name;
+    }
+
+    public void setZone_name(String zone_name) {
+        this.zone_name = zone_name;
+    }
+
+
 }
