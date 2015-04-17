@@ -480,7 +480,7 @@ public class DataAccessUser implements DataAccessInterface {
         while (!cursor.isAfterLast()) {
             Occupancy occupancy = getOccupancyFromCursor(cursor);
             myList.add((double) occupancy.getOccupancy());
-            Log.i(LOG_TAG, "getAllOccupancyBefore, Light: " + occupancy.toString());
+            Log.i(LOG_TAG, "getAllOccupancyBefore, lighteduc: " + occupancy.toString());
             cursor.moveToNext();
         }
         // make sure to close the cursor
@@ -547,7 +547,7 @@ public class DataAccessUser implements DataAccessInterface {
         double res = 0.0;
         while (!cursor.isAfterLast()) {
             light = getLightingFromCursor(cursor);
-            Log.i(LOG_TAG, "getLightingWaste, Light: " + light.toString());
+            Log.i(LOG_TAG, "getLightingWaste, lighteduc: " + light.toString());
             cursor.moveToNext();
             res = light.getEnergy_usage_kwh();
         }
@@ -570,7 +570,7 @@ public class DataAccessUser implements DataAccessInterface {
         int count = cursor.getCount();
         while (!cursor.isAfterLast()) {
             Lighting light = getLightingFromCursor(cursor);
-            Log.i(LOG_TAG, "getTotalTimeLightWasON, Light: " + light.toString());
+            Log.i(LOG_TAG, "getTotalTimeLightWasON, lighteduc: " + light.toString());
             cursor.moveToNext();
         }
 

@@ -273,6 +273,8 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getLighting()
     {
+
+
         DecimalFormat df = new DecimalFormat("#.#");
         ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
 
@@ -290,8 +292,8 @@ public class EnergyActivity extends ActionBarActivity {
 
         float light_kw = (float) data_access.getLightingEnergyUsage(ZonesDescriptionActivity.regionID);
         float light_waste = (float) data_access.getLightingEnergyWaste(ZonesDescriptionActivity.regionID);
-        mPieChart.addPieSlice(new PieModel("Light efficiently used in the last month", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
-        mPieChart.addPieSlice(new PieModel("Light wasted in the last month", light_waste*1000, getResources().getColor(R.color.warning_red)));
+        mPieChart.addPieSlice(new PieModel("lighteduc efficiently used in the last month", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
+        mPieChart.addPieSlice(new PieModel("lighteduc wasted in the last month", light_waste*1000, getResources().getColor(R.color.warning_red)));
         mPieChart.startAnimation();
 
         //Get lighting performance from other buildings
