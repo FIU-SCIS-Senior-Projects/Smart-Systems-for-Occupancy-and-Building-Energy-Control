@@ -65,7 +65,7 @@ public class EnergyActivity extends ActionBarActivity {
         Intent intent = getIntent();
         System.out.println("Activity Intent: "+intent.toString());
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, this.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
 
         //Get the title of the activity
         if(intent.getExtras() != null)
@@ -180,11 +180,7 @@ public class EnergyActivity extends ActionBarActivity {
         }
 
         inside_temperature = temp_vals.get(temp_vals.size()-1);
-
-        /*
-       if(DataAccessOwm.getMyForecast() != null)
-            outside_temperature = Float.parseFloat(DataAccessOwm.getMyForecast());*/
-
+        
         ((TextView) findViewById(R.id.Fahrenheit)).setText(inside_temperature + "" + (char) 0x00B0 + "F");
         ((TextView) findViewById(R.id.Celsius)).setText(convertFahrenheitToCelsius(inside_temperature)+""+(char) 0x00B0+"C");
         ((TextView) findViewById(R.id.max_outside_temp_f)).setText(outside_temperature+"" + (char) 0x00B0 + "F");
@@ -297,6 +293,8 @@ public class EnergyActivity extends ActionBarActivity {
         mPieChart.addPieSlice(new PieModel("Light efficiently used in the last month", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
         mPieChart.addPieSlice(new PieModel("Light wasted in the last month", light_waste*1000, getResources().getColor(R.color.warning_red)));
         mPieChart.startAnimation();
+
+        //Get lighting performance from other buildings
 
     }
 

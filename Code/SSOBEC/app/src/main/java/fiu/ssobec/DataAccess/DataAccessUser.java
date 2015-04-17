@@ -953,14 +953,6 @@ public class DataAccessUser implements DataAccessInterface {
     {
         ArrayList<BasicNameValuePair> basicNameValuePair = new ArrayList<>();
 
-//        Cursor cursor = db.rawQuery("SELECT "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+
-//                                    ", COUNT(*) FROM "+UserSQLiteDatabase.TABLE_PLUGLOAD+
-//                                    " WHERE "+
-//                                    UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + zone_id
-//                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " >= Datetime('"+upperbound_date+"')"
-//                                    +" AND "+UserSQLiteDatabase.PLUG_COLUMN_DATETIME + " < Datetime('"+lowerbound_date+"')"
-//                                    +" GROUP BY "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+";", null);
-
         Cursor cursor = db.rawQuery("SELECT "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE+
                 ", SUM("+UserSQLiteDatabase.PLUG_COLUMN_APPENERGY+") FROM "+UserSQLiteDatabase.TABLE_PLUGLOAD+
                 " WHERE "+
