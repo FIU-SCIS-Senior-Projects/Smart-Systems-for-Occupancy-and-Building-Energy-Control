@@ -49,9 +49,6 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
 
         DecimalFormat df = new DecimalFormat("#.#");
 
-
-        PieChart pie = (PieChart) findViewById(R.id.mySimplePieChart);
-
         HashMap<String, Double> info = data_access.getInfoForZonesDescription(regionID);
 
         double total_energy = info.get("ac") + info.get("light") + info.get("plugload");

@@ -16,10 +16,6 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.androidplot.pie.PieChart;
-import com.androidplot.pie.PieRenderer;
-import com.androidplot.pie.Segment;
-import com.androidplot.pie.SegmentFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
@@ -27,13 +23,16 @@ import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.eazegraph.lib.charts.PieChart;
+import org.eazegraph.lib.models.PieModel;
+
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.Adapters.MyPlugLoadListAdapter;
 import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
+import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -291,26 +290,13 @@ public class EnergyActivity extends ActionBarActivity {
 
         ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+" hours");
 
-        PieChart pie = (PieChart) findViewById(R.id.myLightingChart);
+        PieChart mPieChart = (PieChart) findViewById(R.id.myLightingChart);
 
-        // Get lighting from stat DB
-        Segment s1 = new Segment("", data_access.getLightingEnergyUsage(ZonesDescriptionActivity.regionID));
-        Segment s2  = new Segment("", data_access.getLightingEnergyWaste(ZonesDescriptionActivity.regionID));
-
-        SegmentFormatter sf1 = new SegmentFormatter();
-        sf1.configure(getApplicationContext(), R.xml.lighting_pie_segment_formatter1);
-        sf1.getLabelPaint().setColor(Color.BLACK);
-
-        SegmentFormatter sf2 = new SegmentFormatter();
-        sf2.configure(getApplicationContext(), R.xml.lighting_pie_segment_formatter2);
-        sf2.getLabelPaint().setColor(Color.BLACK);
-
-        pie.addSeries(s1, sf1);
-        pie.addSeries(s2, sf2);
-        pie.getBorderPaint().setColor(Color.TRANSPARENT);
-        pie.getBackgroundPaint().setColor(Color.TRANSPARENT);
-
-        pie.getRenderer(PieRenderer.class).setDonutSize(.90f, PieRenderer.DonutMode.PERCENT);
+        float light_kw = (float) data_access.getLightingEnergyUsage(ZonesDescriptionActivity.regionID);
+        float light_waste = (float) data_access.getLightingEnergyWaste(ZonesDescriptionActivity.regionID);
+        mPieChart.addPieSlice(new PieModel("Light efficiently used in the last month", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
+        mPieChart.addPieSlice(new PieModel("Light wasted in the last month", light_waste*1000, getResources().getColor(R.color.warning_red)));
+        mPieChart.startAnimation();
 
     }
 

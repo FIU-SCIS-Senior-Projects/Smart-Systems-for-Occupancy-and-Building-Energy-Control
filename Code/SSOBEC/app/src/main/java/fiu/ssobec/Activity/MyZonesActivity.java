@@ -53,6 +53,8 @@ public class MyZonesActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_loading);
+
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
 
@@ -270,7 +272,6 @@ public class MyZonesActivity extends ActionBarActivity{
         if (refreshing) {
             setContentView(R.layout.activity_loading);
         } else {
-            setContentView(R.layout.activity_my_zones);
             setTheContentViewContent();
         }
     }

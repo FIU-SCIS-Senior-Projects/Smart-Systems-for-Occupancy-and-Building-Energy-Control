@@ -100,7 +100,6 @@ public class StatisticalCalculation {
 
             Log.i(LOG_TAG, "Region IDs: "+region_id.toString());
 
-
             //List<Integer> region_id = mdata_access.getAllZoneID();
             for (Integer id : region_id) {
 
@@ -279,6 +278,8 @@ public class StatisticalCalculation {
 
     }
 
+
+    //Make a JSON format string and send it to the external db
     private void insertEnergyInfoInExternalDB(String date, int id, double light_total, double light_waste)
     {
         List<NameValuePair> lightingValuePairs = new ArrayList<>(4);

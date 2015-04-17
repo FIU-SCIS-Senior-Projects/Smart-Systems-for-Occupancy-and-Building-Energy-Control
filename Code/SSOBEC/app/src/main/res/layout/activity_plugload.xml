@@ -115,12 +115,28 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="20dp">
+                        android:layout_margin="20dp"
+                        android:layout_weight="1">
 
                         <com.jjoe64.graphview.GraphView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/plugload_graph"
+                            android:background="@color/light_blue_background" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="20dp"
+                        android:layout_weight="1">
+
+                        <com.jjoe64.graphview.GraphView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/plugloadbuilding_graph"
                             android:background="@color/light_blue_background" />
 
                     </LinearLayout>

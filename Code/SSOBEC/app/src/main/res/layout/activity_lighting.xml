@@ -93,56 +93,6 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 
-    <!--Graph Legend-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        android:layout_marginTop="10dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/shape_red_circle"
-            android:layout_gravity="center_vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/lighting_legend_label_wasted"
-            android:textColor="@color/default_font_color"
-            android:layout_marginLeft="20dp"
-            android:textSize="@dimen/standard_font_size" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/shape_yellow_circle"
-            android:layout_gravity="center_vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/lighting_legend_label_consumed"
-            android:textColor="@color/default_font_color"
-            android:layout_marginLeft="20dp"
-            android:textSize="@dimen/standard_font_size"/>
-
-    </LinearLayout>
-
     <!-- Graph View -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -151,10 +101,30 @@
         android:layout_weight="0.00"
         android:paddingBottom="30dp">
 
-        <com.androidplot.pie.PieChart
+        <org.eazegraph.lib.charts.PieChart
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/myLightingChart"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:egLegendTextSize="18sp"
+            app:egUsePieRotation="true"
+            app:egValueTextSize="36sp"
+            app:egInnerValueUnit="W"
+            android:layout_marginBottom="40dip"
+            android:layout_weight="1" />
+
+        <org.eazegraph.lib.charts.PieChart
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/buildingLightingChart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:egLegendTextSize="18sp"
+            app:egUsePieRotation="true"
+            app:egValueTextSize="36sp"
+            android:layout_marginBottom="40dip"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
