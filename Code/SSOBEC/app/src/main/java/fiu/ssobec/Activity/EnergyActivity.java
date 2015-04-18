@@ -23,16 +23,22 @@ import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.apache.http.NameValuePair;
 import org.eazegraph.lib.charts.PieChart;
 import org.eazegraph.lib.models.PieModel;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import fiu.ssobec.Adapters.MyPlugLoadListAdapter;
 import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
+import fiu.ssobec.Calculations.StatisticalCalculation;
 import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -41,12 +47,15 @@ import fiu.ssobec.Synchronization.SyncUtils;
 public class EnergyActivity extends ActionBarActivity {
 
 
+    public static final String LOG_TAG = "EnergyActivity";
     private DataAccessUser data_access;
     TextView mTextView1;
     TextView mTextView2;
     private Menu mOptionsMenu;
     private Object mSyncObserverHandle;
     String app_title;
+    ArrayList<String> building_appliance_types;
+    ArrayList<Double> building_appliance_consumption;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String title = "activity_title";
@@ -62,6 +71,7 @@ public class EnergyActivity extends ActionBarActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         Intent intent = getIntent();
         System.out.println("Activity Intent: "+intent.toString());
 
@@ -147,8 +157,8 @@ public class EnergyActivity extends ActionBarActivity {
 
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
         staticLabelsFormatter.setHorizontalLabels(new String[]{dates.get(4),
-                                                                dates.get(3),dates.get(2),
-                                                                dates.get(1), dates.get(0)});
+                dates.get(3), dates.get(2),
+                dates.get(1), dates.get(0)});
 
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
@@ -216,45 +226,61 @@ public class EnergyActivity extends ActionBarActivity {
             return;
         }
 
+        getBuildingPlugLoadPerformance();
+
         ListView mListView = (ListView) findViewById(R.id.my_plugload_listview);
         MyPlugLoadListAdapter myPlugLoadListAdapter = new MyPlugLoadListAdapter(this);
         myPlugLoadListAdapter.setParents(parents);
         mListView.setAdapter(myPlugLoadListAdapter);
 
         GraphView graph = (GraphView) findViewById(R.id.plugload_graph);
+        GraphView graph2 = (GraphView) findViewById(R.id.plugloadbuilding_graph);
 
         DataPoint[] points = new DataPoint[parents.size()];
+        DataPoint[] b_points = new DataPoint[parents.size()];
         String[] appl_names = new String[parents.size()];
+        String[] appl_type = new String[parents.size()];
 
         for (int i = 0; i < parents.size(); i++) {
             points[i] = new DataPoint(i, Double.parseDouble(parents.get(i).getEnergy_consumed()));
             appl_names[i] = parents.get(i).getName();
+            appl_type[i] = parents.get(i).getAppl_type();
+
+            if(building_appliance_types.contains(appl_type[i]))
+            {
+                b_points[i] = new DataPoint(i, building_appliance_consumption.get(building_appliance_types.indexOf(appl_type[i])));
+            }
+            else
+            {
+                b_points[i] = new DataPoint(i, 0.0);
+            }
         }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(points);
+        BarGraphSeries<DataPoint> b_series = new BarGraphSeries<>(b_points);
         graph.addSeries(series);
+        graph2.addSeries(b_series);
 
-        graph.addSeries(series);
         series.setColor(getResources().getColor(R.color.plugload_green));
         series.setSpacing(15);
         series.setDrawValuesOnTop(true);
 
+        b_series.setColor(getResources().getColor(R.color.plugload_green));
+        b_series.setSpacing(15);
+        b_series.setDrawValuesOnTop(true);
+
         if(parents.size() >= 2) {
             StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+            StaticLabelsFormatter staticLabelsFormatter2 = new StaticLabelsFormatter(graph2);
             staticLabelsFormatter.setHorizontalLabels(appl_names);
+            staticLabelsFormatter2.setHorizontalLabels(appl_type);
             graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+            graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter2);
+
         }
 
-        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
-        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
-        graph.getGridLabelRenderer().setHorizontalAxisTitle("Appliances");
-        graph.getGridLabelRenderer().setVerticalAxisTitle("Energy Usage in Watts");
-        graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
-        graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
-
-        graph.getGridLabelRenderer().setTextSize(22);
-        graph.getLegendRenderer().setVisible(true);
-        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+        GraphViewFormatting(graph);
+        GraphViewFormatting(graph2);
 
         TabHost tabs = (TabHost)findViewById(R.id.tabHost);
 
@@ -273,8 +299,6 @@ public class EnergyActivity extends ActionBarActivity {
 
     private void getLighting()
     {
-
-
         DecimalFormat df = new DecimalFormat("#.#");
         ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
 
@@ -292,12 +316,13 @@ public class EnergyActivity extends ActionBarActivity {
 
         float light_kw = (float) data_access.getLightingEnergyUsage(ZonesDescriptionActivity.regionID);
         float light_waste = (float) data_access.getLightingEnergyWaste(ZonesDescriptionActivity.regionID);
-        mPieChart.addPieSlice(new PieModel("lighteduc efficiently used in the last month", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
-        mPieChart.addPieSlice(new PieModel("lighteduc wasted in the last month", light_waste*1000, getResources().getColor(R.color.warning_red)));
+        mPieChart.addPieSlice(new PieModel("efficiently used", (light_kw-light_waste)*1000, getResources().getColor(R.color.lighting_yellow)));
+        mPieChart.addPieSlice(new PieModel("wasted", light_waste*1000, getResources().getColor(R.color.warning_red)));
         mPieChart.startAnimation();
 
         //Get lighting performance from other buildings
-
+        PieChart mPieChart2 = getBuildingLightingPerformance();
+        mPieChart2.startAnimation();
     }
 
     @Override
@@ -427,5 +452,85 @@ public class EnergyActivity extends ActionBarActivity {
         Intent intent = new Intent(this,ConsumptionAppliances.class);
         Log.i("EnergyActivity", "Starting my new prediction for ConsumptionAppliances");
         startActivity(intent);
+    }
+
+    private PieChart getBuildingLightingPerformance()
+    {
+        PieChart mPieChart = (PieChart) findViewById(R.id.buildingLightingChart);
+
+        ArrayList<Double> light_consumption = new ArrayList<>();
+        ArrayList<Double> light_waste = new ArrayList<>();
+
+        List<NameValuePair> emptyarr = new ArrayList<>(1);
+        String res=null;
+
+        try {
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr,
+                    "http://smartsystems-dev.cs.fiu.edu/getbuildinglightingperformance.php").send();
+
+            JSONObject obj =  new JSONObject(res);
+            JSONObject myobj;
+            int j=0;
+            while (obj.has(j + "")) {
+                myobj = obj.getJSONObject(j + "");
+                light_consumption.add(myobj.getDouble("lighting_total_kw"));
+                light_waste.add(myobj.getDouble("lighting_waste_kw"));
+
+                j++;
+            }
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(!light_consumption.isEmpty()&&!light_waste.isEmpty())
+        {
+            mPieChart.addPieSlice(new PieModel("efficiently used", (float) ((StatisticalCalculation.avg(light_consumption))*1000), getResources().getColor(R.color.lighting_yellow)));
+            mPieChart.addPieSlice(new PieModel("wasted", (float) ((StatisticalCalculation.avg(light_waste))*1000), getResources().getColor(R.color.warning_red)));
+        }
+
+        return mPieChart;
+    }
+
+    private void getBuildingPlugLoadPerformance()
+    {
+        List<NameValuePair> emptyarr = new ArrayList<>(1);
+
+        building_appliance_consumption = new ArrayList<>();
+        building_appliance_types = new ArrayList<>();
+
+        String res=null;
+        try {
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr,
+                    "http://smartsystems-dev.cs.fiu.edu/getbuildingplugloadperformance.php").send();
+
+            Log.i(LOG_TAG, "getBuildingPlugLoadPerformance: "+res);
+            JSONObject obj =  new JSONObject(res);
+            JSONObject myobj;
+            int j=0;
+            while (obj.has(j + "")) {
+                myobj = obj.getJSONObject(j + "");
+                building_appliance_types.add(myobj.getString("appliance_type"));
+                building_appliance_consumption.add(myobj.getDouble("appliance_time_plugged"));
+                j++;
+            }
+
+            Log.i(LOG_TAG, "building_appliance_types: "+building_appliance_types.toString());
+            Log.i(LOG_TAG, "building_appliance_consumption: "+building_appliance_consumption.toString());
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void GraphViewFormatting(GraphView graph)
+    {
+        graph.getGridLabelRenderer().setHorizontalAxisTitle("Appliances");
+        graph.getGridLabelRenderer().setVerticalAxisTitle("Energy Usage in Kilowatts");
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setTextSize(22);
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
     }
 }

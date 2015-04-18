@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1052,31 +1053,25 @@ public class DataAccessUser implements DataAccessInterface {
         ArrayList<PlugLoadListParent> parents = new ArrayList<>();
         ArrayList<String> plugs = new ArrayList<>();
 
-        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_PLUGLOAD,
-                PLUG_COLS,
-                UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + regionID,
-                null, null, null, UserSQLiteDatabase.PLUG_COLUMN_DATETIME+" DESC, " + UserSQLiteDatabase.PLUG_COLUMN_APPNAME  + " DESC");
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        Cursor cursor = db.rawQuery("SELECT "+UserSQLiteDatabase.PLUG_COLUMN_APPNAME+
+                                    ", SUM("+UserSQLiteDatabase.PLUG_COLUMN_APPENERGY+")"
+                                    +", "+UserSQLiteDatabase.PLUG_COLUMN_APPTYPE
+                                    +" FROM "+UserSQLiteDatabase.TABLE_PLUGLOAD
+                                    +" WHERE "+UserSQLiteDatabase.PLUG_COLUMN_ID + " = " + regionID
+                                    +" GROUP BY "+UserSQLiteDatabase.PLUG_COLUMN_APPNAME, null);
 
         int counter = 10;
         cursor.moveToFirst();
         while (!cursor.isAfterLast()&&counter>=0) {
-
-            PlugLoad plugLoad = getPlugLoadFromCursor(cursor);
             PlugLoadListParent plugLoadListParent = new PlugLoadListParent();
+            plugLoadListParent.setName(cursor.getString(0));
+            plugLoadListParent.setEnergy_consumed(df.format(cursor.getDouble(1)));
+            plugLoadListParent.setAppl_type(cursor.getString(2));
+            plugLoadListParent.setStatus("");
 
-            plugLoadListParent.setName(plugLoad.getApp_name());
-            plugLoadListParent.setStatus(plugLoad.getStatus());
-            plugLoadListParent.setEnergy_consumed((plugLoad.getEnergy_usage_kwh()*1000)+"");
-
-            Log.i(LOG_TAG, plugLoadListParent.toString());
-
-            if(plugs.contains(plugLoad.getApp_name()))
-                break;
-            else
-            {
-                plugs.add(plugLoad.getApp_name());
-                parents.add(plugLoadListParent);
-            }
+            parents.add(plugLoadListParent);
 
             counter--;
             cursor.moveToNext();

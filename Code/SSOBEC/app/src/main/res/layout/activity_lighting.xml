@@ -123,6 +123,7 @@
             app:egLegendTextSize="18sp"
             app:egUsePieRotation="true"
             app:egValueTextSize="36sp"
+            app:egInnerValueUnit="W"
             android:layout_marginBottom="40dip"
             android:layout_weight="1" />
 

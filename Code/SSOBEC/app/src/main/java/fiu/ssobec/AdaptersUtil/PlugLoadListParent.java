@@ -8,6 +8,7 @@ public class PlugLoadListParent {
     private String name;
     private String status;
     private String energy_consumed;
+    private String appl_type;
 
     public String getName() {
         return name;
@@ -31,6 +32,14 @@ public class PlugLoadListParent {
 
     public void setEnergy_consumed(String energy_consumed) {
         this.energy_consumed = energy_consumed;
+    }
+
+    public String getAppl_type() {
+        return appl_type;
+    }
+
+    public void setAppl_type(String appl_type) {
+        this.appl_type = appl_type;
     }
 
     @Override

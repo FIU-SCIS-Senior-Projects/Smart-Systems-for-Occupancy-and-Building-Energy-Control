@@ -56,7 +56,7 @@ public class MyZonesActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_loading);
+        //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
@@ -159,8 +159,6 @@ public class MyZonesActivity extends ActionBarActivity{
 
         List<NameValuePair> emptyarr = new ArrayList<>(1);
         String res=null;
-
-
 
         //send the user_id to zonepost.php and get the zones
         try {
