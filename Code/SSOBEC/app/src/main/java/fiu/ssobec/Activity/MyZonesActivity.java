@@ -192,6 +192,32 @@ public class MyZonesActivity extends ActionBarActivity{
                 j++;
             }
 
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr,
+                    "http://smartsystems-dev.cs.fiu.edu/getroomplugloadconsumption.php").send();
+
+            obj =  new JSONObject(res);
+            j=0;
+            while (obj.has(j + "")&&(j<5)) {
+                myobj = obj.getJSONObject(j + "");
+                int id = myobj.getInt("zone_description_region_id");
+                myobj.getDouble("appliance_time_plugged");
+
+                if(data_access.getZone(id)!=null)
+                {
+                    Zones zones = data_access.getZone(id);
+                    Log.i(LOG_TAG, "Get Zone: "+id);
+
+                    RewardListParent parent = new RewardListParent();
+                    parent.setName(rewardNames[j]+" Place");
+                    parent.setDescription("Reward for little consumption of energy in plugload");
+                    parent.setZone_name(zones.getZone_name());
+                    parent.setPoints("+"+(1000-j*100));
+                    parents.add(parent);
+                }
+
+                j++;
+            }
+
 
         } catch (InterruptedException | JSONException e) {
             e.printStackTrace();
