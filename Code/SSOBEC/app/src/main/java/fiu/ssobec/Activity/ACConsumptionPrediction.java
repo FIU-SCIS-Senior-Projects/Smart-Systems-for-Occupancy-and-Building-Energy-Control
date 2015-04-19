@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Random;
+
 import fiu.ssobec.Calculations.NaiveBayesTemperature;
 import fiu.ssobec.R;
+import pl.droidsonroids.gif.GifImageView;
 
 public class ACConsumptionPrediction extends ActionBarActivity {
 
@@ -23,6 +26,20 @@ public class ACConsumptionPrediction extends ActionBarActivity {
 
         outside_temperature = 95;
         ((TextView) findViewById(R.id.forecast_temperature_val)).setText(""+outside_temperature);
+
+        Random randomno = new Random();
+
+        // check next int value
+        int n = randomno.nextInt(2);
+
+        System.out.println("N = "+n);
+        GifImageView gifImageView = (GifImageView) findViewById(R.id.animated_edu);
+        if(n == 1)
+        {
+            System.out.println("N = 1");
+            gifImageView.setImageResource(getResources().getIdentifier("@drawable/coolingeducation2", null, getPackageName()));
+        }
+
     }
 
     @Override

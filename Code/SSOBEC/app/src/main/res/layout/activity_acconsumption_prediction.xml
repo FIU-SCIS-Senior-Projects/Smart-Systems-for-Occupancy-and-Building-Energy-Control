@@ -61,24 +61,38 @@
     </LinearLayout>
 
     <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="predict"
+        android:id="@+id/predict_button"
+        android:layout_margin="20dp"
+        android:onClick="predictTemperatureEnergy" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="result"
+        android:id="@+id/prediction_result"
+        android:layout_margin="20dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="predict"
-            android:id="@+id/predict_button"
-            android:layout_margin="20dp"
-            android:onClick="predictTemperatureEnergy" />
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="fill_parent"
+            android:id="@+id/animated_edu"
+            android:layout_height="120dp"
+            android:src="@drawable/coolingeducation"
+            android:layout_marginTop="50dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="result"
-            android:id="@+id/prediction_result"
-            android:layout_margin="20dp" />
     </LinearLayout>
 
 
