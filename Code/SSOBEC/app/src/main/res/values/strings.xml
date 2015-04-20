@@ -49,7 +49,8 @@
     <string name="consumption_appliances_childrow_image">An image that represents the appliance name</string>
     <string name="calculate_consumption">Monthly Consumption</string>
 
-    <string name="title_activity_acconsumption_prediction">Predict the AC Consumption</string>
+    <string name="title_activity_acconsumption_prediction">Predict AC Consumption</string>
+    <string name="predict_appl_consumption">Predict Consumption of Appliances</string>
 
     <string name="forecast_temperature_outside">Forecast Temperature Today: </string>
     <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>

@@ -11,12 +11,11 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-import fiu.ssobec.R;
+import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
+import fiu.ssobec.R;
 
 /**
  * Created by Fresa on 4/10/2015.
@@ -101,7 +100,14 @@ public class MyRewardListAdapter  implements ListAdapter {
         mViewHolder.appliance_name.setText(mparent.getName());
         mViewHolder.appliance_description.setText(mparent.getDescription());
         mViewHolder.points.setText(mparent.getPoints());
+
         int imageResource = mContext.getResources().getIdentifier("@drawable/award_transparent", null, mContext.getPackageName());
+
+        if(mparent.getDescription().equalsIgnoreCase(MyZonesActivity.plugload_award_descrp))
+        {
+            imageResource = mContext.getResources().getIdentifier("@drawable/award_transparent2", null, mContext.getPackageName());
+        }
+
         Drawable res = mContext.getResources().getDrawable(imageResource);
         mViewHolder.appliance_icon.setImageDrawable(res);
         mViewHolder.zone_name.setText(mparent.getZone_name());

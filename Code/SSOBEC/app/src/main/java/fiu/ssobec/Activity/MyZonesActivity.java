@@ -45,6 +45,9 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
+    public static final String plugload_award_descrp="Reward for little consumption of energy in plugload";
+    public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
+
     private static DataAccessUser data_access;
 
     private Object mSyncObserverHandle;
@@ -181,7 +184,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                     RewardListParent parent = new RewardListParent();
                     parent.setName(rewardNames[j]+" Place");
-                    parent.setDescription("Reward for turning off the lights before leaving the room");
+                    parent.setDescription(lighting_award_descrp);
                     parent.setZone_name(zones.getZone_name());
                     parent.setPoints("+"+(1000-j*100));
                     parents.add(parent);
@@ -203,11 +206,9 @@ public class MyZonesActivity extends ActionBarActivity{
                 if(data_access.getZone(id)!=null)
                 {
                     Zones zones = data_access.getZone(id);
-                    Log.i(LOG_TAG, "Get Zone: "+id);
-
                     RewardListParent parent = new RewardListParent();
                     parent.setName(rewardNames[j]+" Place");
-                    parent.setDescription("Reward for little consumption of energy in plugload");
+                    parent.setDescription(plugload_award_descrp);
                     parent.setZone_name(zones.getZone_name());
                     parent.setPoints("+"+(1000-j*100));
                     parents.add(parent);
