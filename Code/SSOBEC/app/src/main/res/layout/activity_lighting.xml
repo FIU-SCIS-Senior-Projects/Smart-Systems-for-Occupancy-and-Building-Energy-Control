@@ -101,20 +101,57 @@
         android:layout_weight="2"
         android:paddingBottom="30dp">
 
-        <org.eazegraph.lib.charts.PieChart
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/myLightingChart"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            app:egLegendTextSize="18sp"
-            app:egUsePieRotation="true"
-            app:egValueTextSize="36sp"
-            app:egInnerValueUnit="W"
-            android:layout_marginBottom="40dip"
-            android:layout_weight="1" />
+            android:orientation="vertical"
+            android:layout_weight="1">
 
-        <org.eazegraph.lib.charts.PieChart
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Lighting Energy Performance of Zone"
+                android:id="@+id/textView3"
+                android:textColor="@color/default_font_color"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:layout_marginTop="20dp" />
+
+            <org.eazegraph.lib.charts.PieChart
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/myLightingChart"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                app:egLegendTextSize="18sp"
+                app:egUsePieRotation="true"
+                app:egValueTextSize="36sp"
+                app:egInnerValueUnit="W"
+                android:layout_marginBottom="40dip"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Average Lighting Energy Performance of the Building"
+                android:id="@+id/textView4"
+                android:textColor="@color/default_font_color"
+                android:singleLine="false"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:layout_marginTop="20dp" />
+
+            <org.eazegraph.lib.charts.PieChart
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/buildingLightingChart"
             android:layout_width="wrap_content"
@@ -124,8 +161,9 @@
             app:egUsePieRotation="true"
             app:egValueTextSize="36sp"
             app:egInnerValueUnit="W"
-            android:layout_marginBottom="40dip"
-            android:layout_weight="1" />
+            android:layout_marginBottom="40dip" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

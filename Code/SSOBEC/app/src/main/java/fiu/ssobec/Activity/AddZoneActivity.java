@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import org.apache.http.NameValuePair;
@@ -26,7 +25,6 @@ import fiu.ssobec.R;
 public class AddZoneActivity extends ActionBarActivity {
 
     // Search EditText
-    EditText inputSearch;
     public static final String GETALLZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/getallzones.php";
     private static DataAccessUser data_access; //data access variable for user
 
@@ -41,8 +39,6 @@ public class AddZoneActivity extends ActionBarActivity {
 
         //Open the data access to the tables
         try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
-
-        inputSearch = (EditText) findViewById(R.id.inputSearch);
 
         FragmentManager fm = getSupportFragmentManager();
 

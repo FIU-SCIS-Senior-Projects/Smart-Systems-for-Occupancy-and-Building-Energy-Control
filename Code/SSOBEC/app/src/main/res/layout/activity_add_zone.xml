@@ -8,11 +8,6 @@
     tools:context="fiu.ssobec.Activity.AddZoneActivity">
 
     <!-- Editext for Search -->
-    <EditText android:id="@+id/inputSearch"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search zones.."
-        android:inputType="textVisiblePassword"/>
 
     <!-- List View -->
     <ListView

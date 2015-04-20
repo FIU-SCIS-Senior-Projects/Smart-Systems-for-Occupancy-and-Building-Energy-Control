@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:text="@string/zone_description_piechart_title"
             android:id="@+id/textView2"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout android:layout_width="fill_parent"
@@ -144,6 +145,48 @@
             android:layout_weight="1" />
 
     </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+
+            <info.hoang8f.widget.FButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                fbutton:buttonColor="@color/fbutton_color_wet_asphalt"
+                fbutton:shadowColor="@color/fbutton_color_midnight_blue"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp"
+                fbutton:cornerRadius="5dp"
+                android:padding="90dip"
+                android:onClick="predictAC"
+                android:text="@string/title_activity_acconsumption_prediction"
+                android:textColor="@color/default_background"
+                android:layout_margin="5dip"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                />
+
+            <info.hoang8f.widget.FButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                fbutton:buttonColor="@color/fbutton_color_wet_asphalt"
+                fbutton:shadowColor="@color/fbutton_color_midnight_blue"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp"
+                fbutton:cornerRadius="5dp"
+                android:padding="90dip"
+                android:onClick="predictConsumption"
+                android:text="@string/predict_appl_consumption"
+                android:textColor="@color/default_background"
+                android:layout_margin="5dip"
+                android:textSize="20sp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
 
         </LinearLayout>
 

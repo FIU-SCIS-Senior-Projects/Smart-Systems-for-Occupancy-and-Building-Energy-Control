@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,13 +53,11 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         HashMap<String, Double> info = data_access.getInfoForZonesDescription(regionID);
 
         double total_energy =  info.get("light") + info.get("plugload");
-        double percentage_ac = (info.get("ac")/(total_energy))*100;
         double percentage_light = (info.get("light")/(total_energy))*100;
         double percentage_plug = (info.get("plugload")/(total_energy))*100;
 
         PieChart mPieChart = (PieChart) findViewById(R.id.mySimplePieChart);
 
-        //mPieChart.addPieSlice(new PieModel("Cooling", (float) percentage_ac, getResources().getColor(R.color.temperature_blue)));
         mPieChart.addPieSlice(new PieModel("Lighting", (float) percentage_light, getResources().getColor(R.color.lighting_yellow)));
         mPieChart.addPieSlice(new PieModel("Plug Load", (float) percentage_plug, getResources().getColor(R.color.plugload_green)));
 
@@ -123,6 +122,21 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public void predictAC (View view)
+    {
+        Intent intent = new Intent(this,ACConsumptionPrediction.class);
+        Log.i("EnergyActivity", "Starting my new prediction for AC");
+        startActivity(intent);
+    }
+
+    public void predictConsumption(View view)
+    {
+        Intent intent = new Intent(this,ConsumptionAppliances.class);
+        Log.i("EnergyActivity", "Starting my new prediction for ConsumptionAppliances");
+        startActivity(intent);
+    }
+
 
     @Override
     protected void onResume() {
