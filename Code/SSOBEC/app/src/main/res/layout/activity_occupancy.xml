@@ -27,13 +27,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/CurrOccupValue"
-            android:text="2"
+            android:text="0"
+            android:id="@+id/occupancyval"
             android:textColor="@color/default_font_color"
-            android:textSize="45sp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp" />
+            android:textSize="40sp"
+            android:layout_margin="5dp" />
 
         <TextView
             android:layout_width="wrap_content"

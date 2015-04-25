@@ -60,19 +60,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Appliance\nStatus"
-                                android:id="@+id/appliance_status"
-                                android:textSize="@dimen/small_standard_font_size"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginRight="20dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
                                 android:text="Energy\nConsumption"
                                 android:id="@+id/energy_consumed_today"
                                 android:textSize="@dimen/small_standard_font_size"
-                                android:layout_marginLeft="20dp" />
+                                android:layout_marginLeft="80dp" />
                         </LinearLayout>
 
 
@@ -91,14 +82,6 @@
                                 android:id="@+id/my_plugload_listview" />
 
                         </LinearLayout>
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/prediction_consumption"
-                        android:id="@+id/predict_consumption_button"
-                        android:onClick="predictConsumption"
-                        android:padding="20dp" />
 
                     <pl.droidsonroids.gif.GifImageView
                         android:layout_width="fill_parent"
@@ -124,6 +107,13 @@
                         android:layout_margin="20dp"
                         android:layout_weight="1">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Appliance Energy Consumption per Zone"
+                            android:id="@+id/textView6" />
+
                         <com.jjoe64.graphview.GraphView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -138,6 +128,13 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"
                         android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Average Appliance Energy Consumption of the Building"
+                            android:id="@+id/textView7" />
 
                         <com.jjoe64.graphview.GraphView
                             android:layout_width="match_parent"

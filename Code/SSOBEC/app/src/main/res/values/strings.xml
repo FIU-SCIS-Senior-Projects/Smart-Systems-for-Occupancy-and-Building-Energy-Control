@@ -52,7 +52,7 @@
     <string name="title_activity_acconsumption_prediction">Predict AC Consumption</string>
     <string name="predict_appl_consumption">Predict Consumption of Appliances</string>
 
-    <string name="forecast_temperature_outside">Forecast Temperature Today: </string>
+    <string name="forecast_temperature_outside">Outside Temperature Today: </string>
     <string name="ac_mean_medium_temperature_inside">Mean Medium Temperature Inside: </string>
     <string name="ac_mean_high_temperature_inside">Mean High Temperature Inside: </string>
 

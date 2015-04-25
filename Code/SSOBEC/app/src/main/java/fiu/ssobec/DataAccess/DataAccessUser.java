@@ -645,7 +645,7 @@ public class DataAccessUser implements DataAccessInterface {
         return cloud_p;
     }
 
-    public String getOutsideTemperature() {
+    public int getOutsideTemperature() {
 
         int outside_temperature=0;
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_OW,
@@ -673,7 +673,7 @@ public class DataAccessUser implements DataAccessInterface {
             }
         }
 
-        return outside_temperature+"";
+        return outside_temperature;
     }
 
     /****************************** MISC ************************************/
@@ -875,8 +875,6 @@ public class DataAccessUser implements DataAccessInterface {
         db.insert(UserSQLiteDatabase.TABLE_STAT, null, vals);
     }
 
-    //TODO: After finish testing add option to only calculate a month
-    // " AND date(" + UserSQLiteDatabase.STAT_DATE + ") < date('now', '-30 days')"
     public ArrayList<Double> getInsideTemperatureByZone(int zone_id, int ac_energy_upper, int ac_energy_lower)
     {
         ArrayList<Double> myList = new ArrayList<>();
@@ -1004,7 +1002,7 @@ public class DataAccessUser implements DataAccessInterface {
                 null, null, null, UserSQLiteDatabase.OCC_COLUMN_DATETIME+" DESC");
 
         cursor.moveToFirst();
-        int counter = 7;
+        int counter = 50;
         ArrayList<Integer> occ_vals = new ArrayList<>();
 
         while (!cursor.isAfterLast()&&counter>=0) {
@@ -1080,6 +1078,19 @@ public class DataAccessUser implements DataAccessInterface {
         return parents;
     }
 
+    public String getAvgOccupancyPerDay(int regionID)
+    {
+        DecimalFormat df = new DecimalFormat("#");
+
+        Cursor cursor = db.rawQuery("SELECT AVG("+UserSQLiteDatabase.STAT_OCCUP_TIME_AVG+")"
+                +" FROM "+UserSQLiteDatabase.TABLE_STAT
+                +" WHERE "+UserSQLiteDatabase.STAT_ID + " = " + regionID, null);
+
+        cursor.moveToFirst();
+
+        return df.format(cursor.getDouble(0));
+    }
+
     public double getLightingEnergyUsage(int regionID)
     {
         Cursor cursor;
@@ -1120,6 +1131,8 @@ public class DataAccessUser implements DataAccessInterface {
         return energywaste;
     }
 
+    /*Get Lighting average in a room
+    * */
     public double getLightingAverageDay(int regionID)
     {
         ArrayList<Double> lighting_vals = new ArrayList<>();
@@ -1140,6 +1153,24 @@ public class DataAccessUser implements DataAccessInterface {
         return StatisticalCalculation.avg(lighting_vals);
     }
 
+    /*Get Lighting average in a room
+   * */
+    public String getLatestLightinginRoom(int regionID)
+    {
+        String light_status="";
+        Cursor cursor;
+        cursor = db.query(UserSQLiteDatabase.TABLE_LIGHTING,
+                new String[]{UserSQLiteDatabase.LIGHT_COLUMN_STATE},
+                UserSQLiteDatabase.STAT_ID + " = " + regionID, null, null, null,  UserSQLiteDatabase.LIGHT_COLUMN_DATETIME+" DESC");
+
+        cursor.moveToFirst();
+        light_status = cursor.getString(0);
+
+        cursor.close();
+        return light_status;
+    }
+
+
     /*Get Latest Temperature information in a room
     * */
     public ArrayList<Integer> getLatestManyTemperature(int region_id)
@@ -1157,6 +1188,34 @@ public class DataAccessUser implements DataAccessInterface {
             Temperature temp = getTemperatureFromCursor(cursor);
             System.out.println("Date: " + temp.getDatetime() + " Temperature: " + temp.getTemperature());
             temp_vals.add(temp.getTemperature());
+
+            cursor.moveToNext();
+            counter--;
+        }
+
+        cursor.close();
+        Collections.reverse(temp_vals);
+
+        return temp_vals;
+    }
+
+    /*Get Latest Temperature information in a room
+    * */
+    public ArrayList<String> getLatestManyTemperatureDates(int region_id)
+    {
+        Cursor cursor = db.query(UserSQLiteDatabase.TABLE_TEMPERATURE,
+                TEMP_COLS,
+                UserSQLiteDatabase.TEMP_COLUMN_ID + " = " + region_id,
+                null, null, null, UserSQLiteDatabase.TEMP_COLUMN_DATETIME+" DESC");
+
+        cursor.moveToFirst();
+        int counter = 50;
+        ArrayList<String> temp_vals = new ArrayList<>();
+
+        while (!cursor.isAfterLast()&&counter>=0) {
+            Temperature temp = getTemperatureFromCursor(cursor);
+            System.out.println("Date: " + temp.getDatetime() + " Temperature: " + temp.getTemperature());
+            temp_vals.add(temp.getDatetime());
 
             cursor.moveToNext();
             counter--;

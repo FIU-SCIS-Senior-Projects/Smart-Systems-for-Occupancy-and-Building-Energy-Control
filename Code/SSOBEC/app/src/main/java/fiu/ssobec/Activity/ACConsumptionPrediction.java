@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.sql.SQLException;
 import java.util.Random;
 
 import fiu.ssobec.Calculations.NaiveBayesTemperature;
+import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -18,13 +20,23 @@ public class ACConsumptionPrediction extends ActionBarActivity {
 
 
     int outside_temperature;
+    private DataAccessUser data_access;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
 
-        outside_temperature = 95;
+        data_access = new DataAccessUser(this);
+
+        try {
+            System.out.println("Open data access");
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        outside_temperature = data_access.getOutsideTemperature();
         ((TextView) findViewById(R.id.forecast_temperature_val)).setText(""+outside_temperature);
 
         Random randomno = new Random();
@@ -32,11 +44,9 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         // check next int value
         int n = randomno.nextInt(2);
 
-        System.out.println("N = "+n);
         GifImageView gifImageView = (GifImageView) findViewById(R.id.animated_edu);
         if(n == 1)
         {
-            System.out.println("N = 1");
             gifImageView.setImageResource(getResources().getIdentifier("@drawable/coolingeducation2", null, getPackageName()));
         }
 
@@ -75,10 +85,28 @@ public class ACConsumptionPrediction extends ActionBarActivity {
 
          runOnUiThread(new Runnable() {
 
-                public void run() { ((TextView) findViewById(R.id.prediction_result)).setText(res);
-              }
+             public void run() {
+                 ((TextView) findViewById(R.id.prediction_result)).setText(res);
+             }
 
-            });
+         });
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            data_access.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        data_access.close();
     }
 }

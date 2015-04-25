@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="login_background">#ff33b5e5</color>
-
-    <color name="login_button_background">#ff197897</color>
-
-    <color name="default_background">#fff3f7fa</color>
-
-    <color name="light_blue_background">#ffcce5f2</color>
-
-    <color name="default_font_color">#ff000000</color>
-
-    <color name="gray_font_color">#ffa9a9a9</color>
-
     <color name="temperature_blue">#ff6bb3ff</color>
-
+    <color name="login_background">#ff33b5e5</color>
+    <color name="login_button_background">#ff197897</color>
+    <color name="default_background">#fff3f7fa</color>
+    <color name="light_blue_background">#ffcce5f2</color>
+    <color name="default_font_color">#ff000000</color>
+    <color name="gray_font_color">#ffa9a9a9</color>
     <color name="occupancy_red">#ffff6176</color>
-
     <color name="plugload_green">#ff22d053</color>
-
     <color name="lighting_yellow">#fffff30f</color>
-
     <color name="warning_red">#ffff392d</color>
 
     <!-- Color Swatches provided by http://designmodo.github.io/Flat-UI/ -->

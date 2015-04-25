@@ -82,7 +82,6 @@ public class EnergyActivity extends ActionBarActivity {
         {
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(title, getIntent().getStringExtra(ZonesDescriptionActivity.ACTIVITY_NAME));
-            //editor.commit();
             editor.apply();
         }
 
@@ -129,6 +128,7 @@ public class EnergyActivity extends ActionBarActivity {
     {
 
         GraphView graph = (GraphView) findViewById(R.id.occupancy_graph);
+        String avgoccup = data_access.getAvgOccupancyPerDay(ZonesDescriptionActivity.regionID);
 
         ArrayList<String> dates = data_access.getLastFewHoursofOccupancyDates(ZonesDescriptionActivity.regionID);
         ArrayList<Integer> occ_vals = data_access.getLastFewHoursofOccupancy(ZonesDescriptionActivity.regionID);
@@ -139,8 +139,13 @@ public class EnergyActivity extends ActionBarActivity {
             return;
         }
 
-        //((TextView) findViewById(R.id.CurrOccupValue)).setText(occ_vals.get(occ_vals.size()-1));
-        ((TextView) findViewById(R.id.AvgOccupValue)).setText("2");
+        int curr_occup = occ_vals.get(occ_vals.size() - 1);
+
+        TextView textView = (TextView) findViewById(R.id.occupancyval);
+        TextView textView2 = (TextView) findViewById(R.id.AvgOccupValue);
+
+        textView.setText(String.valueOf(curr_occup));
+        textView2.setText(avgoccup);
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
                 new DataPoint(0, occ_vals.get(4)),
@@ -177,11 +182,15 @@ public class EnergyActivity extends ActionBarActivity {
     private void getTemperature()
     {
         int inside_temperature;
-        float outside_temperature = 89;
+        float outside_temperature = data_access.getOutsideTemperature();
+        int DATAVAL = 50;
 
         GraphView graph = (GraphView) findViewById(R.id.temperature_graph);
 
         ArrayList<Integer> temp_vals = data_access.getLatestManyTemperature(ZonesDescriptionActivity.regionID);
+        ArrayList<String> temp_dates = data_access.getLatestManyTemperatureDates(ZonesDescriptionActivity.regionID);
+
+        String[] temp_dates_array = temp_dates.toArray(new String[temp_dates.size()]);
 
         if(temp_vals.isEmpty())
         {
@@ -196,19 +205,21 @@ public class EnergyActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.max_outside_temp_f)).setText(outside_temperature+"" + (char) 0x00B0 + "F");
         ((TextView) findViewById(R.id.max_outside_temp_c)).setText(convertFahrenheitToCelsius(outside_temperature)+"" + (char) 0x00B0 + "C");
 
-        DataPoint[] points = new DataPoint[50];
+        DataPoint[] points = new DataPoint[DATAVAL];
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < DATAVAL; i++) {
             points[i] = new DataPoint(i, temp_vals.get(i));
         }
 
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(points);
 
-        // set manual X bounds
+        series.setThickness(10);
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0);
         graph.getViewport().setMaxX(5);
         graph.onDataChanged(false, false);
+        graph.getGridLabelRenderer().setNumHorizontalLabels(4);
+        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
 
         // enable scrolling
         graph.getViewport().setScrollable(true);
@@ -219,7 +230,6 @@ public class EnergyActivity extends ActionBarActivity {
     private void getPlugLoad()
     {
         ArrayList<PlugLoadListParent> parents = data_access.getPlugLoadParentData(ZonesDescriptionActivity.regionID);
-
         if(parents.isEmpty())
         {
             this.setContentView(R.layout.empty_activity_message);
@@ -276,7 +286,6 @@ public class EnergyActivity extends ActionBarActivity {
             staticLabelsFormatter2.setHorizontalLabels(appl_type);
             graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
             graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter2);
-
         }
 
         GraphViewFormatting(graph);
@@ -300,16 +309,17 @@ public class EnergyActivity extends ActionBarActivity {
     private void getLighting()
     {
         DecimalFormat df = new DecimalFormat("#.#");
-        ((TextView) findViewById(R.id.CurrLightValue)).setText("ON");
 
         double myval = data_access.getLightingAverageDay(ZonesDescriptionActivity.regionID);
-
         if(myval == 0)
         {
             this.setContentView(R.layout.empty_activity_message);
             return;
         }
 
+        String light_status = data_access.getLatestLightinginRoom(ZonesDescriptionActivity.regionID);
+
+        ((TextView) findViewById(R.id.CurrLightValue)).setText(light_status);
         ((TextView) findViewById(R.id.AvgLightValue)).setText(df.format(myval)+" hours");
 
         PieChart mPieChart = (PieChart) findViewById(R.id.myLightingChart);
