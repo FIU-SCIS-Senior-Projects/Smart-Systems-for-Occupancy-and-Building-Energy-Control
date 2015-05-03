@@ -1,6 +1,7 @@
 package fiu.ssobec;
 
 import android.support.test.espresso.action.ViewActions;
+import android.support.test.espresso.assertion.ViewAssertions;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -41,9 +42,17 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         onView(withId(R.id.email_text_field)).perform(ViewActions.typeText("mandy@yahoo.com"));
         onView(withId(R.id.password_text_field)).perform(ViewActions.typeText("mandy123"));
         onView(withId(R.id.login_button)).perform(ViewActions.click());
-        onView(withId(1)).perform(ViewActions.click());
-        onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
-        onView(withId(R.id.predict_consumption_button)).perform(ViewActions.click());
+        onView(withId(R.id.list_view_userrewards)).check(ViewAssertions.doesNotExist());
+        pressBack();
+        onView(withId(R.id.email_text_field)).perform(ViewActions.typeText("ana@hotmail.com"));
+        onView(withId(R.id.password_text_field)).perform(ViewActions.typeText("Naaa"));
+        onView(withId(R.id.login_button)).perform(ViewActions.click());
+        onView(withId(R.id.list_view_userrewards)).check(ViewAssertions.doesNotExist());
+
+
+        //onView(withId(1)).perform(ViewActions.click());
+        //onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
+        //onView(withId(R.id.predict_consumption_button)).perform(ViewActions.click());
         //Espresso.onView(withText("Electric")).perform(ViewActions.click());
 
         onView(allOf(withId(R.id.text1), withText("Electric Appliances"))).perform(ViewActions.click());
@@ -82,7 +91,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
         onView(withId(2)).perform(ViewActions.click());
         onView(withId(R.id.PludLoadButton)).perform(ViewActions.click());
-        onView(withId(R.id.predict_consumption_button)).perform(ViewActions.click());
+        //onView(withId(R.id.predict_consumption_button)).perform(ViewActions.click());
         //Espresso.onView(withText("Electric")).perform(ViewActions.click());
 
         onView(allOf(withId(R.id.text1), withText("Electric Appliances"))).perform(ViewActions.click());

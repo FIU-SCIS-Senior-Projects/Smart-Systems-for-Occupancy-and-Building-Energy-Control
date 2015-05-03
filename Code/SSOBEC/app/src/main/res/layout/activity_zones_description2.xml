@@ -180,6 +180,7 @@
                 fbutton:cornerRadius="5dp"
                 android:padding="90dip"
                 android:onClick="predictConsumption"
+                android:id="@+id/predict_consumption"
                 android:text="@string/predict_appl_consumption"
                 android:textColor="@color/default_background"
                 android:layout_margin="5dip"
