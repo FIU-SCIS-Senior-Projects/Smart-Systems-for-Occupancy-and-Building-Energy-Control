@@ -61,6 +61,10 @@ public class EnergyActivity extends ActionBarActivity {
     public static final String title = "activity_title";
     SharedPreferences sharedpreferences;
 
+    /**
+     * Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,11 +123,18 @@ public class EnergyActivity extends ActionBarActivity {
 
     }
 
-    // Convert to Celsius
+    /**
+     * Convert to Celsius
+     * @param fahrenheit
+     * @return
+     */
     private int convertFahrenheitToCelsius(float fahrenheit) {
         return (int) ((fahrenheit - 32) * 5 / 9);
     }
 
+    /**
+     * onClick Occupancy button, display the occupancy view
+     */
     private void getOccupancy()
     {
 
@@ -179,6 +190,9 @@ public class EnergyActivity extends ActionBarActivity {
         graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
     }
 
+    /**
+     * onClick Temperature button, display the temperature view
+     */
     private void getTemperature()
     {
         int inside_temperature;
@@ -227,6 +241,9 @@ public class EnergyActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * onClick PlugLoad button, display the plug load view
+     */
     private void getPlugLoad()
     {
         ArrayList<PlugLoadListParent> parents = data_access.getPlugLoadParentData(ZonesDescriptionActivity.regionID);
@@ -306,6 +323,9 @@ public class EnergyActivity extends ActionBarActivity {
         tabs.addTab(spec);
     }
 
+    /**
+     * onClick Lighting button, display the lighting view
+     */
     private void getLighting()
     {
         DecimalFormat df = new DecimalFormat("#.#");
@@ -335,6 +355,11 @@ public class EnergyActivity extends ActionBarActivity {
         mPieChart2.startAnimation();
     }
 
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -346,6 +371,11 @@ public class EnergyActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -402,6 +432,9 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Observe the synchronization status of the Sync Adapter class
+     */
     private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
         /** Callback invoked with the sync adapter status changes. */
         @Override
@@ -435,6 +468,10 @@ public class EnergyActivity extends ActionBarActivity {
         }
     };
 
+    /**
+     * Set refresh button according to sync status
+     * @param refreshing
+     */
     public void setRefreshActionButtonState(boolean refreshing) {
         if (mOptionsMenu == null) {
             return;
@@ -450,6 +487,10 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * onClick Predict AC Consumption, display the AC Consumption view
+     * @param view
+     */
     public void predictAC (View view)
     {
         Intent intent = new Intent(this,ACConsumptionPrediction.class);
@@ -457,6 +498,10 @@ public class EnergyActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /**
+     * onClick Predict Appliance Consumption, display the Predict Appliance Consumption view
+     * @param view
+     */
     public void predictConsumption(View view)
     {
         Intent intent = new Intent(this,ConsumptionAppliances.class);
@@ -464,6 +509,10 @@ public class EnergyActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /**
+     * Get the average of the building energy performance for lighting
+     * @return PieChart
+     */
     private PieChart getBuildingLightingPerformance()
     {
         PieChart mPieChart = (PieChart) findViewById(R.id.buildingLightingChart);
@@ -501,6 +550,9 @@ public class EnergyActivity extends ActionBarActivity {
         return mPieChart;
     }
 
+    /**
+     * Get the average of the building energy performance for plugload
+     */
     private void getBuildingPlugLoadPerformance()
     {
         List<NameValuePair> emptyarr = new ArrayList<>(1);
@@ -531,6 +583,10 @@ public class EnergyActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Stylization for our graph views for plug load
+     * @param graph
+     */
     private void GraphViewFormatting(GraphView graph)
     {
         graph.getGridLabelRenderer().setHorizontalAxisTitle("Appliances");

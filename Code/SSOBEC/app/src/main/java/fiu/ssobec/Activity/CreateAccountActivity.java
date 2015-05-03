@@ -24,13 +24,21 @@ public class CreateAccountActivity extends ActionBarActivity {
     public static final String LOG_TAG = "CreateAccountActivity";
     TextView warning_msg;
 
+    /**
+     * Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
     }
 
-
+    /**
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -38,6 +46,11 @@ public class CreateAccountActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -52,6 +65,11 @@ public class CreateAccountActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * onClick Submit button, create the user's account
+     * @param view
+     */
     public void registerUser (View view){
 
         List<NameValuePair> new_user_info = new ArrayList<>(3);

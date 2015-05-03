@@ -33,6 +33,10 @@ public class LoginActivity extends ActionBarActivity {
     private DataAccessUser data_access;
     TextView warning_msg;
 
+    /**
+     * Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -62,6 +66,11 @@ public class LoginActivity extends ActionBarActivity {
 
     }*/
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -77,7 +86,11 @@ public class LoginActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Login Button has been clicked
+    /**
+     *  Login Button has been clicked
+     * @param view
+     * @throws InterruptedException
+     */
     public void LoginPost(View view) throws InterruptedException {
 
         //get the email and password from the text fields
@@ -126,6 +139,11 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Save User ID and Name in the internal database
+     * @param response
+     * @return
+     */
     public boolean userDetails(String response)
     {
         String name="";
@@ -170,7 +188,10 @@ public class LoginActivity extends ActionBarActivity {
         return user_flag;
     }
 
-    // OnClick Create Account Button
+    /**
+     * OnClick Create Account Button
+     * @param view
+     */
     public void getCreateAccount(View view) {
         Intent intent = new Intent(this,CreateAccountActivity.class);
         startActivity(intent);

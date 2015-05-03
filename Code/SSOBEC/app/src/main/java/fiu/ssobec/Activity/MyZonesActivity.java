@@ -54,7 +54,10 @@ public class MyZonesActivity extends ActionBarActivity{
     public static int user_id;
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
-
+    /**
+     *  Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +75,9 @@ public class MyZonesActivity extends ActionBarActivity{
         SyncUtils.TriggerRefresh();
     }
 
+    /**
+     * Set the view for the zone activity
+     */
     private void setTheContentViewContent()
     {
         setContentView(R.layout.activity_my_zones);
@@ -141,22 +147,10 @@ public class MyZonesActivity extends ActionBarActivity{
 
     }
 
-    public ArrayList<RewardListParent> buildDummyData(){
-        ArrayList<RewardListParent> dummy_parents = new ArrayList<>();
-
-        for(int i=0; i<10; i++)
-        {
-            RewardListParent parent = new RewardListParent();
-            parent.setName("RewardName"+i);
-            parent.setDescription("RewardDescription"+i);
-            parent.setZone_name("Zone" + i);
-            parent.setPoints("+"+i);
-            dummy_parents.add(parent);
-        }
-
-        return dummy_parents;
-    }
-
+    /**
+     * Get rewards for each zone
+     * @return ArrayList of zone rewards
+     */
     public ArrayList<RewardListParent> getZones(){
         ArrayList<RewardListParent> parents = new ArrayList<>();
 
@@ -226,6 +220,11 @@ public class MyZonesActivity extends ActionBarActivity{
         return parents;
     }
 
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -233,6 +232,11 @@ public class MyZonesActivity extends ActionBarActivity{
         return true;
     }
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -296,6 +300,10 @@ public class MyZonesActivity extends ActionBarActivity{
         }
     }
 
+
+    /**
+     * Observe the synchronization status of the Sync Adapter class
+     */
     private SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
         /** Callback invoked with the sync adapter status changes. */
         @Override
@@ -329,6 +337,10 @@ public class MyZonesActivity extends ActionBarActivity{
         }
     };
 
+    /**
+     * Set refresh button according to sync status
+     * @param refreshing
+     */
     public void setRefreshActionButtonState(boolean refreshing) {
         if (refreshing) {
             setContentView(R.layout.activity_loading);

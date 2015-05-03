@@ -1,7 +1,6 @@
 package fiu.ssobec.Activity;
 
 import android.app.ListActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +11,11 @@ import fiu.ssobec.R;
 
 public class SettingActivity extends ListActivity {
 
+
+    /**
+     *  Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +28,11 @@ public class SettingActivity extends ListActivity {
     }
 
 
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -31,6 +40,11 @@ public class SettingActivity extends ListActivity {
         return true;
     }
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
