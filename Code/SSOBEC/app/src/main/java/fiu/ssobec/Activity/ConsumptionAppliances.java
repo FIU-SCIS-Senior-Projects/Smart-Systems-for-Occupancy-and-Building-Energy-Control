@@ -32,7 +32,9 @@ import fiu.ssobec.AdaptersUtil.ExpandableListParent;
 import fiu.ssobec.Calculations.PredictPlugLoadConsumption;
 import fiu.ssobec.R;
 
-
+/**
+ *
+ */
 public class ConsumptionAppliances extends ExpandableListActivity {
 
     //Initialize variables
@@ -64,6 +66,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
     HashMap<String, Double> appl_info_hmap;
 
+    /**
+     * Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +97,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         loadHosts(mydummyList);
     }
 
-
+    /**
+     * Get the information of the appliances from the database
+     * @return List of Appliances from Zone
+     */
     private ArrayList<ExpandableListParent> getDBData() {
         // Creating ArrayList of type parent class to store parent class objects
         final ArrayList<ExpandableListParent> list = new ArrayList<>();
@@ -143,49 +152,10 @@ public class ConsumptionAppliances extends ExpandableListActivity {
     }
 
 
-    //Data Service Implementation
-
-    private ArrayList<ExpandableListParent> buildDummyData() {
-        // Creating ArrayList of type parent class to store parent class objects
-        final ArrayList<ExpandableListParent> list = new ArrayList<ExpandableListParent>();
-        int numChilds = 4;
-
-        for (int i = 0; i < 6; i++) {
-            //Create parent class object
-            final ExpandableListParent expandableListParent = new ExpandableListParent();
-
-            expandableListParent.setName("" + i);
-            expandableListParent.setText1(parent_text1[i]);
-            expandableListParent.setText2(parent_text2[i]);
-            expandableListParent.setExpandableListChildren(new ArrayList<ExpandableListChild>());
-
-            if(i == 4 || i == 5)
-                numChilds = 5;
-
-            for(int j = 0 ; j < numChilds ; j++)
-            {
-                if((i == 4 || i == 5) && j == numChilds - 1)
-                {
-                    final ExpandableListChild expandableListChild = new ExpandableListChild();
-                    expandableListChild.setName("" + j);
-                    expandableListParent.getExpandableListChildren().add(expandableListChild);
-                }
-                else
-                {
-                    final ExpandableListChild expandableListChild = new ExpandableListChild();
-                    expandableListChild.setName("" + j);
-                    expandableListChild.setText1(appl_names[j]);
-                    expandableListParent.getExpandableListChildren().add(expandableListChild);
-                }
-
-            }
-
-            //Adding Parent class object to ArrayList
-            list.add(expandableListParent);
-        }
-        return list;
-    }
-
+    /**
+     * Load Information of Appliances in the Expandable List
+     * @param newExpandableListParents
+     */
     private void loadHosts(final ArrayList<ExpandableListParent> newExpandableListParents) {
 
         if (newExpandableListParents == null)
@@ -229,6 +199,11 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         data_access.close();
     }
 
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -413,6 +388,13 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return convertView;
         }
 
+        /**
+         * Calculate the data for the Monthly Consumption and Monthly Cost
+         * @param powerKw
+         * @param quantity
+         * @param hoursUse
+         * @param daysUse
+         */
         public void calcData( ArrayList<Double> powerKw, ArrayList<Integer> quantity, ArrayList<Integer> hoursUse, ArrayList<Integer> daysUse) {
 
             for (int i = 0; i < 4; i++) {
@@ -451,12 +433,23 @@ public class ConsumptionAppliances extends ExpandableListActivity {
 
         }
 
+        /**
+         *
+         * @param groupPosition
+         * @param childPosition
+         * @return
+         */
         @Override
         public Object getChild(int groupPosition, int childPosition) {
             return expandableListParents.get(groupPosition).getExpandableListChildren().get(childPosition);
         }
 
-        //Call when child row clicked
+        /**
+         * Call when child row clicked
+         * @param groupPosition
+         * @param childPosition
+         * @return
+         */
         @Override
         public long getChildId(int groupPosition, int childPosition) {
             /****** When Child row clicked then this function call *******/
@@ -469,6 +462,11 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return childPosition;
         }
 
+        /**
+         *
+         * @param groupPosition
+         * @return
+         */
         @Override
         public int getChildrenCount(int groupPosition) {
             int size = 0;
@@ -477,18 +475,31 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return size;
         }
 
-
+        /**
+         *
+         * @param groupPosition
+         * @return
+         */
         @Override
         public Object getGroup(int groupPosition) {
             //Log.i("Parent", groupPosition + "=  getGroup ");
             return expandableListParents.get(groupPosition);
         }
 
+        /**
+         *
+         * @return
+         */
         @Override
         public int getGroupCount() {
             return expandableListParents.size();
         }
 
+        /**
+         *
+         * @param groupPosition
+         * @return The ID of the parent
+         */
         //Call when parent row clicked
         @Override
         public long getGroupId(int groupPosition) {
@@ -501,27 +512,48 @@ public class ConsumptionAppliances extends ExpandableListActivity {
             return groupPosition;
         }
 
+        /**
+         *
+         */
         @Override
         public void notifyDataSetChanged() {
             // Refresh List rows
             super.notifyDataSetChanged();
         }
 
+        /**
+         *
+         * @return Whether the list is empty or not
+         */
         @Override
         public boolean isEmpty() {
             return ((expandableListParents == null) || expandableListParents.isEmpty());
         }
 
+        /**
+         *
+         * @param groupPosition
+         * @param childPosition
+         * @return true
+         */
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
         }
 
+        /**
+         *
+         * @return true
+         */
         @Override
         public boolean hasStableIds() {
             return true;
         }
 
+        /**
+         *
+         * @return true
+         */
         @Override
         public boolean areAllItemsEnabled() {
             return true;

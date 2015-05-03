@@ -25,6 +25,10 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
     public static int regionID;
     public static String ACTIVITY_NAME = "activity_name";
 
+    /**
+     *  Initialize Activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +71,11 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -103,6 +111,11 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will

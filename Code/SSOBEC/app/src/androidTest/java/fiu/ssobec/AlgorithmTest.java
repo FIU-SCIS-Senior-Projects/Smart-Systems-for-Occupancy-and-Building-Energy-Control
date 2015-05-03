@@ -34,20 +34,17 @@ public class AlgorithmTest extends ActivityInstrumentationTestCase2<MyZonesActiv
         getActivity();
     }
 
+    // Open the overflow menu OR open the options menu,
+    // depending on if the device has a hardware or software overflow menu button.
+
     @MediumTest
     public void testNaiveAlgorithm() {
 
         onView(withId(1)).perform(click());
-
         onView(withId(R.id.TemperatureButton)).perform(click());
-
-        // Open the overflow menu OR open the options menu,
-        // depending on if the device has a hardware or software overflow menu button.
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 
-        // Click the item.
-        onView(withText(Matchers.startsWith("Temperature")))
-                .perform(click());
+        onView(withText(Matchers.startsWith("Temperature"))).perform(click());
 
         for(int i = 70; i <= 100; i=i+2)
         {
@@ -56,6 +53,9 @@ public class AlgorithmTest extends ActivityInstrumentationTestCase2<MyZonesActiv
             System.out.println(i+") "+ onView(withId(R.id.prediction_result)).toString());
             onView(withId(R.id.today_temperature_textfield)).perform(ViewActions.clearText());
         }
+
+
+
 
         try {
             Thread.sleep(1500);

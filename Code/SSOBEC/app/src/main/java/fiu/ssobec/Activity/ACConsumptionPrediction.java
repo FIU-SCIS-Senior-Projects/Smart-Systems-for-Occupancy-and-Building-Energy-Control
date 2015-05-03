@@ -7,10 +7,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import java.sql.SQLException;
 import java.util.Random;
-
 import fiu.ssobec.Calculations.NaiveBayesTemperature;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.R;
@@ -22,7 +20,11 @@ public class ACConsumptionPrediction extends ActionBarActivity {
     int outside_temperature;
     private DataAccessUser data_access;
 
-    @Override
+    /**
+     *  Initialize Activity
+     * @param savedInstanceState
+     */
+ @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_acconsumption_prediction);
@@ -52,6 +54,11 @@ public class ACConsumptionPrediction extends ActionBarActivity {
 
     }
 
+    /**
+     *  Initialize Activity Action Bar Menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -59,6 +66,11 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         return true;
     }
 
+    /**
+     *  On Menu Item Selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -75,6 +87,11 @@ public class ACConsumptionPrediction extends ActionBarActivity {
     }
 
     String res;
+
+    /**
+     * onClick predict button, use naive to make prediction and display results in the view
+     * @param view
+     */
     public void predictTemperatureEnergy(View view)
     {
         NaiveBayesTemperature mnaive = new NaiveBayesTemperature(this);
@@ -93,7 +110,9 @@ public class ACConsumptionPrediction extends ActionBarActivity {
 
     }
 
-
+    /**
+     *
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -104,6 +123,9 @@ public class ACConsumptionPrediction extends ActionBarActivity {
         }
     }
 
+    /**
+     *
+     */
     @Override
     protected void onPause() {
         super.onPause();
