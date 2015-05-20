@@ -32,7 +32,7 @@ import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 /**
  * Created by Dalaidis on 2/10/2015.
- *
+ * Modified by Diana on 5/20/2015
  *  This class is useful to maintain our User database
  *  and support adding new users and updating the
  *  information of users.
@@ -60,7 +60,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** USER ************************************/
 
-    public static void createUser(String name, int id, String email)
+    public static void createUser(String name, int id, String email, String usertype)
     {
         int loggedIn = 1;
         ContentValues vals = new ContentValues();
@@ -68,6 +68,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
+        vals.put(UserSQLiteDatabase.COLUMN_USERTYPE, usertype);
 
         db.insert(UserSQLiteDatabase.TABLE_USER, null, vals);
     }
@@ -131,10 +132,14 @@ public class DataAccessUser implements DataAccessInterface {
     }
 
     public static User getUserFromCursor(Cursor cursor) {
+        if(cursor.getString(4)== null){
+            System.out.println("null usertype");
+        }
         User user = new User(cursor.getString(0),  //Name
                 cursor.getInt(1),     //ID
                 cursor.getString(2),  //Email
-                cursor.getInt(3));    //LoggedIn
+                cursor.getInt(3),    //LoggedIn
+                cursor.getString(4));  //UserType
         return user;
     }
 

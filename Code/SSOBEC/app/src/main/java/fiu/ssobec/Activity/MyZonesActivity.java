@@ -80,8 +80,6 @@ public class MyZonesActivity extends ActionBarActivity{
      */
     private void setTheContentViewContent()
     {
-        setContentView(R.layout.activity_my_zones);
-
         User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
 
         //If a user that is logged in into the system is not found then start a new LoginActivity
@@ -94,6 +92,19 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
+            if(user.getUsertype()== "admin"){  //Load Facility Manager Layout
+                setContentView(R.layout.activity_admin_zones);
+            }
+            else{  //Load general user layout
+                setContentView(R.layout.activity_my_zones);
+
+                //Set the rewards list from the user's rewards
+                ArrayList<RewardListParent> parents = getZones();
+                ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
+                MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
+                myRewardListAdapter.setParents(parents);
+                mListView.setAdapter(myRewardListAdapter);
+            }
             user_id = user.getId(); //Get the ID of the user
             List<NameValuePair> userId = new ArrayList<>(1);
             String res = null;
@@ -132,16 +143,6 @@ public class MyZonesActivity extends ActionBarActivity{
             m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridViewButtons.setAdapter(m_badapter);
 
-            //Set the rewards list from the user's rewards
-           // ArrayList<RewardListParent> parents = buildDummyData();
-            ArrayList<RewardListParent> parents = getZones();
-
-            getZones();
-
-            ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
-            MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
-            myRewardListAdapter.setParents(parents);
-            mListView.setAdapter(myRewardListAdapter);
 
         }
 
