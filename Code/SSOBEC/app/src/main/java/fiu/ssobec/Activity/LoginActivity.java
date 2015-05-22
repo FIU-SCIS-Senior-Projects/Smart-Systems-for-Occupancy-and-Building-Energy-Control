@@ -157,6 +157,8 @@ public class LoginActivity extends ActionBarActivity {
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
         int id=0;
 
+        System.out.println(LOG_TAG + " ::: " + stringTokenizer.toString());
+
         while (stringTokenizer.hasMoreElements()) {
 
             String temp = stringTokenizer.nextElement().toString();

@@ -10,7 +10,9 @@ public interface DataAccessInterface {
      static String[] USER_COLS = {   UserSQLiteDatabase.COLUMN_EMAIL,
             UserSQLiteDatabase.COLUMN_ID,
             UserSQLiteDatabase.COLUMN_NAME,
-            UserSQLiteDatabase.COLUMN_LOGGEDIN};
+            UserSQLiteDatabase.COLUMN_LOGGEDIN,
+            UserSQLiteDatabase.COLUMN_USERTYPE
+     };
 
      static String[] ZONE_COLS = {   UserSQLiteDatabase.ZONES_COLUMN_ID,
             UserSQLiteDatabase.ZONES_COLUMN_NAME};

@@ -68,7 +68,13 @@ public class MyZonesActivity extends ActionBarActivity{
         data_access = new DataAccessUser(this);
 
         //Open the data access to the tables
-        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
+        try {
+            data_access.open();
+        }
+        catch (SQLException e) {
+            System.err.println(LOG_TAG + ": " + e.toString());
+            e.printStackTrace();
+        }
 
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);

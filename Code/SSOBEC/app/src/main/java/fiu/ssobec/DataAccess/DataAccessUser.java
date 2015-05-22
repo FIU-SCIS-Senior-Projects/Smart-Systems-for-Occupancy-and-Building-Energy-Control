@@ -62,6 +62,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     public static void createUser(String name, int id, String email, String usertype)
     {
+        System.out.println(LOG_TAG + " ::: createUser()");
         int loggedIn = 1;
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.COLUMN_NAME, name);
@@ -79,6 +80,12 @@ public class DataAccessUser implements DataAccessInterface {
                 USER_COLS,
                 UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
                 null, null, null, null);
+
+        System.out.println(LOG_TAG + " ::: Cursor ::: ");
+        for(String str: cursor.getColumnNames()){
+            System.out.println(LOG_TAG + " " + str);
+
+        }
 
         if (cursor.moveToFirst()) {
             User nUser = getUserFromCursor(cursor);
@@ -132,9 +139,10 @@ public class DataAccessUser implements DataAccessInterface {
     }
 
     public static User getUserFromCursor(Cursor cursor) {
-        if(cursor.getString(4)== null){
-            System.out.println("null usertype");
-        }
+
+//        if(cursor.getString(4)== null){
+//            System.out.println("null usertype");
+//        }
         User user = new User(cursor.getString(0),  //Name
                 cursor.getInt(1),     //ID
                 cursor.getString(2),  //Email

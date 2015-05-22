@@ -11,6 +11,7 @@ import android.util.Log;
  */
 public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
+    private static final String LOG_TAG = "UserSQLiteDatabase";
 
     //Table User
     public static final String TABLE_USER = "user";
@@ -27,7 +28,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + COLUMN_NAME + " varchar(50) NOT NULL, "
             + COLUMN_EMAIL + " varchar(100) NOT NULL, "
             + COLUMN_USERTYPE + " varchar(50) NOT NULL "
-            +"); ";
+            +");";
 
     //Table Zones
     public static final String TABLE_ZONES = "zone_description";
@@ -165,6 +166,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        System.out.println(LOG_TAG + " ::: onCreate() :::");
+
         db.execSQL(USER_TABLE_CREATE);
         db.execSQL(ZONE_TABLE_CREATE);
         db.execSQL(OCC_TABLE_CREATE);
