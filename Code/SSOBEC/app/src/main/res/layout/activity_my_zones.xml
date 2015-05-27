@@ -10,8 +10,9 @@
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="100dp"
         android:layout_weight="1"
-        android:background="@color/gray_light">
-        <!-- android:background="@drawable/lightbluepatternrepeat"-->
+        android:background="@drawable/lightbluepatternrepeat"
+        >
+        <!-- android:background="@color/gray_light" -->
 
         <GridView
             android:layout_height="wrap_content"
@@ -58,7 +59,7 @@
     </LinearLayout>
 
     <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:layout_weight="1"
         android:background="@color/login_button_background">
 

@@ -71,6 +71,8 @@ public class MyZonesActivity extends ActionBarActivity{
     private ListView mListView;
     private Context mContext = this;
 
+    private GridView gridViewButtons;
+    private GridViewAdapter gridAdapter;
 
     /**
      *  Initialize Activity
@@ -162,107 +164,23 @@ public class MyZonesActivity extends ActionBarActivity{
             }
 
 
-
-            /**
-             * The following comment is the sample usage of ArraySwipeAdapter.
-             */
-//            String[] adapterData = new String[]{"Activity", "Service", "Content Provider", "Intent", "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient",
-//                "DDMS", "Android Studio", "Fragment", "Loader", "Activity", "Service", "Content Provider", "Intent",
-//                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient", "Activity", "Service", "Content Provider", "Intent",
-//                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient"};
-
-
-
-
-            /**
-             * New View
-             */
-            /*
-            mListView = (ListView) findViewById(R.id.listview);
-
-//            ListViewAdapter mAdapter = new ListViewAdapter(this);
-//            mAdapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
-//            mListView.setAdapter(mAdapter);
-//            mAdapter.setMode(Attributes.Mode.Single);
-
-            ArraySwipeAdapterSample arraySwipeAdapterSample =
-                    new ArraySwipeAdapterSample<String>(this, R.layout.listview_item, R.id.position, data_access.getAllZoneNames());
-            mListView.setAdapter(arraySwipeAdapterSample);
-            arraySwipeAdapterSample.setMode(Attributes.Mode.Single);
-            arraySwipeAdapterSample.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
-
-            for(int str : data_access.getAllZoneID()) {
-                System.out.println("ID: " + str);
-            }
-
-            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    //((SwipeLayout)(mListView.getChildAt(position - mListView.getFirstVisiblePosition()))).open(true);
-
-                    Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
-
-                    //send the region_id or button_id to the ZonesDescriptionActivity
-                    intent.putExtra("button_id",id);
-                    mContext.startActivity(intent);
-                }
-            });
-            mListView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    Log.e("ListView", "OnTouch");
-                    return false;
-                }
-            });
-            mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
-                    ((SwipeLayout)(mListView.getChildAt(position - mListView.getFirstVisiblePosition()))).open(true);
-                    return true;
-                }
-            });
-            mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-                    Log.e("ListView", "onScrollStateChanged");
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-                }
-            });
-
-            mListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("ListView", "onItemSelected:" + position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    Log.e("ListView", "onNothingSelected:");
-                }
-            });
-            */
-            /**
-             * /End of new View
-             */
-
             //Set buttons in a Grid View order
-            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
 //            ButtonAdapter m_badapter = new ButtonAdapter(this);
 //            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            gridViewButtons.setAdapter(m_badapter);
-            final GridViewAdapter adapter = new GridViewAdapter(this);
-            adapter.setMode(Attributes.Mode.Multiple);
-            gridViewButtons.setAdapter(adapter);
+            gridAdapter = new GridViewAdapter(
+                    this, data_access.getAllZoneNames(), data_access.getAllZoneID());
+//            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+            gridAdapter.setMode(Attributes.Mode.Single);
+            gridViewButtons.setAdapter(gridAdapter);
             gridViewButtons.setSelected(false);
             gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     Log.e("onItemLongClick","onItemLongClick:" + position);
+                    ((SwipeLayout)(gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition())))
+                            .open(true);
                     return false;
                 }
             });
@@ -271,6 +189,13 @@ public class MyZonesActivity extends ActionBarActivity{
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Log.e("onItemClick","onItemClick:" + position);
+
+                    Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
+
+                    //send the region_id or button_id to the ZonesDescriptionActivity
+                    Zones zone = (Zones) gridAdapter.getItem(position);
+                    intent.putExtra("button_id",zone.getZone_id());
+                    mContext.startActivity(intent);
                 }
             });
 
