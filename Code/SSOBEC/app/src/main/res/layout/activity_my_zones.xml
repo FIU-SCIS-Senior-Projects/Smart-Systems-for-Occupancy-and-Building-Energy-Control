@@ -10,16 +10,50 @@
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="100dp"
         android:layout_weight="1"
-        android:background="@drawable/lightbluepatternrepeat">
+        android:background="@color/gray_light">
+        <!-- android:background="@drawable/lightbluepatternrepeat"-->
 
-        <GridView
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/grid_view_buttons"
-            android:verticalSpacing="2dp"
-            android:horizontalSpacing="8dp"
-            android:numColumns="3"
-            android:layout_margin="20dp" />
+        <!--<GridView-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:id="@+id/grid_view_buttons"-->
+            <!--android:verticalSpacing="2dp"-->
+            <!--android:horizontalSpacing="8dp"-->
+            <!--android:numColumns="3"-->
+            <!--android:layout_margin="20dp" />-->
+
+        <ListView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!-- Swipe Layout -->
+        <!--<com.daimajia.swipe.SwipeLayout-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:id="@+id/swipeLayout"-->
+            <!--android:layout_height="80dp">-->
+            <!--&lt;!&ndash; Bottom View Start&ndash;&gt;-->
+            <!--<LinearLayout-->
+                <!--android:background="#66ddff00"-->
+                <!--android:id="@+id/bottom_wrapper"-->
+                <!--android:layout_width="160dp"-->
+                <!--android:weightSum="1"-->
+                <!--android:layout_height="match_parent">-->
+                <!--&lt;!&ndash;What you want to show&ndash;&gt;-->
+            <!--</LinearLayout>-->
+            <!--&lt;!&ndash; Bottom View End&ndash;&gt;-->
+
+            <!--&lt;!&ndash; Surface View Start &ndash;&gt;-->
+            <!--<LinearLayout-->
+                <!--android:padding="10dp"-->
+                <!--android:background="#ffffff"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+                <!--&lt;!&ndash;What you want to show in SurfaceView&ndash;&gt;-->
+            <!--</LinearLayout>-->
+            <!--&lt;!&ndash; Surface View End &ndash;&gt;-->
+        <!--</com.daimajia.swipe.SwipeLayout>-->
 
     </LinearLayout>
 
