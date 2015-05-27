@@ -13,20 +13,20 @@
         android:background="@color/gray_light">
         <!-- android:background="@drawable/lightbluepatternrepeat"-->
 
-        <!--<GridView-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:id="@+id/grid_view_buttons"-->
-            <!--android:verticalSpacing="2dp"-->
-            <!--android:horizontalSpacing="8dp"-->
-            <!--android:numColumns="3"-->
-            <!--android:layout_margin="20dp" />-->
+        <GridView
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/grid_view_buttons"
+            android:verticalSpacing="2dp"
+            android:horizontalSpacing="8dp"
+            android:numColumns="3"
+            android:layout_margin="20dp" />
 
-        <ListView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/listview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <!--<ListView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:id="@+id/listview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"/>-->
 
         <!-- Swipe Layout -->
         <!--<com.daimajia.swipe.SwipeLayout-->

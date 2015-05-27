@@ -33,6 +33,7 @@ import java.util.List;
 
 import fiu.ssobec.Adapters.ArraySwipeAdapterSample;
 import fiu.ssobec.Adapters.ButtonAdapter;
+import fiu.ssobec.Adapters.GridViewAdapter;
 import fiu.ssobec.Adapters.ListViewAdapter;
 import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
@@ -160,7 +161,7 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             }
 
-            mListView = (ListView) findViewById(R.id.listview);
+
 
             /**
              * The following comment is the sample usage of ArraySwipeAdapter.
@@ -170,16 +171,25 @@ public class MyZonesActivity extends ActionBarActivity{
 //                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient", "Activity", "Service", "Content Provider", "Intent",
 //                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient"};
 
-            ArraySwipeAdapterSample arraySwipeAdapterSample =
-                    new ArraySwipeAdapterSample<String>(this, R.layout.listview_item, R.id.position, data_access.getAllZoneNames());
-            mListView.setAdapter(arraySwipeAdapterSample);
-            arraySwipeAdapterSample.setMode(Attributes.Mode.Single);
-            arraySwipeAdapterSample.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+
+
+
+            /**
+             * New View
+             */
+            /*
+            mListView = (ListView) findViewById(R.id.listview);
 
 //            ListViewAdapter mAdapter = new ListViewAdapter(this);
 //            mAdapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            mListView.setAdapter(mAdapter);
 //            mAdapter.setMode(Attributes.Mode.Single);
+
+            ArraySwipeAdapterSample arraySwipeAdapterSample =
+                    new ArraySwipeAdapterSample<String>(this, R.layout.listview_item, R.id.position, data_access.getAllZoneNames());
+            mListView.setAdapter(arraySwipeAdapterSample);
+            arraySwipeAdapterSample.setMode(Attributes.Mode.Single);
+            arraySwipeAdapterSample.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 
             for(int str : data_access.getAllZoneID()) {
                 System.out.println("ID: " + str);
@@ -235,13 +245,47 @@ public class MyZonesActivity extends ActionBarActivity{
                     Log.e("ListView", "onNothingSelected:");
                 }
             });
-
+            */
+            /**
+             * /End of new View
+             */
 
             //Set buttons in a Grid View order
-//            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
 //            ButtonAdapter m_badapter = new ButtonAdapter(this);
 //            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            gridViewButtons.setAdapter(m_badapter);
+            final GridViewAdapter adapter = new GridViewAdapter(this);
+            adapter.setMode(Attributes.Mode.Multiple);
+            gridViewButtons.setAdapter(adapter);
+            gridViewButtons.setSelected(false);
+            gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemLongClick","onItemLongClick:" + position);
+                    return false;
+                }
+            });
+
+            gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemClick","onItemClick:" + position);
+                }
+            });
+
+
+            gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemSelected","onItemSelected:" + position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
         }
 
     }
