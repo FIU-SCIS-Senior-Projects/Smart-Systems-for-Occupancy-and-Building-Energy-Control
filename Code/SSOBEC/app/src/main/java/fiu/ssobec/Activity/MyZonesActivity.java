@@ -193,7 +193,8 @@ public class MyZonesActivity extends ActionBarActivity{
                     Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
 
                     //send the region_id or button_id to the ZonesDescriptionActivity
-                    intent.putExtra("button_id",id);
+                    //TODO: NOT BUENO. Polling database on each click is not good
+                    intent.putExtra("button_id",data_access.getAllZoneID().get(position));
                     mContext.startActivity(intent);
                 }
             });
