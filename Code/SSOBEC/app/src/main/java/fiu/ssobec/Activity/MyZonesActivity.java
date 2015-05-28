@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.ListView;
 
@@ -98,7 +99,8 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
-            if(user.getUsertype()== "admin"){  //Load Facility Manager Layout
+            if(user.getUsertype().equalsIgnoreCase("admin")){  //Load Facility Manager Layout
+                System.out.println("Loading Facility Manager view.");
                 setContentView(R.layout.activity_admin_zones);
             }
             else{  //Load general user layout
@@ -227,6 +229,7 @@ public class MyZonesActivity extends ActionBarActivity{
         return parents;
     }
 
+
     /**
      *  Initialize Activity Action Bar Menu
      * @param menu
@@ -354,6 +357,22 @@ public class MyZonesActivity extends ActionBarActivity{
         } else {
             setTheContentViewContent();
         }
+    }
+
+    public void getReports(View view){
+        //This method is intended to generate reports for a facility manager
+
+    }
+
+    public void createZone(View view){
+        //This method is intended to allow a facility manager to create a zone
+        Intent intent = new Intent(this,CreateZoneActivity.class);
+        startActivity(intent);
+    }
+
+    public void getWastefulRegions(View view){
+        //This method is intended to allow users to view wasteful regions
+
     }
 
 }

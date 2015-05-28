@@ -11,23 +11,23 @@ if (!$conn) {
 }
 
 
-$name = $_POST['name'];
-$password = $_POST['password'];
-$login_email = $_POST['login_email'];
+$region_name = $_POST['region_name'];
+$location = $_POST['location'];
+$windows = $_POST['windows'];
 
-$sql = "INSERT INTO user(name, password, login_email, user_type) VALUES ('".$name."', '".$password."', '".$login_email."', 'user')";
+$sql = "INSERT INTO zone_description(region_name, location, windows) VALUES ('".$region_name."', '".$location."', '".$windows."')";
 
 $result = mysqli_query($conn, $sql);
 
 $con = "";
-$con .= "{ \"newuser_obj\": [";
+$con .= "{ \"newzone_obj\": [";
 
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
     while($row = mysqli_fetch_assoc($result)) {
-        $con .= " { \"name\": \"".$row["name"]."\", \"login_email\": ".$row["login_email"]." }, ";
+        $con .= " { \"region_name\": \"".$row["region_name"]."\", \"location\": ".$row["location"]." }, ";
     }
-	$con .= "{ \"name\": \"null\", \"login_email\": 0 } ] }";
+	$con .= "{ \"region_name\": \"null\", \"location\": 0 } ] }";
 	echo $con;
 } else {
     echo "No Data";

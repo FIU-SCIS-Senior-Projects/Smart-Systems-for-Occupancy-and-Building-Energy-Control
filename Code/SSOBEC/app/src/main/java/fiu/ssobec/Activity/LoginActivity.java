@@ -106,7 +106,7 @@ public class LoginActivity extends ActionBarActivity {
         username_pass.add(new BasicNameValuePair("login_email", login_email.trim()));
         username_pass.add(new BasicNameValuePair("password", password.trim()));
 
-        //send the username and password to loginpost.php file
+        //send the username and password to loginpost1.php file
         //save the response from the database in a string
         String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
 
@@ -122,8 +122,6 @@ public class LoginActivity extends ActionBarActivity {
                 }
 
             });
-
-  //TODO: CHECK IF USER is FACILITY MANAGER OR OCCUPANT AND REDIRECT TO RESPECTIVE LAYOUT
 
 
             //Start MyZonesActivity
