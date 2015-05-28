@@ -85,7 +85,7 @@ public class MyZonesActivity extends ActionBarActivity{
         //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
-        data_access = new DataAccessUser(this);
+        data_access = DataAccessUser.getInstance(this);
 
         //Open the data access to the tables
         try {
@@ -198,8 +198,7 @@ public class MyZonesActivity extends ActionBarActivity{
                     mContext.startActivity(intent);
                 }
             });
-
-
+            
             gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -212,7 +211,6 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             });
         }
-
     }
 
     /**

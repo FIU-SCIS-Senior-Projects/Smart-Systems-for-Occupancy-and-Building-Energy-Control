@@ -12,9 +12,18 @@ import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
-import java.util.ArrayList;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.Activity.ZonesDescriptionActivity;
+import fiu.ssobec.AdaptersUtil.RewardListParent;
+import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
 
@@ -96,27 +105,69 @@ public class GridViewAdapter extends BaseSwipeAdapter {
                 mContext.startActivity(intent);
             }
         });
-
         */
 
         v.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, "Delete: " + currentZones.get(viewPosition).getZone_name(), Toast.LENGTH_SHORT).show();
+                int a = -1;
+                //Toast.makeText(mContext, "Delete: " + currentZones.get(viewPosition).getZone_name(), Toast.LENGTH_SHORT).show();
                 swipeLayout.close(true);
-                currentZones.remove(viewPosition);
+                TextView zoneTV = (TextView)swipeLayout.findViewById(R.id.position);
+                String zoneIdStr = zoneTV.getText().toString().trim();
+                int zoneId = Integer.parseInt(zoneIdStr);
+
+                // Remove user-region pair from DB
+                //DataAccessUser.getInstance(mContext).userUnfollowZone(MyZonesActivity.user_id,viewPosition);
+
+                userUnfollowZone(MyZonesActivity.user_id,zoneId);
+
+                for(int i = 0; i < currentZones.size(); i++){
+                    if(currentZones.get(i).getZone_id() == zoneId){
+                        a = i;
+                    }
+                }
+
+                Toast.makeText(mContext, "user: " + MyZonesActivity.user_id
+                        + "zone: " + zoneId + " "
+                        + currentZones.get(a).getZone_name(), Toast.LENGTH_SHORT).show();
+
+                currentZones.remove(a);
+                zone_names.remove(a);
+                zone_id.remove(a);
                 notifyDataSetChanged();
             }
         });
+
         return v;
     }
 
+    public boolean userUnfollowZone(int userId, int zoneId) {
+
+        ArrayList<RewardListParent> parents = new ArrayList<>();
+
+        List<NameValuePair> emptyarr = new ArrayList<>(1);
+
+        emptyarr.add( new BasicNameValuePair("region_id", Integer.toString(zoneId) ));
+        emptyarr.add( new BasicNameValuePair("user_id", Integer.toString(userId) ));
+
+        String res=null;
+
+        try {
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr,
+                    "http://smartsystems-dev.cs.fiu.edu/unfollowZone.php").send();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     @Override
     public void fillValues(int position, View convertView) {
         //convertView.setId((Integer) zone_id.get(position));
         TextView t = (TextView)convertView.findViewById(R.id.position);
-        t.setText( String.valueOf( currentZones.get(position).getZone_id() ) + ". " );
+        t.setText( String.valueOf( currentZones.get(position).getZone_id() ) + " " );
 
         TextView zoneName = (TextView)convertView.findViewById(R.id.zone_name);
 //        zoneName.setText((String) zone_names.get(position));
@@ -146,5 +197,8 @@ public class GridViewAdapter extends BaseSwipeAdapter {
     {
         zone_names = zone_n;
         zone_id = zone_i;
+        for(int i = 0; i < zone_names.size(); i++) {
+            currentZones.add(new Zones((Integer) zone_id.get(i), (String) zone_names.get(i)));
+        }
     }
 }

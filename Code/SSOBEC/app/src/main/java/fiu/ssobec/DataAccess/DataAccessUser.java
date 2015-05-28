@@ -41,11 +41,19 @@ public class DataAccessUser implements DataAccessInterface {
 
     //Database fields
     private static SQLiteDatabase db;
-    private UserSQLiteDatabase dbHelp;
+    private static UserSQLiteDatabase dbHelp;
     public static final String LOG_TAG = "DataAccessUser";
 
+    private static DataAccessUser instance = null;
 
-    public DataAccessUser(Context context)
+    public static DataAccessUser getInstance(Context context){
+        if(instance == null) {
+            instance = new DataAccessUser(context);
+        }
+        return instance;
+    }
+
+    private DataAccessUser(Context context)
     {
         dbHelp = new UserSQLiteDatabase(context);
     }
@@ -160,7 +168,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.ZONES_COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.ZONES_COLUMN_NAME, zone_name);
 
-        System.out.println("Zone Name in vals: "+vals.getAsString(zone_name));
+        System.out.println("Zone Name in vals: " + vals.getAsString(zone_name));
 
         db.insert(UserSQLiteDatabase.TABLE_ZONES, null, vals);
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
@@ -231,6 +239,20 @@ public class DataAccessUser implements DataAccessInterface {
     private static Zones getZoneFromCursor(Cursor cursor) {
         return new Zones(cursor.getInt(0),       //ID
                 cursor.getString(1));
+    }
+
+    public void userUnfollowZone(int userId, int zoneId){
+        /*
+        String REMOVE_REGION_AUTHORITY_ROW = "remove from "
+                + UserSQLiteDatabase.TABLE_REGION_AUTHORITY
+                + " where " + UserSQLiteDatabase.USER_USER_ID + " = " + userId
+                + " AND " + UserSQLiteDatabase.ZONE_DESCRIPTION_REGION_ID + " = " + zoneId + ";";
+                */
+
+        String whereClause = UserSQLiteDatabase.USER_USER_ID + " = " + userId
+                + " AND " + UserSQLiteDatabase.ZONE_DESCRIPTION_REGION_ID + " = " + zoneId;
+
+        db.delete(UserSQLiteDatabase.TABLE_REGION_AUTHORITY, whereClause, null);
     }
 
     /****************************** TEMPERATURE ************************************/

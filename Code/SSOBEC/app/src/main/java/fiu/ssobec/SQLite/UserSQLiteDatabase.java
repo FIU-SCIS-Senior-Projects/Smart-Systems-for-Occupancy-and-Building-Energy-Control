@@ -42,6 +42,11 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             +
             ");";
 
+    // Table Region Authority
+    public static final String TABLE_REGION_AUTHORITY = "region_authority";
+    public static final String USER_USER_ID = "user_user_id";
+    public static final String ZONE_DESCRIPTION_REGION_ID = "zone_description_region_id";
+
     //Table Temperature
     public static final String TABLE_TEMPERATURE = "zone_temperature";
     public static final String TEMP_COLUMN_ID = "zone_description_id";

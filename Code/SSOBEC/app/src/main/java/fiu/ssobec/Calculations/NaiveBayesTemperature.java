@@ -41,7 +41,7 @@ public class NaiveBayesTemperature {
 
     public void training()
     {
-        DataAccessUser dataAccessUser = new DataAccessUser(context);
+        DataAccessUser dataAccessUser = DataAccessUser.getInstance(context);
 
         try {
             dataAccessUser.open();

@@ -46,7 +46,7 @@ public class DataAccessOwm {
 
     public void saveWeatherData()
     {
-        DataAccessUser data_access = new DataAccessUser(context);
+        DataAccessUser data_access = DataAccessUser.getInstance(context);
         float Clouds = 0;
         float Temp = 0;
 

@@ -207,7 +207,7 @@ public class MyZoneListAdapter implements ListAdapter {
 
         private int getUserID() {
 
-            DataAccessUser dataAccessUser = new DataAccessUser(mContext);
+            DataAccessUser dataAccessUser = DataAccessUser.getInstance(mContext);
             try {
                 dataAccessUser.open();
             } catch (SQLException e) {

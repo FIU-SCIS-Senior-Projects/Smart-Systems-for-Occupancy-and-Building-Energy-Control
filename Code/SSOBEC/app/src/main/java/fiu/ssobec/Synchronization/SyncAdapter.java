@@ -62,7 +62,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        data_access = new DataAccessUser(context);
+        data_access = DataAccessUser.getInstance(context);
         mcontext = context;
         zone_list = new JSONArray();
     }
