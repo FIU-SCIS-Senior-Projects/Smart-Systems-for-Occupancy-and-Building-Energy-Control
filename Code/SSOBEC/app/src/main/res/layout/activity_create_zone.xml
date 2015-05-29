@@ -1,0 +1,123 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    tools:context=".LinearLayout"
+    android:background="@color/background_material_light"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/create_zone"
+        android:textColor="@color/default_font_color"
+        android:textSize="30dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px">
+
+        <!-- Zone Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10px"
+            android:paddingTop="20px"
+            android:text="Zone Name:"
+            android:id="@+id/zone_name"
+            android:textColor="@color/default_font_color" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+            android:layout_marginLeft="40px"
+            android:paddingTop="20px"
+            android:id="@+id/zone_name_field"
+            android:textColor="@color/default_font_color" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px">
+
+        <!-- Zone Location -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10px"
+            android:paddingTop="20px"
+            android:text="Zone Location:"
+            android:id="@+id/zone_location"
+            android:textColor="@color/default_font_color" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+            android:layout_marginLeft="40px"
+            android:paddingTop="20px"
+            android:id="@+id/zone_location_field"
+            android:textColor="@color/default_font_color" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20px">
+
+        <!-- Zone Windows -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10px"
+            android:paddingTop="20px"
+            android:text="Number of windows within Zone:"
+            android:id="@+id/zone_windows"
+            android:textColor="@color/default_font_color" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+            android:layout_marginLeft="40px"
+            android:paddingTop="20px"
+            android:id="@+id/zone_windows_field"
+            android:textColor="@color/default_font_color" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="126dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingLeft="20px"
+        android:paddingTop="10px"
+        android:text="@string/create_zone"
+        android:id="@+id/create_zone_button"
+        android:onClick="createZone"
+        android:layout_marginTop="20dp"
+        android:background="#ff0ed39e"
+        android:layout_weight="0.05" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/warning_message_view"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#ffff000c"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>

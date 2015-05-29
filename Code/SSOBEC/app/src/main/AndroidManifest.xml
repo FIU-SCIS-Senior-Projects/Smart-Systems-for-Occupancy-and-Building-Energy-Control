@@ -148,6 +148,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+        <activity
+            android:name=".Activity.CreateZoneActivity"
+            android:label="@string/title_activity_create_zone"
+            android:parentActivityName=".Activity.MyZonesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.MyZonesActivity" />
+        </activity>
     </application>
 
 </manifest>

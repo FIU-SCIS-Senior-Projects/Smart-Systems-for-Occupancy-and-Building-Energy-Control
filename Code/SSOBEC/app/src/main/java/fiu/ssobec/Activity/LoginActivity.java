@@ -27,7 +27,7 @@ public class LoginActivity extends ActionBarActivity {
 
 
     public static final String LOG_TAG = "LoginActivity";
-    public static final String LOGIN_PHP = "http://smartsystems-dev.cs.fiu.edu/loginpost.php";
+    public static final String LOGIN_PHP = "http://smartsystems-dev.cs.fiu.edu/loginpost1.php";
     String login_email, password;
     List<NameValuePair> username_pass;
     private DataAccessUser data_access;
@@ -40,7 +40,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        data_access = new DataAccessUser(this);
+        data_access = DataAccessUser.getInstance(this);
 
         try {
             System.out.println("Open data access");
@@ -106,7 +106,7 @@ public class LoginActivity extends ActionBarActivity {
         username_pass.add(new BasicNameValuePair("login_email", login_email.trim()));
         username_pass.add(new BasicNameValuePair("password", password.trim()));
 
-        //send the username and password to loginpost.php file
+        //send the username and password to loginpost1.php file
         //save the response from the database in a string
         String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
 
@@ -122,6 +122,7 @@ public class LoginActivity extends ActionBarActivity {
                 }
 
             });
+
 
             //Start MyZonesActivity
             Intent intent = new Intent(this, MyZonesActivity.class);
@@ -140,7 +141,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Save User ID and Name in the internal database
+     * Save User ID, Name, Email and User type in the internal database
      * @param response
      * @return
      */
@@ -148,10 +149,13 @@ public class LoginActivity extends ActionBarActivity {
     {
         String name="";
         String email="";
+        String usertype="";
         boolean user_flag = false;
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
         int id=0;
+
+        System.out.println(LOG_TAG + " ::: " + stringTokenizer.toString());
 
         while (stringTokenizer.hasMoreElements()) {
 
@@ -167,10 +171,15 @@ public class LoginActivity extends ActionBarActivity {
                 System.out.println("name: "+temp);
                 name = temp;
             }
-            else if (str_before.equalsIgnoreCase("login_email"))
+            else if (str_before.equalsIgnoreCase("email"))
             {
-                System.out.println("login_email: "+temp);
+                System.out.println("email: "+temp);
                 email = temp;
+            }
+            else if (str_before.equalsIgnoreCase("usertype"))
+            {
+                System.out.println("usertype: "+temp);
+                usertype = temp;
             }
 
             str_before = temp;
@@ -179,7 +188,7 @@ public class LoginActivity extends ActionBarActivity {
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
         if(user_flag && (data_access.userExist(id) == null))
         {
-            data_access.createUser(name, id, email);
+            data_access.createUser(name, id, email, usertype);
         }
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id) != null)

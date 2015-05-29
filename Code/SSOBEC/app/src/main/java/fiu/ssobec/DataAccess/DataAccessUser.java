@@ -32,7 +32,7 @@ import fiu.ssobec.SQLite.UserSQLiteDatabase;
 
 /**
  * Created by Dalaidis on 2/10/2015.
- *
+ * Modified by Diana on 5/20/2015
  *  This class is useful to maintain our User database
  *  and support adding new users and updating the
  *  information of users.
@@ -41,9 +41,17 @@ public class DataAccessUser implements DataAccessInterface {
 
     //Database fields
     private static SQLiteDatabase db;
-    private UserSQLiteDatabase dbHelp;
+    private static UserSQLiteDatabase dbHelp;
     public static final String LOG_TAG = "DataAccessUser";
 
+    private static DataAccessUser instance = null;
+
+    public static DataAccessUser getInstance(Context context){
+        if(instance == null) {
+            instance = new DataAccessUser(context);
+        }
+        return instance;
+    }
 
     public DataAccessUser(Context context)
     {
@@ -60,14 +68,16 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** USER ************************************/
 
-    public static void createUser(String name, int id, String email)
+    public static void createUser(String name, int id, String email, String usertype)
     {
+        System.out.println(LOG_TAG + " ::: createUser()");
         int loggedIn = 1;
         ContentValues vals = new ContentValues();
         vals.put(UserSQLiteDatabase.COLUMN_NAME, name);
         vals.put(UserSQLiteDatabase.COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
+        vals.put(UserSQLiteDatabase.COLUMN_USERTYPE, usertype);
 
         db.insert(UserSQLiteDatabase.TABLE_USER, null, vals);
     }
@@ -78,6 +88,12 @@ public class DataAccessUser implements DataAccessInterface {
                 USER_COLS,
                 UserSQLiteDatabase.COLUMN_LOGGEDIN+" = "+ loggedIn+"",
                 null, null, null, null);
+
+        System.out.println(LOG_TAG + " ::: Cursor ::: ");
+        for(String str: cursor.getColumnNames()){
+            System.out.println(LOG_TAG + " " + str);
+
+        }
 
         if (cursor.moveToFirst()) {
             User nUser = getUserFromCursor(cursor);
@@ -131,10 +147,15 @@ public class DataAccessUser implements DataAccessInterface {
     }
 
     public static User getUserFromCursor(Cursor cursor) {
+
+//        if(cursor.getString(4)== null){
+//            System.out.println("null usertype");
+//        }
         User user = new User(cursor.getString(0),  //Name
                 cursor.getInt(1),     //ID
                 cursor.getString(2),  //Email
-                cursor.getInt(3));    //LoggedIn
+                cursor.getInt(3),    //LoggedIn
+                cursor.getString(4));  //UserType
         return user;
     }
 
@@ -147,7 +168,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.ZONES_COLUMN_ID, id);
         vals.put(UserSQLiteDatabase.ZONES_COLUMN_NAME, zone_name);
 
-        System.out.println("Zone Name in vals: "+vals.getAsString(zone_name));
+        System.out.println("Zone Name in vals: " + vals.getAsString(zone_name));
 
         db.insert(UserSQLiteDatabase.TABLE_ZONES, null, vals);
         Cursor cursor = db.query(UserSQLiteDatabase.TABLE_ZONES,
@@ -160,6 +181,24 @@ public class DataAccessUser implements DataAccessInterface {
 
         cursor.close();
         return zones;
+    }
+
+    /**
+     * FORCED, to create this method to remove Zones from GridView since they are populated on
+     * SQLite.
+     * @param id
+     * @return
+     */
+    public static int removeZone(int id){
+        System.out.println("create zone: Creating new zone on my database!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.ZONES_COLUMN_ID, id);
+//        vals.put(UserSQLiteDatabase.ZONES_COLUMN_NAME, zone_name);
+
+        String whereClause = UserSQLiteDatabase.ZONES_COLUMN_ID + " = " + id;
+
+        return db.delete(UserSQLiteDatabase.TABLE_ZONES, whereClause, null);
+
     }
 
     //Get me a zone that has the zone_id
@@ -218,6 +257,27 @@ public class DataAccessUser implements DataAccessInterface {
     private static Zones getZoneFromCursor(Cursor cursor) {
         return new Zones(cursor.getInt(0),       //ID
                 cursor.getString(1));
+    }
+
+
+    /**
+     * TODO: Currently Unecessary since there isn't an actual REGION_AUTHORITY Table like the one on the server
+     *
+     * @param userId
+     * @param zoneId
+     */
+    public void userUnfollowZone(int userId, int zoneId){
+        /*
+        String REMOVE_REGION_AUTHORITY_ROW = "remove from "
+                + UserSQLiteDatabase.TABLE_REGION_AUTHORITY
+                + " where " + UserSQLiteDatabase.USER_USER_ID + " = " + userId
+                + " AND " + UserSQLiteDatabase.ZONE_DESCRIPTION_REGION_ID + " = " + zoneId + ";";
+                */
+
+        String whereClause = UserSQLiteDatabase.USER_USER_ID + " = " + userId
+                + " AND " + UserSQLiteDatabase.ZONE_DESCRIPTION_REGION_ID + " = " + zoneId;
+
+        db.delete(UserSQLiteDatabase.TABLE_REGION_AUTHORITY, whereClause, null);
     }
 
     /****************************** TEMPERATURE ************************************/

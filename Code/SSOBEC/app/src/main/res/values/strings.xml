@@ -21,6 +21,12 @@
     <string name="min_outside_temp_f">Min F</string>
     <string name="n_a">N/A</string>
 
+    <string name="wasteful_regions">Save Energy</string>
+    <string name="reports">Reports</string>
+    <string name="create_zone">Create Zone</string>
+
+    <string name="my_rewards">My Rewards</string>
+
     <string name="create_account_submit">Submit</string>
     <string name="create_account">CREATE ACCOUNT</string>
 
@@ -80,6 +86,7 @@
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
 
     <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
+    <string name="title_activity_create_zone">CreateZoneActivity</string>
 
 
 </resources>

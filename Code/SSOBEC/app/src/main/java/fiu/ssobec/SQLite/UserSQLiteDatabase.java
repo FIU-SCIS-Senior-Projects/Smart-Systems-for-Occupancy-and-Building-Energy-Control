@@ -7,9 +7,11 @@ import android.util.Log;
 
 /**
  * Created by Dalaidis on 2/7/2015.
+ * Modified by Diana on 5/20/2015
  */
 public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
+    private static final String LOG_TAG = "UserSQLiteDatabase";
 
     //Table User
     public static final String TABLE_USER = "user";
@@ -17,14 +19,16 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_NAME = "user_name";
     public static final String COLUMN_EMAIL = "user_email";
     public static final String COLUMN_LOGGEDIN = "user_loggedin";
+    public static final String COLUMN_USERTYPE = "user_type";
 
     private static final String USER_TABLE_CREATE = "create table "
             + TABLE_USER + "("
             + COLUMN_LOGGEDIN + " int NOT NULL, "
             + COLUMN_ID + " int NOT NULL PRIMARY KEY, "
             + COLUMN_NAME + " varchar(50) NOT NULL, "
-            + COLUMN_EMAIL + " varchar(100) NOT NULL "
-            +"); ";
+            + COLUMN_EMAIL + " varchar(100) NOT NULL, "
+            + COLUMN_USERTYPE + " varchar(50) NOT NULL "
+            +");";
 
     //Table Zones
     public static final String TABLE_ZONES = "zone_description";
@@ -37,6 +41,11 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + ZONES_COLUMN_NAME + " varchar(255) NOT NULL "
             +
             ");";
+
+    // Table Region Authority
+    public static final String TABLE_REGION_AUTHORITY = "region_authority";
+    public static final String USER_USER_ID = "user_user_id";
+    public static final String ZONE_DESCRIPTION_REGION_ID = "zone_description_region_id";
 
     //Table Temperature
     public static final String TABLE_TEMPERATURE = "zone_temperature";
@@ -162,6 +171,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        System.out.println(LOG_TAG + " ::: onCreate() :::");
+
         db.execSQL(USER_TABLE_CREATE);
         db.execSQL(ZONE_TABLE_CREATE);
         db.execSQL(OCC_TABLE_CREATE);

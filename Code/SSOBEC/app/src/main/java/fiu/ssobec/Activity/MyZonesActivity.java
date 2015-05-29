@@ -2,6 +2,7 @@ package fiu.ssobec.Activity;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
@@ -9,8 +10,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -22,7 +32,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Adapters.ArraySwipeAdapterSample;
 import fiu.ssobec.Adapters.ButtonAdapter;
+import fiu.ssobec.Adapters.GridViewAdapter;
+import fiu.ssobec.Adapters.ListViewAdapter;
 import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
@@ -33,6 +46,7 @@ import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
+
 
 
 /*
@@ -54,6 +68,13 @@ public class MyZonesActivity extends ActionBarActivity{
     public static int user_id;
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
+    //////////////////////////////////
+    private ListView mListView;
+    private Context mContext = this;
+
+    private GridView gridViewButtons;
+    private GridViewAdapter gridAdapter;
+
     /**
      *  Initialize Activity
      * @param savedInstanceState
@@ -65,10 +86,17 @@ public class MyZonesActivity extends ActionBarActivity{
         //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
+//        data_access = DataAccessUser.getInstance(this);
         data_access = new DataAccessUser(this);
 
         //Open the data access to the tables
-        try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }
+        try {
+            data_access.open();
+        }
+        catch (SQLException e) {
+            System.err.println(LOG_TAG + ": " + e.toString());
+            e.printStackTrace();
+        }
 
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);
@@ -80,8 +108,6 @@ public class MyZonesActivity extends ActionBarActivity{
      */
     private void setTheContentViewContent()
     {
-        setContentView(R.layout.activity_my_zones);
-
         User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
 
         //If a user that is logged in into the system is not found then start a new LoginActivity
@@ -94,6 +120,20 @@ public class MyZonesActivity extends ActionBarActivity{
         //User that is currently logged in is found
         else
         {
+            if(user.getUsertype().equalsIgnoreCase("admin")){  //Load Facility Manager Layout
+                System.out.println("Loading Facility Manager view.");
+                setContentView(R.layout.activity_admin_zones);
+            }
+            else{  //Load general user layout
+                setContentView(R.layout.activity_my_zones);
+
+                //Set the rewards list from the user's rewards
+                ArrayList<RewardListParent> parents = getZones();
+                ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
+                MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
+                myRewardListAdapter.setParents(parents);
+                mListView.setAdapter(myRewardListAdapter);
+            }
             user_id = user.getId(); //Get the ID of the user
             List<NameValuePair> userId = new ArrayList<>(1);
             String res = null;
@@ -126,25 +166,54 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             }
 
+
             //Set buttons in a Grid View order
-            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-            ButtonAdapter m_badapter = new ButtonAdapter(this);
-            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
-            gridViewButtons.setAdapter(m_badapter);
+            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+//            ButtonAdapter m_badapter = new ButtonAdapter(this);
+//            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+//            gridViewButtons.setAdapter(m_badapter);
+            gridAdapter = new GridViewAdapter(
+                    this, data_access.getAllZoneNames(), data_access.getAllZoneID());
+//            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+            gridAdapter.setMode(Attributes.Mode.Single);
+            gridViewButtons.setAdapter(gridAdapter);
+            gridViewButtons.setSelected(false);
+            gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemLongClick","onItemLongClick:" + position);
+                    ((SwipeLayout)(gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition())))
+                            .open(true);
+                    return false;
+                }
+            });
 
-            //Set the rewards list from the user's rewards
-           // ArrayList<RewardListParent> parents = buildDummyData();
-            ArrayList<RewardListParent> parents = getZones();
+            gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemClick","onItemClick:" + position);
 
-            getZones();
+                    Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
 
-            ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
-            MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
-            myRewardListAdapter.setParents(parents);
-            mListView.setAdapter(myRewardListAdapter);
+                    //send the region_id or button_id to the ZonesDescriptionActivity
+                    Zones zone = (Zones) gridAdapter.getItem(position);
+                    intent.putExtra("button_id",zone.getZone_id());
+                    mContext.startActivity(intent);
+                }
+            });
 
+            gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemSelected","onItemSelected:" + position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
         }
-
     }
 
     /**
@@ -220,6 +289,7 @@ public class MyZonesActivity extends ActionBarActivity{
         return parents;
     }
 
+
     /**
      *  Initialize Activity Action Bar Menu
      * @param menu
@@ -285,6 +355,8 @@ public class MyZonesActivity extends ActionBarActivity{
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
+
+        setTheContentViewContent();
     }
 
     //When an Activity is left, close the
@@ -299,7 +371,6 @@ public class MyZonesActivity extends ActionBarActivity{
             mSyncObserverHandle = null;
         }
     }
-
 
     /**
      * Observe the synchronization status of the Sync Adapter class
@@ -347,6 +418,22 @@ public class MyZonesActivity extends ActionBarActivity{
         } else {
             setTheContentViewContent();
         }
+    }
+
+    public void getReports(View view){
+        //This method is intended to generate reports for a facility manager
+
+    }
+
+    public void createZone(View view){
+        //This method is intended to allow a facility manager to create a zone
+        Intent intent = new Intent(this,CreateZoneActivity.class);
+        startActivity(intent);
+    }
+
+    public void getWastefulRegions(View view){
+        //This method is intended to allow users to view wasteful regions
+
     }
 
 }
