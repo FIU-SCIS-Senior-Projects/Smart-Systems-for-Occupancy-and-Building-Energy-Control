@@ -35,5 +35,6 @@
             android:text="If winter comes , can spring be far behind ? \n"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
 </com.daimajia.swipe.SwipeLayout>

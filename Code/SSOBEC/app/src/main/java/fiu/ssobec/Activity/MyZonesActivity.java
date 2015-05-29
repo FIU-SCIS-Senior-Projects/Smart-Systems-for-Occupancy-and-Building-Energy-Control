@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.view.View;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -210,6 +209,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
+
 
                 }
             });

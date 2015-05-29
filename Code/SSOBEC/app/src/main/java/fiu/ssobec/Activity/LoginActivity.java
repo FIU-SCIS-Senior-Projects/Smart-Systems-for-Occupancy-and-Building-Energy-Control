@@ -123,6 +123,8 @@ public class LoginActivity extends ActionBarActivity {
 
             });
 
+  //TODO: CHECK IF USER is FACILITY MANAGER OR OCCUPANT AND REDIRECT TO RESPECTIVE LAYOUT
+
 
             //Start MyZonesActivity
             Intent intent = new Intent(this, MyZonesActivity.class);
