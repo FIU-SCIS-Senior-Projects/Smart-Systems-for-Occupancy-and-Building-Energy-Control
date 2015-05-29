@@ -53,7 +53,7 @@ public class DataAccessUser implements DataAccessInterface {
         return instance;
     }
 
-    private DataAccessUser(Context context)
+    public DataAccessUser(Context context)
     {
         dbHelp = new UserSQLiteDatabase(context);
     }
@@ -183,6 +183,24 @@ public class DataAccessUser implements DataAccessInterface {
         return zones;
     }
 
+    /**
+     * FORCED, to create this method to remove Zones from GridView since they are populated on
+     * SQLite.
+     * @param id
+     * @return
+     */
+    public static int removeZone(int id){
+        System.out.println("create zone: Creating new zone on my database!");
+        ContentValues vals = new ContentValues();
+        vals.put(UserSQLiteDatabase.ZONES_COLUMN_ID, id);
+//        vals.put(UserSQLiteDatabase.ZONES_COLUMN_NAME, zone_name);
+
+        String whereClause = UserSQLiteDatabase.ZONES_COLUMN_ID + " = " + id;
+
+        return db.delete(UserSQLiteDatabase.TABLE_ZONES, whereClause, null);
+
+    }
+
     //Get me a zone that has the zone_id
     public Zones getZone (int zone_id){
 
@@ -241,6 +259,13 @@ public class DataAccessUser implements DataAccessInterface {
                 cursor.getString(1));
     }
 
+
+    /**
+     * TODO: Currently Unecessary since there isn't an actual REGION_AUTHORITY Table like the one on the server
+     *
+     * @param userId
+     * @param zoneId
+     */
     public void userUnfollowZone(int userId, int zoneId){
         /*
         String REMOVE_REGION_AUTHORITY_ROW = "remove from "

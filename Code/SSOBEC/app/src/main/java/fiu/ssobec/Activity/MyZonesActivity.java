@@ -85,7 +85,8 @@ public class MyZonesActivity extends ActionBarActivity{
         //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
-        data_access = DataAccessUser.getInstance(this);
+//        data_access = DataAccessUser.getInstance(this);
+        data_access = new DataAccessUser(this);
 
         //Open the data access to the tables
         try {
@@ -198,7 +199,7 @@ public class MyZonesActivity extends ActionBarActivity{
                     mContext.startActivity(intent);
                 }
             });
-            
+
             gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -351,6 +352,8 @@ public class MyZonesActivity extends ActionBarActivity{
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
+
+        setTheContentViewContent();
     }
 
     //When an Activity is left, close the
@@ -365,7 +368,6 @@ public class MyZonesActivity extends ActionBarActivity{
             mSyncObserverHandle = null;
         }
     }
-
 
     /**
      * Observe the synchronization status of the Sync Adapter class

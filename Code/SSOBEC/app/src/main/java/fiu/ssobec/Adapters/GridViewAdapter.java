@@ -45,6 +45,8 @@ public class GridViewAdapter extends BaseSwipeAdapter {
         this.zone_id = zone_id;
         this.currentZones = new ArrayList<Zones>();
 
+        System.out.println("::::::::::::::::::::::::::: " + currentZones.size());
+
         for(int i = 0; i < zone_names.size(); i++) {
             currentZones.add(new Zones((Integer) zone_id.get(i), (String) zone_names.get(i)));
         }
@@ -120,7 +122,7 @@ public class GridViewAdapter extends BaseSwipeAdapter {
                 // Remove user-region pair from DB
                 //DataAccessUser.getInstance(mContext).userUnfollowZone(MyZonesActivity.user_id,viewPosition);
 
-                userUnfollowZone(MyZonesActivity.user_id,zoneId);
+                userUnfollowZone(MyZonesActivity.user_id, zoneId);
 
                 for(int i = 0; i < currentZones.size(); i++){
                     if(currentZones.get(i).getZone_id() == zoneId){
@@ -132,9 +134,11 @@ public class GridViewAdapter extends BaseSwipeAdapter {
                         + "zone: " + zoneId + " "
                         + currentZones.get(a).getZone_name(), Toast.LENGTH_SHORT).show();
 
+                DataAccessUser.getInstance(mContext).removeZone(zoneId);
                 currentZones.remove(a);
                 zone_names.remove(a);
                 zone_id.remove(a);
+
                 notifyDataSetChanged();
             }
         });
