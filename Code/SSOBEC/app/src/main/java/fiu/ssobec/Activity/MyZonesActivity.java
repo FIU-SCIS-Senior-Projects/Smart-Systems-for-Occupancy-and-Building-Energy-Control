@@ -10,14 +10,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-<<<<<<< HEAD
 import android.view.View;
-=======
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
->>>>>>> unfollowZonesMerge
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
