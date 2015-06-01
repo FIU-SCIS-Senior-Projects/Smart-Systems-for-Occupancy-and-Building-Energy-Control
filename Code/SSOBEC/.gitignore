@@ -37,7 +37,9 @@ build/
 *.ipr
 *.iws
 .idea/
-.idea/vcs.ml
+.idea/*
+
+app/app.iml
 
 #gradle
 .gradle/d
