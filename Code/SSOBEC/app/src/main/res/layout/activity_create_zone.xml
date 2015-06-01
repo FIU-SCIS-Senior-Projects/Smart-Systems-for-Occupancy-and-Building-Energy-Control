@@ -107,7 +107,6 @@
         android:paddingTop="10px"
         android:text="@string/create_zone"
         android:id="@+id/create_zone_button"
-        android:onClick="createZone"
         android:layout_marginTop="20dp"
         android:background="#ff0ed39e"
         android:layout_weight="0.05" />

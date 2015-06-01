@@ -7,9 +7,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,6 +36,15 @@ public class CreateZoneActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_zone);
+
+        Button createZoneBtn = (Button)findViewById(R.id.create_zone_button);
+        createZoneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("CREATE_ZONE_ACTIVITY ", "CLICKKKKK");
+                createZone(v);
+            }
+        });
     }
 
 
@@ -69,9 +82,20 @@ public class CreateZoneActivity extends ActionBarActivity {
 
         if(!zone_name.isEmpty())
         {
-            new_zone_info.add(new BasicNameValuePair("region_name", zone_name.trim()));
-            new_zone_info.add(new BasicNameValuePair("location", zone_location.trim()));
-            new_zone_info.add(new BasicNameValuePair("windows", zone_windows.trim()));
+            String zoneName = "";
+            String location = "";
+            String windows = "";
+            try {
+                //zoneName = URLEncoder.encode(zone_name.trim(), "UTF-8");
+                location = URLEncoder.encode(zone_location.trim(), "UTF-8");
+                windows = URLEncoder.encode(zone_windows.trim(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            new_zone_info.add(new BasicNameValuePair("region_name",  zone_name ));
+            new_zone_info.add(new BasicNameValuePair("location", zone_location));
+            new_zone_info.add(new BasicNameValuePair("windows", zone_windows));
 
             String res = "";
             //Create a new Zone
@@ -99,7 +123,7 @@ public class CreateZoneActivity extends ActionBarActivity {
             }
             else{
 
-                Toast.makeText(getApplicationContext(), "Unable to create zone on DB", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
             }
 
         }
