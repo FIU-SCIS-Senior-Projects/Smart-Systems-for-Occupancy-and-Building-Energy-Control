@@ -53,7 +53,7 @@ public class StatisticalCalculation {
     {
         region_id = zones;
         mcontext = context;
-        mdata_access = new DataAccessUser(mcontext);
+        mdata_access = DataAccessUser.getInstance(mcontext);
         try {
             mdata_access.open();
         } catch (SQLException e) {

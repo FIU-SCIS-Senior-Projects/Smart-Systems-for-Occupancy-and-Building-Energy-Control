@@ -78,7 +78,7 @@ public class ConsumptionAppliances extends ExpandableListActivity {
         Drawable divider = res.getDrawable(R.drawable.line);
 
         //Declare the access to the SQLite table for user
-        data_access = new DataAccessUser(this);
+        data_access = DataAccessUser.getInstance(this);
 
         //Open the data access to the tables
         try { data_access.open(); } catch (SQLException e) { e.printStackTrace(); }

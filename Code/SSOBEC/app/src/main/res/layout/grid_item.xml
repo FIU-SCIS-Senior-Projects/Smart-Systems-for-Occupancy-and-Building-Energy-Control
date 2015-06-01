@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_grid"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:tag="Bottom2"
+        android:background="#333"
+        android:layout_width="40dp"
+        android:gravity="center"
+        android:layout_height="120dp">
+        <ImageView
+            android:id="@+id/trash"
+            android:src="@drawable/trash"
+            android:layout_width="22dp"
+            android:layout_height="22dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top_layer"
+        android:padding="10dp"
+        android:background="#ff33b5e5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/position"
+            android:textSize="@dimen/txt_24sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/zone_name"
+            android:textSize="@dimen/txt_24sp"
+            android:tag="Hover"
+            android:text="If winter comes , can spring be far behind ? \n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</com.daimajia.swipe.SwipeLayout>

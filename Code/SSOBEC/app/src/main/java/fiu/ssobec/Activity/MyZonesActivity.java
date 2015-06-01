@@ -2,6 +2,7 @@ package fiu.ssobec.Activity;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
@@ -9,9 +10,20 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+<<<<<<< HEAD
 import android.view.View;
+=======
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+>>>>>>> unfollowZonesMerge
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -23,7 +35,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Adapters.ArraySwipeAdapterSample;
 import fiu.ssobec.Adapters.ButtonAdapter;
+import fiu.ssobec.Adapters.GridViewAdapter;
+import fiu.ssobec.Adapters.ListViewAdapter;
 import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
@@ -34,6 +49,7 @@ import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
+
 
 
 /*
@@ -55,6 +71,13 @@ public class MyZonesActivity extends ActionBarActivity{
     public static int user_id;
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
+    //////////////////////////////////
+    private ListView mListView;
+    private Context mContext = this;
+
+    private GridView gridViewButtons;
+    private GridViewAdapter gridAdapter;
+
     /**
      *  Initialize Activity
      * @param savedInstanceState
@@ -66,6 +89,7 @@ public class MyZonesActivity extends ActionBarActivity{
         //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
+//        data_access = DataAccessUser.getInstance(this);
         data_access = new DataAccessUser(this);
 
         //Open the data access to the tables
@@ -145,15 +169,55 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             }
 
+
             //Set buttons in a Grid View order
-            GridView gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-            ButtonAdapter m_badapter = new ButtonAdapter(this);
-            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
-            gridViewButtons.setAdapter(m_badapter);
+            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+//            ButtonAdapter m_badapter = new ButtonAdapter(this);
+//            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+//            gridViewButtons.setAdapter(m_badapter);
+            gridAdapter = new GridViewAdapter(
+                    this, data_access.getAllZoneNames(), data_access.getAllZoneID());
+//            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
+            gridAdapter.setMode(Attributes.Mode.Single);
+            gridViewButtons.setAdapter(gridAdapter);
+            gridViewButtons.setSelected(false);
+            gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemLongClick","onItemLongClick:" + position);
+                    ((SwipeLayout)(gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition())))
+                            .open(true);
+                    return false;
+                }
+            });
+
+            gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemClick","onItemClick:" + position);
+
+                    Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
+
+                    //send the region_id or button_id to the ZonesDescriptionActivity
+                    Zones zone = (Zones) gridAdapter.getItem(position);
+                    intent.putExtra("button_id",zone.getZone_id());
+                    mContext.startActivity(intent);
+                }
+            });
+
+            gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.e("onItemSelected","onItemSelected:" + position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
 
+                }
+            });
         }
-
     }
 
     /**
@@ -295,6 +359,8 @@ public class MyZonesActivity extends ActionBarActivity{
         final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
+
+        setTheContentViewContent();
     }
 
     //When an Activity is left, close the
@@ -309,7 +375,6 @@ public class MyZonesActivity extends ActionBarActivity{
             mSyncObserverHandle = null;
         }
     }
-
 
     /**
      * Observe the synchronization status of the Sync Adapter class

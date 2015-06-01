@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:id="@+id/gridview"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -8,9 +9,10 @@
     android:orientation="vertical">
 
     <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:layout_weight="1"
-        android:background="@drawable/lightbluepatternrepeat">
+        android:background="@drawable/lightbluepatternrepeat"
+        android:orientation="vertical">
 
         <GridView
             android:layout_height="wrap_content"
@@ -21,10 +23,95 @@
             android:numColumns="3"
             android:layout_margin="20dp" />
 
+        <!--<ListView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:id="@+id/listview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"/>-->
+
+        <!-- Swipe Layout -->
+        <!--<com.daimajia.swipe.SwipeLayout-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:id="@+id/swipeLayout"-->
+            <!--android:layout_height="80dp">-->
+            <!--&lt;!&ndash; Bottom View Start&ndash;&gt;-->
+            <!--<LinearLayout-->
+                <!--android:background="#66ddff00"-->
+                <!--android:id="@+id/bottom_wrapper"-->
+                <!--android:layout_width="160dp"-->
+                <!--android:weightSum="1"-->
+                <!--android:layout_height="match_parent">-->
+                <!--&lt;!&ndash;What you want to show&ndash;&gt;-->
+            <!--</LinearLayout>-->
+            <!--&lt;!&ndash; Bottom View End&ndash;&gt;-->
+
+            <!--&lt;!&ndash; Surface View Start &ndash;&gt;-->
+            <!--<LinearLayout-->
+                <!--android:padding="10dp"-->
+                <!--android:background="#ffffff"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+                <!--&lt;!&ndash;What you want to show in SurfaceView&ndash;&gt;-->
+            <!--</LinearLayout>-->
+            <!--&lt;!&ndash; Surface View End &ndash;&gt;-->
+        <!--</com.daimajia.swipe.SwipeLayout>-->
     </LinearLayout>
 
+
     <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
+        android:background="@color/login_button_background">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="81dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <info.hoang8f.widget.FButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                fbutton:buttonColor="@color/fbutton_color_peter_river"
+                fbutton:shadowColor="@color/fbutton_color_belize_hole"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp"
+                fbutton:cornerRadius="5dp"
+                android:drawableLeft="@drawable/rewards_icon_50x"
+                android:drawablePadding="0.5dip"
+                android:id="@+id/RewardsButton"
+                android:padding="90dip"
+                android:onClick="getReports"
+                android:text="@string/my_rewards"
+                android:textColor="@color/default_background"
+                android:layout_margin="5dip"
+                android:textSize="20sp"
+                android:layout_weight="1" />
+
+            <info.hoang8f.widget.FButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                fbutton:buttonColor="@color/fbutton_color_alizarin"
+                fbutton:shadowColor="@color/fbutton_color_pomegranate"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp"
+                fbutton:cornerRadius="5dp"
+                android:drawableLeft="@drawable/smallcoin"
+                android:drawablePadding="0.5dip"
+                android:id="@+id/WastefulRegionsButton"
+                android:padding="90dip"
+                android:onClick="getWastefulRegions"
+                android:text="@string/wasteful_regions"
+                android:textColor="@color/default_background"
+                android:layout_margin="5dip"
+                android:textSize="20sp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="70dp"
         android:layout_weight="1"
         android:background="@color/login_button_background">
 

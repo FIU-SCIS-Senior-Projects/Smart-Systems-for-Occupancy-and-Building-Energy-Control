@@ -40,7 +40,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        data_access = new DataAccessUser(this);
+        data_access = DataAccessUser.getInstance(this);
 
         try {
             System.out.println("Open data access");

@@ -68,7 +68,7 @@ public class EnergyActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        data_access = new DataAccessUser(this);
+        data_access = DataAccessUser.getInstance(this);
 
         try {
             data_access.open();
