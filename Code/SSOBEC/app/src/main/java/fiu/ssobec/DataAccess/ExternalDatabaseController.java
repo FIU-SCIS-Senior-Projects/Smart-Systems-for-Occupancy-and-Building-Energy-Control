@@ -1,5 +1,7 @@
 package fiu.ssobec.DataAccess;
 
+import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -26,6 +28,7 @@ import java.util.List;
 public class ExternalDatabaseController {
 
 
+    private String LOG_TAG = "ExternalDatabaseController";
     private List<NameValuePair> parameters;
     private HttpPost httppost;
     private HttpResponse response;
@@ -50,6 +53,7 @@ public class ExternalDatabaseController {
         Thread mThread = new Thread(new Runnable() {
 
             public void run() {
+                Log.d(LOG_TAG, "SEND()");
                 db_post();
             }
 
@@ -62,6 +66,7 @@ public class ExternalDatabaseController {
 
     public void db_post(){
 
+        Log.d(LOG_TAG, "DB_POST()");
         try {
 
             httpclient = new DefaultHttpClient();
@@ -75,7 +80,7 @@ public class ExternalDatabaseController {
             httppost.setEntity(new UrlEncodedFormEntity(parameters));
 
             //Execute HTTP Post Request
-            response = httpclient.execute(httppost);
+            ////////response = httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             response_str = httpclient.execute(httppost, responseHandler);
 
