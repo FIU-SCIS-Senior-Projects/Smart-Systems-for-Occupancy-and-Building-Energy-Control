@@ -421,6 +421,13 @@ public class MyZonesActivity extends ActionBarActivity{
         }
     }
 
+    //Created by Diana June 2015
+    public void getMyRewards(View view){
+        //This method is intended to allow a user to see his/her account reward points
+        Intent intent = new Intent(this,MyRewardsActivity.class);
+        startActivity(intent);
+    }
+
     public void getReports(View view){
         //This method is intended to generate reports for a facility manager
 

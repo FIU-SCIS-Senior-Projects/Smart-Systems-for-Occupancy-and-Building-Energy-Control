@@ -12,7 +12,8 @@ public interface DataAccessInterface {
             UserSQLiteDatabase.COLUMN_ID,
             UserSQLiteDatabase.COLUMN_NAME,
             UserSQLiteDatabase.COLUMN_LOGGEDIN,
-            UserSQLiteDatabase.COLUMN_USERTYPE
+            UserSQLiteDatabase.COLUMN_USERTYPE,
+             UserSQLiteDatabase.COLUMN_REWARDS
      };
 
      static String[] ZONE_COLS = {   UserSQLiteDatabase.ZONES_COLUMN_ID,

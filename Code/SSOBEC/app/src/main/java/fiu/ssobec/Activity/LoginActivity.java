@@ -141,7 +141,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Save User ID, Name, Email and User type in the internal database
+     * Save User ID, Name, Email, User type and total Rewards points in the internal database
      * @param response
      * @return
      */
@@ -150,6 +150,7 @@ public class LoginActivity extends ActionBarActivity {
         String name="";
         String email="";
         String usertype="";
+        int rewards=0;
         boolean user_flag = false;
         String str_before = "";
         StringTokenizer stringTokenizer = new StringTokenizer(response, ":");
@@ -181,6 +182,11 @@ public class LoginActivity extends ActionBarActivity {
                 System.out.println("usertype: "+temp);
                 usertype = temp;
             }
+            else if(str_before.equalsIgnoreCase("rewards"))
+            {
+                System.out.println("rewards: "+temp);
+                rewards = Integer.parseInt(temp);
+            }
 
             str_before = temp;
         }
@@ -188,7 +194,7 @@ public class LoginActivity extends ActionBarActivity {
         //Create new user. LoggedIn is equal 1 to certified that the user is loggedIn.
         if(user_flag && (data_access.userExist(id) == null))
         {
-            data_access.createUser(name, id, email, usertype);
+            data_access.createUser(name, id, email, usertype, rewards);
         }
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id) != null)

@@ -80,7 +80,7 @@
                 android:drawablePadding="0.5dip"
                 android:id="@+id/RewardsButton"
                 android:padding="90dip"
-                android:onClick="getReports"
+                android:onClick="getMyRewards"
                 android:text="@string/my_rewards"
                 android:textColor="@color/default_background"
                 android:layout_margin="5dip"

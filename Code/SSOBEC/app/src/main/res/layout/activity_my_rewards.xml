@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/lightbluepatternrepeat"
+    android:weightSum="3"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="248dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:gravity="center"
+        android:text="My Rewards"
+        android:background="@drawable/lightbluepatternrepeat"
+        android:textColor="@color/default_background"
+        android:drawableLeft="@drawable/rewards_icon_50x"
+        android:textSize="30dp" />
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="88dp"
+        android:background="@drawable/lightbluepatternrepeat"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:layout_width="205dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:gravity="center"
+            android:text="Total Points: "
+            android:background="@drawable/lightbluepatternrepeat"
+            android:textColor="@color/default_background"
+            android:drawableLeft="@drawable/smallcoin"
+            android:textSize="25dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:gravity="left"
+            android:id="@+id/total_points"
+            android:text="0"
+            android:background="@drawable/lightbluepatternrepeat"
+            android:textColor="@color/default_background"
+            android:textSize="25dp" />
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/lightbluepatternrepeat"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:gravity="center"
+            android:id="@+id/rewards_table"
+            android:text=""
+            android:background="@drawable/lightbluepatternrepeat"
+            android:textColor="@color/default_background"
+            android:textSize="25dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

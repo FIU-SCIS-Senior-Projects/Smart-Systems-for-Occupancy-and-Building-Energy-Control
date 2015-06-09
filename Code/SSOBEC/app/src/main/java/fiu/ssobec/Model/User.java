@@ -11,13 +11,15 @@ public class User {
     private String email;
     private int loggedIn;
     private String usertype;
+    private int rewards;
 
-    public User(String name, int id, String email, int loggedIn, String usertype) {
+    public User(String name, int id, String email, int loggedIn, String usertype, int rewards) {
         this.name = name;
         this.id = id;
         this.email = email;
         this.loggedIn = loggedIn;
         this.usertype = usertype;
+        this.rewards = rewards;
     }
 
     public int getLoggedIn() { return loggedIn; }
@@ -38,6 +40,10 @@ public class User {
     public String getUsertype() { return usertype; }
 
     public void setUsertype(String usertype) { this.usertype = usertype; }
+
+    public int getRewards() { return rewards; }
+
+    public void setRewards(int rewards) { this.rewards = rewards; }
 
     public String getName() {
         return name;

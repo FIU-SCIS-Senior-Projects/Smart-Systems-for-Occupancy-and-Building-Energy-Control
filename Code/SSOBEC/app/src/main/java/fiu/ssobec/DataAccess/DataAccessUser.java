@@ -68,7 +68,7 @@ public class DataAccessUser implements DataAccessInterface {
 
     /****************************** USER ************************************/
 
-    public static void createUser(String name, int id, String email, String usertype)
+    public static void createUser(String name, int id, String email, String usertype, int rewards)
     {
         System.out.println(LOG_TAG + " ::: createUser()");
         int loggedIn = 1;
@@ -78,6 +78,7 @@ public class DataAccessUser implements DataAccessInterface {
         vals.put(UserSQLiteDatabase.COLUMN_EMAIL, email);
         vals.put(UserSQLiteDatabase.COLUMN_LOGGEDIN, loggedIn);
         vals.put(UserSQLiteDatabase.COLUMN_USERTYPE, usertype);
+        vals.put(UserSQLiteDatabase.COLUMN_REWARDS, rewards);
 
         db.insert(UserSQLiteDatabase.TABLE_USER, null, vals);
     }
@@ -155,7 +156,8 @@ public class DataAccessUser implements DataAccessInterface {
                 cursor.getInt(1),     //ID
                 cursor.getString(2),  //Email
                 cursor.getInt(3),    //LoggedIn
-                cursor.getString(4));  //UserType
+                cursor.getString(4),  //UserType
+                cursor.getInt(5));      //Rewards
         return user;
     }
 

@@ -20,6 +20,7 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_EMAIL = "user_email";
     public static final String COLUMN_LOGGEDIN = "user_loggedin";
     public static final String COLUMN_USERTYPE = "user_type";
+    public static final String COLUMN_REWARDS = "rewards";
 
     private static final String USER_TABLE_CREATE = "create table "
             + TABLE_USER + "("
@@ -27,7 +28,8 @@ public class UserSQLiteDatabase extends SQLiteOpenHelper {
             + COLUMN_ID + " int NOT NULL PRIMARY KEY, "
             + COLUMN_NAME + " varchar(50) NOT NULL, "
             + COLUMN_EMAIL + " varchar(100) NOT NULL, "
-            + COLUMN_USERTYPE + " varchar(50) NOT NULL "
+            + COLUMN_USERTYPE + " varchar(50) NOT NULL, "
+            + COLUMN_REWARDS + " int NOT NULL "
             +");";
 
     //Table Zones

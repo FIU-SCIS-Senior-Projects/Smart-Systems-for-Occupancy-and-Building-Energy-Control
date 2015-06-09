@@ -156,6 +156,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+        <activity
+            android:name=".Activity.MyRewardsActivity"
+            android:label="@string/title_activity_my_rewards"
+            android:parentActivityName=".Activity.MyZonesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.MyZonesActivity" />
+        </activity>
     </application>
 
 </manifest>
