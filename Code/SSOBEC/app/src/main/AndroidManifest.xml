@@ -164,6 +164,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+        <activity
+            android:name=".Activity.WastefulRegionsActivity"
+            android:label="@string/title_activity_wasteful_regions"
+            android:parentActivityName=".Activity.MyZonesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.MyZonesActivity" />
+        </activity>
     </application>
 
 </manifest>

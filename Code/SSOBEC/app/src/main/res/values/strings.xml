@@ -88,6 +88,7 @@
     <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
     <string name="title_activity_create_zone">CreateZoneActivity</string>
     <string name="title_activity_my_rewards">MyRewards</string>
+    <string name="title_activity_wasteful_regions">WastefulRegionsActivity</string>
 
 
 </resources>

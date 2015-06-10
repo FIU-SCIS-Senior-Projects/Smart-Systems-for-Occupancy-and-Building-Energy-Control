@@ -4,51 +4,36 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/login_button_background"
-    android:weightSum="3"
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:paddingLeft="10dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
         android:paddingTop="10dp"
         android:gravity="center"
-        android:id="@+id/my_rewards"
-        android:text="My Rewards"
+        android:text="Wasteful Regions"
         android:textColor="@color/default_background"
-        android:drawableLeft="@drawable/rewards_icon_50x"
+        android:drawableLeft="@drawable/smallcoin"
         android:textSize="30dp" />
 
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:background="@drawable/lightbluepatternrepeat"
-        android:orientation="horizontal"
-        android:weightSum="2">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:paddingTop="10dp"
             android:paddingLeft="10dp"
             android:gravity="center"
-            android:text="Total Points: "
-            android:background="@drawable/lightbluepatternrepeat"
+            android:text="Save Energy by reducing consumption and turning lights off."
             android:textColor="@color/default_background"
-            android:textSize="25dp" />
+            android:textSize="20dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:gravity="left"
-            android:id="@+id/total_points"
-            android:text="0"
-            android:background="@drawable/lightbluepatternrepeat"
-            android:textColor="@color/default_background"
-            android:textSize="25dp" />
 
     </LinearLayout>
 
@@ -62,9 +47,8 @@
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
             android:gravity="center"
-            android:id="@+id/rewards_table"
+            android:id="@+id/wasteful_regions"
             android:text=""
-            android:background="@color/login_button_background"
             android:textColor="@color/default_background"
             android:textSize="25dp" />
 
