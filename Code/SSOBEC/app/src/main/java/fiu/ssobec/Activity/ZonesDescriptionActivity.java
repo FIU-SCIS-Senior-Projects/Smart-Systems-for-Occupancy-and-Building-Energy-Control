@@ -122,6 +122,10 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
+            case R.id.action_viewAppliances:
+                Intent i = new Intent(this,ZoneAppliances.class);
+                startActivity(i);
+                return true;
             case R.id.action_logout:
                 Intent intent = new Intent(this,LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

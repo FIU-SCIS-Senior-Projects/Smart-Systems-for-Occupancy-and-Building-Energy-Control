@@ -14,6 +14,7 @@
     <string name="artificialLighting">Lighting</string>
     <string name="action_logout">Logout</string>
     <string name="action_addzone">Add Zone</string>
+    <string name="action_addAppliance">Add Appliance</string>
     <string name="celsius">Celsius</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="outside_temperature">Temperature Outside the Building:</string>
@@ -88,7 +89,21 @@
     <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
     <string name="title_activity_create_zone">CreateZoneActivity</string>
     <string name="title_activity_my_rewards">MyRewards</string>
+    <string name="title_activity_edit_zone">EditZone</string>
 
+    <string name="edit_zone_add_location">Add Location</string>
+    <string name="edit_zone_add_windows">Add Windows</string>
+    <string name="title_activity_zone_appliances">ZoneAppliances</string>
+
+    <!-- Add Appliance -->
+    <string name="add_appliance_name">Appliance Name</string>
+    <string name="add_appliance_type">Appliance Type</string>
+    <string name="add_appliance_status">Status</string>
+    <string name="add_appliance_energy_usage_kwh">Energy Usage kwh</string>
+    <string name="hint_add_appliance_name">Enter appliance name</string>
+    <string name="hint_add_appliance_type">Enter appliance type</string>
+    <string name="hint_add_appliance_status">Enter Status</string>
+    <string name="hint_add_appliance_energy_usage_kwh">Enter Energy Usage kwh</string>
 
 </resources>
 
