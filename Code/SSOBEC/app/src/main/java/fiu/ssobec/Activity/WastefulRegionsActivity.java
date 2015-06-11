@@ -2,16 +2,76 @@ package fiu.ssobec.Activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import fiu.ssobec.AdaptersUtil.WastefulRegionListParent;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 
+/**
+ * Created by diana on June 2015.
+ */
 public class WastefulRegionsActivity extends ActionBarActivity {
+    public static final String LOG_TAG = "WastefulRegionsActivity";
+    public static final String GETWasteRegions_PHP = "http://smartsystems-dev.cs.fiu.edu/getwastefulregions.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        List<NameValuePair> emptyarr = new ArrayList<>(1);
+
+        String res = null;
+        ArrayList<WastefulRegionListParent> wasteful_regions_list = new ArrayList<WastefulRegionListParent>();
+
+        //Get the regions that are currently wasteful based on plugload and lights on without occupants
+        try {
+            res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr, GETWasteRegions_PHP).send();
+
+            Log.i(LOG_TAG, "Result: " + res);
+
+            JSONObject obj;
+
+            try {
+                obj = new JSONObject(res);
+                JSONObject myobj;
+                int j=0;
+                while (obj.has(j + "") && j < obj.length()) {
+                    myobj = obj.getJSONObject(j + "");
+                    String name = myobj.getString("region_name");
+                    String light_description = myobj.getString("light_description");
+                    int plugload = myobj.getInt("plugload");
+
+                    WastefulRegionListParent record = new WastefulRegionListParent();
+                    record.setName(name);
+                    record.setLightDescription(light_description);
+                    record.setPlugload(plugload+"");
+                    wasteful_regions_list.add(record);
+
+                    j++;
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         setContentView(R.layout.activity_wasteful_regions);
     }
 
