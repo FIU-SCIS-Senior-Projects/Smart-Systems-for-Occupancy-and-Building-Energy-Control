@@ -22,6 +22,7 @@
                 android:layout_marginRight="@dimen/pad_15dp"
                 android:text="@string/add_appliance_name" />
             <EditText
+                android:id="@+id/appliance_name"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:hint="@string/hint_add_appliance_name"/>
@@ -36,6 +37,7 @@
                 android:layout_marginRight="@dimen/pad_15dp"
                 android:text="@string/add_appliance_type" />
             <EditText
+                android:id="@+id/appliance_type"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:hint="@string/hint_add_appliance_type"/>
@@ -50,6 +52,7 @@
                 android:layout_marginRight="@dimen/pad_15dp"
                 android:text="@string/add_appliance_status" />
             <EditText
+                android:id="@+id/appliance_status"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:hint="@string/hint_add_appliance_status"/>
@@ -64,6 +67,7 @@
                 android:layout_marginRight="@dimen/pad_15dp"
                 android:text="@string/add_appliance_energy_usage_kwh" />
             <EditText
+                android:id="@+id/appliance_energy_usage"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:hint="@string/hint_add_appliance_energy_usage_kwh"/>
@@ -76,13 +80,13 @@
         android:orientation="horizontal"
         android:paddingLeft="@dimen/pad_30dp">
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/cancel_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel" />
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/add_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set" />

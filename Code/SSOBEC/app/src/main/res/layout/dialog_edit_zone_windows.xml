@@ -12,7 +12,7 @@
         android:layout_marginTop="64dp" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/cancel_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/numberPicker1"
@@ -22,11 +22,11 @@
         android:text="Cancel" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/save_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button2"
-        android:layout_alignBottom="@+id/button2"
+        android:layout_alignBaseline="@+id/cancel_btn"
+        android:layout_alignBottom="@+id/cancel_btn"
         android:layout_marginRight="16dp"
         android:layout_toLeftOf="@+id/numberPicker1"
         android:text="Set" />

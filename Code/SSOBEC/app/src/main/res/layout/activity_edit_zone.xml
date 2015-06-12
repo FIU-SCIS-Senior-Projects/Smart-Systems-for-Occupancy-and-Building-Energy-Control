@@ -12,9 +12,10 @@
         android:id="@+id/edit_zone_name"
         android:text="@string/hello_world"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/pad_15dp"/>
     <View
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="5dp"
         android:background="@color/background_material_dark"/>
     <LinearLayout
@@ -54,6 +55,11 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/edit_zone_add_windows"/>
         </LinearLayout>
+        <Button
+            android:id="@+id/edit_zone_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/pad_15dp"
+            android:text="Save" />
     </LinearLayout>
-
 </LinearLayout>
