@@ -38,5 +38,9 @@ build/
 *.iws
 .idea/
 
+Code/SSOBEC/.idea/vcs.xml
+Code/SSOBEC/SSOBEC.iml
+Code/SSOBEC/app/app.iml
+
 #gradle
 .gradle/d
