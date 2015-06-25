@@ -15,6 +15,7 @@
     <string name="action_logout">Logout</string>
     <string name="action_addzone">Add Zone</string>
     <string name="action_addAppliance">Add Appliance</string>
+    <string name="action_editusers">Edit Users</string>
     <string name="celsius">Celsius</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="outside_temperature">Temperature Outside the Building:</string>
@@ -83,6 +84,7 @@
     <string name="empty_room_msg">It seems this room has no data yet.</string>
 
     <string name="title_activity_add_zone">Add Zone</string>
+    <string name="title_activity_edit_zone_users">Edit Zone Users</string>
 
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
 

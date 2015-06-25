@@ -68,6 +68,8 @@ public class MyZonesActivity extends ActionBarActivity{
     public static int user_id;
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
+    private boolean isFacilityManager = false;
+
     //////////////////////////////////
     private ListView mListView;
     private Context mContext = this;
@@ -122,6 +124,7 @@ public class MyZonesActivity extends ActionBarActivity{
         {
             if(user.getUsertype().equalsIgnoreCase("admin")){  //Load Facility Manager Layout
                 System.out.println("Loading Facility Manager view.");
+                isFacilityManager = true;
                 setContentView(R.layout.activity_admin_zones);
             }
             else{  //Load general user layout
@@ -303,6 +306,19 @@ public class MyZonesActivity extends ActionBarActivity{
         return true;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        MenuItem item = menu.findItem(R.id.action_editusers);
+
+        if (item != null) {
+            item.setVisible (isFacilityManager);
+
+        }
+
+        return true;
+    }
+
     /**
      *  On Menu Item Selected
      * @param item
@@ -332,6 +348,10 @@ public class MyZonesActivity extends ActionBarActivity{
                 return true;
             case R.id.action_addzone:
                 intent = new Intent(this,AddZoneActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_editusers:
+                intent = new Intent(this,EditZoneUsersActivity.class);
                 startActivity(intent);
                 return true;
             default:

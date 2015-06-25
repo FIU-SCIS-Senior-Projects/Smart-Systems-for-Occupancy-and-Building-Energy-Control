@@ -27,8 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/cancel_btn"
         android:layout_alignBottom="@+id/cancel_btn"
-        android:layout_marginRight="16dp"
-        android:layout_toLeftOf="@+id/numberPicker1"
-        android:text="Set" />
+        android:text="Set"
+        android:layout_toLeftOf="@+id/cancel_btn"
+        android:layout_toStartOf="@+id/cancel_btn" />
 
 </RelativeLayout>

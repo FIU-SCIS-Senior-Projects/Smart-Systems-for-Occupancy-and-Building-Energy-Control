@@ -126,10 +126,7 @@ public class EditZone extends ActionBarActivity implements NumberPicker.OnValueC
             }
         });
         d.show();
-
-
     }
-
 
     //onClick Create Zone, create the new Zone with its attributes
     public void editZone(View view){
