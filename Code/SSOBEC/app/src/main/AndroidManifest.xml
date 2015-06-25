@@ -164,6 +164,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+
         <activity
             android:name=".Activity.WastefulRegionsActivity"
             android:label="@string/title_activity_wasteful_regions"
@@ -171,6 +172,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
+        </activity>
+
+        <activity
+            android:name=".Activity.EditZone"
+            android:label="@string/title_activity_edit_zone"
+            android:parentActivityName=".Activity.AddZoneActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.ZoneAppliances"
+            android:parentActivityName=".Activity.ZonesDescriptionActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
         </activity>
     </application>
 

@@ -14,7 +14,7 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/action_addzone"
-        android:icon="@drawable/houseplus"
+        android:icon="@drawable/home_edit_256x"
         android:title="@string/action_addzone"
         android:orderInCategory="1"
         app:showAsAction="ifRoom" />

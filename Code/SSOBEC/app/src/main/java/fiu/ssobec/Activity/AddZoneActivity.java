@@ -105,11 +105,15 @@ public class AddZoneActivity extends ActionBarActivity {
             int j=0;
             JSONObject obj =  new JSONObject(res);
             JSONObject myobj;
+            Log.i("AddZoneActivity", ""+ obj.length());
 
             while (obj.has(j + "")) {
                 myobj = obj.getJSONObject(j + "");
                 int zone_id = myobj.getInt("region_id");
                 String zone_name  = myobj.getString("region_name");
+                String zone_location = myobj.getString("location");
+                int zone_windows = myobj.getInt("windows");
+
 
                 ZoneListParent zoneListParent = new ZoneListParent();
 
@@ -120,6 +124,8 @@ public class AddZoneActivity extends ActionBarActivity {
 
                 zoneListParent.setZone_id(zone_id);
                 zoneListParent.setZone_name(zone_name);
+                zoneListParent.setZone_location(zone_location);
+                zoneListParent.setZone_windows(zone_windows);
                 zoneListParentArrayList.add(zoneListParent);
                 j++;
             }

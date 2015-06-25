@@ -1,13 +1,37 @@
 package fiu.ssobec.AdaptersUtil;
 
+import java.io.Serializable;
+
 /**
  * Created by Maria on 4/14/2015.
+ * Implements Serializable so that we can pass this Object between Activities - irvincardenas
  */
-public class ZoneListParent {
+public class ZoneListParent implements Serializable {
 
     private String zone_name;
     private int zone_id;
+
+    private String zone_location;
     private boolean zone_added;
+
+    private int zone_windows;
+
+
+    public int getZone_windows() {
+        return zone_windows;
+    }
+
+    public void setZone_windows(int zone_windows) {
+        this.zone_windows = zone_windows;
+    }
+
+    public String getZone_location() {
+        return zone_location;
+    }
+
+    public void setZone_location(String zone_location) {
+        this.zone_location = zone_location;
+    }
 
     public boolean isZone_added() {
         return zone_added;

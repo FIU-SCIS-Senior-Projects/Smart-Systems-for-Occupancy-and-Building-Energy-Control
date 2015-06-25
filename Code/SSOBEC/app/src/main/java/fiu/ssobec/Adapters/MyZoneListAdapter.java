@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -24,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Activity.EditZone;
 import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
@@ -34,6 +37,7 @@ import fiu.ssobec.R;
  * Created by Maria on 4/14/2015.
  */
 public class MyZoneListAdapter implements ListAdapter {
+
 
     public static final String ADDNEWZONE_PHP = "http://smartsystems-dev.cs.fiu.edu/addnewzone.php";
     private LayoutInflater inflater;
@@ -94,7 +98,7 @@ public class MyZoneListAdapter implements ListAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, final ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
 
         ViewHolder mViewHolder = null;
         final ZoneListParent mparent = parents.get(position);
@@ -125,6 +129,16 @@ public class MyZoneListAdapter implements ListAdapter {
                 //Add Zone to db and delete zone from database
                 AddZoneDialogFragment addZoneDialogFragment = new AddZoneDialogFragment(mparent);
                 addZoneDialogFragment.show(fm, "fragment_add_zone");
+            }
+        });
+
+        convertView.findViewById(R.id.zone_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Edit Zone", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(mContext,EditZone.class);
+                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                mContext.startActivity(i);
             }
         });
 
