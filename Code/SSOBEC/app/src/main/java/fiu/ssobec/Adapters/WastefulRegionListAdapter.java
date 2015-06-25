@@ -112,7 +112,6 @@ public class WastefulRegionListAdapter implements ListAdapter {
 
         Drawable res = mContext.getResources().getDrawable(imageResource);
         mViewHolder.icon.setImageDrawable(res);
-        mViewHolder.plugload.setText(mparent.getPlugload());
 
         return convertView;
     }
@@ -139,8 +138,8 @@ public class WastefulRegionListAdapter implements ListAdapter {
 
     static class ViewHolder {
 
-        private  TextView name;
-        private  TextView light_description;
+        private TextView name;
+        private TextView light_description;
         private ImageView icon;
         private TextView plugload;
 

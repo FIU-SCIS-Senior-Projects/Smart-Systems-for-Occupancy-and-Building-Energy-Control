@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Adapters.WastefulRegionListAdapter;
 import fiu.ssobec.AdaptersUtil.WastefulRegionListParent;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
@@ -29,7 +31,7 @@ public class WastefulRegionsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i(LOG_TAG, "Starting WastefulRegionsActivity");
         List<NameValuePair> emptyarr = new ArrayList<>(1);
 
         String res = null;
@@ -50,13 +52,13 @@ public class WastefulRegionsActivity extends ActionBarActivity {
                 while (obj.has(j + "") && j < obj.length()) {
                     myobj = obj.getJSONObject(j + "");
                     String name = myobj.getString("region_name");
-                    String light_description = myobj.getString("light_description");
-                    int plugload = myobj.getInt("plugload");
+                    String light_description = myobj.getString("description");
+                    double plugload = myobj.getDouble("plugload");
 
                     WastefulRegionListParent record = new WastefulRegionListParent();
                     record.setName(name);
                     record.setLightDescription(light_description);
-                    record.setPlugload(plugload+"");
+                    record.setPlugload(plugload + "");
                     wasteful_regions_list.add(record);
 
                     j++;
@@ -73,6 +75,10 @@ public class WastefulRegionsActivity extends ActionBarActivity {
         }
 
         setContentView(R.layout.activity_wasteful_regions);
+        ListView listview_wasteful_regions = (ListView) findViewById(R.id.wasteful_regions);
+        WastefulRegionListAdapter wastefulRegionsListAdapter = new WastefulRegionListAdapter(this);
+        wastefulRegionsListAdapter.setParents(wasteful_regions_list);
+        listview_wasteful_regions.setAdapter(wastefulRegionsListAdapter);
     }
 
 
