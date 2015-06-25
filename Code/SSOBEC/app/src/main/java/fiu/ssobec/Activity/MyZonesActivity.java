@@ -461,6 +461,8 @@ public class MyZonesActivity extends ActionBarActivity{
 
     public void getWastefulRegions(View view){
         //This method is intended to allow users to view wasteful regions
+        Intent intent = new Intent(this,WastefulRegionsActivity.class);
+        startActivity(intent);
 
     }
 

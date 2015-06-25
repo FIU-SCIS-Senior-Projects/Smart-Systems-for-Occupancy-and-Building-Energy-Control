@@ -91,6 +91,7 @@
     <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
     <string name="title_activity_create_zone">CreateZoneActivity</string>
     <string name="title_activity_my_rewards">MyRewards</string>
+    <string name="title_activity_wasteful_regions">WastefulRegionsActivity</string>
     <string name="title_activity_edit_zone">EditZone</string>
 
     <string name="edit_zone_add_location">Add Location</string>
@@ -106,6 +107,7 @@
     <string name="hint_add_appliance_type">Enter appliance type</string>
     <string name="hint_add_appliance_status">Enter Status</string>
     <string name="hint_add_appliance_energy_usage_kwh">Enter Energy Usage kwh</string>
+>>>>>>> 042faae1e675645d112b1366ff0dc8d081304037
 
 </resources>
 
