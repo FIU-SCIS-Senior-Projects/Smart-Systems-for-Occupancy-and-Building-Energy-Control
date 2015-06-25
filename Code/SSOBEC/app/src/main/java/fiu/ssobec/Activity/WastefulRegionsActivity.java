@@ -16,7 +16,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.Adapters.WastefulRegionListAdapter;
+import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.AdaptersUtil.WastefulRegionListParent;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
@@ -42,15 +44,19 @@ public class WastefulRegionsActivity extends ActionBarActivity {
             res = new ExternalDatabaseController((ArrayList<NameValuePair>) emptyarr, GETWasteRegions_PHP).send();
 
             Log.i(LOG_TAG, "Result: " + res);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
 
-            JSONObject obj;
-
-            try {
-                obj = new JSONObject(res);
+        if (res != null) {
+            try{
+                JSONObject obj = new JSONObject(res);
                 JSONObject myobj;
-                int j=0;
+                int j = 0;
                 while (obj.has(j + "") && j < obj.length()) {
                     myobj = obj.getJSONObject(j + "");
+                    System.out.println("length "+obj.length());
+
                     String name = myobj.getString("region_name");
                     String light_description = myobj.getString("description");
                     double plugload = myobj.getDouble("plugload");
@@ -64,21 +70,19 @@ public class WastefulRegionsActivity extends ActionBarActivity {
                     j++;
                 }
 
-            } catch (JSONException e) {
+            }catch(JSONException e){
                 e.printStackTrace();
             }
-
-
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         setContentView(R.layout.activity_wasteful_regions);
+
+
         ListView listview_wasteful_regions = (ListView) findViewById(R.id.wasteful_regions);
         WastefulRegionListAdapter wastefulRegionsListAdapter = new WastefulRegionListAdapter(this);
         wastefulRegionsListAdapter.setParents(wasteful_regions_list);
         listview_wasteful_regions.setAdapter(wastefulRegionsListAdapter);
+
     }
 
 
