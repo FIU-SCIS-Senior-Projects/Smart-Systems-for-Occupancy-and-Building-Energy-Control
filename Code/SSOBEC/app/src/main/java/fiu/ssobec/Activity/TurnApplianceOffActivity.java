@@ -1,0 +1,116 @@
+package fiu.ssobec.Activity;
+
+import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import fiu.ssobec.AdaptersUtil.RewardListParent;
+import fiu.ssobec.DataAccess.DataAccessUser;
+import fiu.ssobec.DataAccess.ExternalDatabaseController;
+import fiu.ssobec.Model.User;
+import fiu.ssobec.R;
+import fiu.ssobec.Synchronization.SyncUtils;
+
+public class TurnApplianceOffActivity extends ActionBarActivity {
+    public static final String LOG_TAG = "TurnOffApplianceActivity";
+    public static final String TURNOFFAPPLIANCE_PHP = "http://smartsystems-dev.cs.fiu.edu/turnoffappliance.php";
+    private static DataAccessUser data_access;
+    public static final int USER_LOGGEDIN = 1;
+    int RewardPoints = 5; //Points awarded for turning off appliance in wasteful region
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_turn_appliance_off);
+    }
+
+    public void turnOffAppliance(View view) {
+        //Declare the access to the SQLite table for user
+        data_access = new DataAccessUser(this);
+
+        //Open the data access to the tables
+        try {
+            data_access.open();
+        } catch (SQLException e) {
+            System.err.println(LOG_TAG + ": " + e.toString());
+            e.printStackTrace();
+        }
+
+        //Synchronize Data
+        SyncUtils.CreateSyncAccount(this);
+        SyncUtils.TriggerRefresh();
+
+        User user = data_access.getUser(USER_LOGGEDIN); //Get a user that is currently logged in the system
+
+        //If a user that is logged in into the system is not found then start a new LoginActivity
+        if (user == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+        //User that is currently logged in is found
+        else {
+            int user_id = user.getId();
+            int total_rewards = user.getRewards() + RewardPoints;
+            String reward_description = "Turned Off Appliance";
+
+            List<NameValuePair> userInfo = new ArrayList<>(4);
+            userInfo.add(new BasicNameValuePair("user_id", (user_id + "").trim()));
+            userInfo.add(new BasicNameValuePair("total_rewards", (total_rewards + "").trim()));
+            userInfo.add(new BasicNameValuePair("reward", (RewardPoints + "").trim()));
+            userInfo.add(new BasicNameValuePair("reward_description", (reward_description + "").trim()));
+
+            String res = "";
+
+            //Send the user info to update the user_rewards table and user table with the added reward points
+            try {
+                res = new ExternalDatabaseController((ArrayList<NameValuePair>) userInfo, TURNOFFAPPLIANCE_PHP).send();
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (res.equalsIgnoreCase("successful")) {
+                Intent intent = new Intent(this, MyZonesActivity.class);
+                startActivity(intent);
+            } else {
+
+                Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_turn_appliance_off, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}

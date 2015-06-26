@@ -119,7 +119,8 @@
     <string name="hint_add_appliance_energy_usage_kwh">Enter Energy Usage kwh</string>
     <string name="title_activity_add_user_to_zone">AddUserToZoneActivity</string>
     <string name="title_activity_remove_user_from_zone">RemoveUserFromZoneActivity</string>
->>>>>>> 042faae1e675645d112b1366ff0dc8d081304037
+    <string name="title_activity_turn_light_off">TurnLightOffActivity</string>
+    <string name="title_activity_turn_appliance_off">TurnApplianceOffActivity</string>
 
 </resources>
 
