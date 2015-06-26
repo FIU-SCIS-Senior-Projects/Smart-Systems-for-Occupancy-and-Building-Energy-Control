@@ -172,7 +172,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
-
         <activity
             android:name=".Activity.WastefulRegionsActivity"
             android:label="@string/title_activity_wasteful_regions"
@@ -181,7 +180,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
-
         <activity
             android:name=".Activity.EditZone"
             android:label="@string/title_activity_edit_zone"
@@ -196,6 +194,20 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.AddUserToZoneActivity"
+            android:label="@string/title_activity_add_user_to_zone" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.EditZoneUsersActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.RemoveUserFromZoneActivity"
+            android:label="@string/title_activity_remove_user_from_zone" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.EditZoneUsersActivity" />
         </activity>
     </application>
 

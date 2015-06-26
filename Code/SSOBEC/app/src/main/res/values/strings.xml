@@ -86,8 +86,18 @@
     <string name="title_activity_add_zone">Add Zone</string>
     <string name="title_activity_edit_zone_users">Edit Zone Users</string>
 
+    <string name="add_user_to_zone">Add User</string>
+    <string name="remove_user_from_zone">Remove User</string>
+    <string name="add_user_button">Add User</string>
+    <string name="add_user_email_hint">Enter User Email</string>
+    <string name="tv_user_email">User Email</string>
+
+    <string name="remove_user_button">Remove User</string>
+    <string name="remove_user_email_hint">Enter User Email</string>
+
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
 
+    
     <string name="zone_description_piechart_title">Percentage of energy consumed:</string>
     <string name="title_activity_create_zone">CreateZoneActivity</string>
     <string name="title_activity_my_rewards">MyRewards</string>
@@ -107,6 +117,8 @@
     <string name="hint_add_appliance_type">Enter appliance type</string>
     <string name="hint_add_appliance_status">Enter Status</string>
     <string name="hint_add_appliance_energy_usage_kwh">Enter Energy Usage kwh</string>
+    <string name="title_activity_add_user_to_zone">AddUserToZoneActivity</string>
+    <string name="title_activity_remove_user_from_zone">RemoveUserFromZoneActivity</string>
 >>>>>>> 042faae1e675645d112b1366ff0dc8d081304037
 
 </resources>

@@ -26,7 +26,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiu.ssobec.Activity.AddUserToZoneActivity;
 import fiu.ssobec.Activity.EditZone;
+import fiu.ssobec.Activity.RemoveUserFromZoneActivity;
 import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
@@ -125,22 +127,18 @@ public class MyZoneEditUsersListAdapter implements ListAdapter {
         mViewHolder.userPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i("ZoneListAdapter", "Clicked, Parent Name: " + mparent.getZone_name());
-//
-//                //Add Zone to db and delete zone from database
-//                AddZoneDialogFragment addZoneDialogFragment = new AddZoneDialogFragment(mparent);
-//                addZoneDialogFragment.show(fm, "fragment_add_zone");
+                Intent i = new Intent(mContext, AddUserToZoneActivity.class);
+                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                mContext.startActivity(i);
             }
         });
 
         mViewHolder.userMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.i("ZoneListAdapter", "Clicked, Parent Name: " + mparent.getZone_name());
-//
-//                //Add Zone to db and delete zone from database
-//                AddZoneDialogFragment addZoneDialogFragment = new AddZoneDialogFragment(mparent);
-//                addZoneDialogFragment.show(fm, "fragment_add_zone");
+                Intent i = new Intent(mContext, RemoveUserFromZoneActivity.class);
+                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                mContext.startActivity(i);
             }
         });
 
