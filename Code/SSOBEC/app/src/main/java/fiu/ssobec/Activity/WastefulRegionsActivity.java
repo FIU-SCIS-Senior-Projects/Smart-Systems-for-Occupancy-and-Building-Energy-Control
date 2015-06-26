@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -69,6 +70,14 @@ public class WastefulRegionsActivity extends ActionBarActivity {
             ArrayList<WastefulRegionListParent> wasteful_regions_list = getWastefulRegions();
 
             ListView listview_wasteful_regions = (ListView) findViewById(R.id.wasteful_regions);
+
+            listview_wasteful_regions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    
+                }
+            });
+
             WastefulRegionListAdapter wastefulRegionsListAdapter = new WastefulRegionListAdapter(this);
             wastefulRegionsListAdapter.setParents(wasteful_regions_list);
             listview_wasteful_regions.setAdapter(wastefulRegionsListAdapter);
@@ -105,7 +114,12 @@ private ArrayList<WastefulRegionListParent> getWastefulRegions(){
 
                 String name = myobj.getString("region_name");
                 String light_description = myobj.getString("description");
-                double plugload = myobj.getDouble("plugload");
+
+                double plugload = 0;
+
+                if(!myobj.isNull("plugload")){
+                    plugload = myobj.getDouble("plugload");
+                }
 
                 WastefulRegionListParent record = new WastefulRegionListParent();
                 record.setName(name);
