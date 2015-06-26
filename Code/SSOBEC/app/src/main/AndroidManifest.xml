@@ -172,7 +172,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
-
         <activity
             android:name=".Activity.WastefulRegionsActivity"
             android:label="@string/title_activity_wasteful_regions"
@@ -181,7 +180,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
-
         <activity
             android:name=".Activity.EditZone"
             android:label="@string/title_activity_edit_zone"
@@ -196,6 +194,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.TurnLightOffActivity"
+            android:label="@string/title_activity_turn_light_off"
+            android:parentActivityName=".Activity.WastefulRegionsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.WastefulRegionsActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.TurnApplianceOffActivity"
+            android:label="@string/title_activity_turn_appliance_off"
+            android:parentActivityName=".Activity.WastefulRegionsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.WastefulRegionsActivity" />
         </activity>
     </application>
 

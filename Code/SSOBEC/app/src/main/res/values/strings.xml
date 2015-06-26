@@ -107,6 +107,8 @@
     <string name="hint_add_appliance_type">Enter appliance type</string>
     <string name="hint_add_appliance_status">Enter Status</string>
     <string name="hint_add_appliance_energy_usage_kwh">Enter Energy Usage kwh</string>
+    <string name="title_activity_turn_light_off">TurnLightOffActivity</string>
+    <string name="title_activity_turn_appliance_off">TurnApplianceOffActivity</string>
 >>>>>>> 042faae1e675645d112b1366ff0dc8d081304037
 
 </resources>
