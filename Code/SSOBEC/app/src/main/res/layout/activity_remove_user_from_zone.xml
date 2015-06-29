@@ -41,6 +41,7 @@
 
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="60dp"
+        android:paddingLeft="@dimen/pad_30dp"
         android:background="@drawable/lightbluepatternrepeat"
         android:orientation="horizontal">
 

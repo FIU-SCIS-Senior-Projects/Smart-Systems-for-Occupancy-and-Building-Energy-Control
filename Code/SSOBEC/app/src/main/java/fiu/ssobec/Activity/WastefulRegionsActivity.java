@@ -7,8 +7,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -71,16 +73,19 @@ public class WastefulRegionsActivity extends ActionBarActivity {
 
             ListView listview_wasteful_regions = (ListView) findViewById(R.id.wasteful_regions);
 
-            listview_wasteful_regions.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    
-                }
-            });
-
             WastefulRegionListAdapter wastefulRegionsListAdapter = new WastefulRegionListAdapter(this);
             wastefulRegionsListAdapter.setParents(wasteful_regions_list);
             listview_wasteful_regions.setAdapter(wastefulRegionsListAdapter);
+
+            listview_wasteful_regions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Toast.makeText(getApplicationContext(), "Position: " + position, Toast.LENGTH_SHORT)
+                            .show();
+                    Intent i = new Intent(getApplicationContext(), TurnApplianceOffActivity.class);
+                    startActivity(i);
+                }
+            });
         }
     }
 
