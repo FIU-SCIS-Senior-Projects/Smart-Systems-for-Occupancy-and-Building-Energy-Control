@@ -61,15 +61,18 @@ public class TurnApplianceOffActivity extends ActionBarActivity {
 
         //User that is currently logged in is found
         else {
-            int user_id = user.getId();
-            int total_rewards = user.getRewards() + RewardPoints;
+            int id = user.getId();
+            int total = user.getRewards() + RewardPoints;
             String reward_description = "Turned Off Appliance";
+            String user_id = id + "";
+            String total_rewards = total + "";
+            String reward_points = RewardPoints + "";
 
-            List<NameValuePair> userInfo = new ArrayList<>(4);
-            userInfo.add(new BasicNameValuePair("user_id", (user_id + "").trim()));
-            userInfo.add(new BasicNameValuePair("total_rewards", (total_rewards + "").trim()));
-            userInfo.add(new BasicNameValuePair("reward", (RewardPoints + "").trim()));
-            userInfo.add(new BasicNameValuePair("reward_description", (reward_description + "").trim()));
+            List<NameValuePair> userInfo = new ArrayList<NameValuePair>(4);
+            userInfo.add(new BasicNameValuePair("user_id", user_id.trim()));
+            userInfo.add(new BasicNameValuePair("total_rewards", total_rewards.trim()));
+            userInfo.add(new BasicNameValuePair("reward", reward_points.trim()));
+            userInfo.add(new BasicNameValuePair("reward_description", reward_description.trim()));
 
             String res = "";
 
@@ -82,6 +85,8 @@ public class TurnApplianceOffActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
             if (res.equalsIgnoreCase("successful")) {
+                user.setRewards(total);
+                Toast.makeText(getApplicationContext(), "Congrats on Saving Energy!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MyZonesActivity.class);
                 startActivity(intent);
             } else {

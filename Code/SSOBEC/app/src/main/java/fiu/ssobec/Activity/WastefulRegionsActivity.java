@@ -3,6 +3,7 @@ package fiu.ssobec.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -82,7 +83,7 @@ public class WastefulRegionsActivity extends ActionBarActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Toast.makeText(getApplicationContext(), "Position: " + position, Toast.LENGTH_SHORT)
                             .show();
-                    Intent i = new Intent(getApplicationContext(), TurnApplianceOffActivity.class);
+                    Intent i = new Intent(getApplicationContext(), TurnLightOffActivity.class);
                     startActivity(i);
                 }
             });
@@ -124,6 +125,7 @@ private ArrayList<WastefulRegionListParent> getWastefulRegions(){
 
                 if(!myobj.isNull("plugload")){
                     plugload = myobj.getDouble("plugload");
+
                 }
 
                 WastefulRegionListParent record = new WastefulRegionListParent();

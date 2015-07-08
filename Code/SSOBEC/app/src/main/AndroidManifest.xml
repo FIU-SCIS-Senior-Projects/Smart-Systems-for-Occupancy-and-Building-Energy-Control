@@ -209,7 +209,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activity.EditZoneUsersActivity" />
         </activity>
-
         <activity
             android:name=".Activity.TurnLightOffActivity"
             android:label="@string/title_activity_turn_light_off"
@@ -221,6 +220,14 @@
         <activity
             android:name=".Activity.TurnApplianceOffActivity"
             android:label="@string/title_activity_turn_appliance_off"
+            android:parentActivityName=".Activity.WastefulRegionsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fiu.ssobec.Activity.WastefulRegionsActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.SendNotificationActivity"
+            android:label="@string/title_activity_send_notification"
             android:parentActivityName=".Activity.WastefulRegionsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
