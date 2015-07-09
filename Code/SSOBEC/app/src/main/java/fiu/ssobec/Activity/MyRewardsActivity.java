@@ -67,13 +67,13 @@ public class MyRewardsActivity extends ActionBarActivity {
         //User that is currently logged in is found
         else {
             user_id = user.getId();
-            rewards = user.getRewards();
 
             List<NameValuePair> userId = new ArrayList<>(1);
             userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
 
             String res = null;
             ArrayList<RewardListParent> rewards_list = new ArrayList<RewardListParent>();
+            int total_rewards = 0;
 
             //Send the user ID to getrewards.php and get the records for the user account rewards from user_rewards table
             try {
@@ -93,6 +93,7 @@ public class MyRewardsActivity extends ActionBarActivity {
                         String time_stamp = myobj.getString("time_stamp");
                         String description = myobj.getString("description");
                         int points = myobj.getInt("points");
+                        total_rewards += points;
 
                         RewardListParent record = new RewardListParent();
                         record.setName(description);
@@ -115,7 +116,8 @@ public class MyRewardsActivity extends ActionBarActivity {
 
             setContentView(R.layout.activity_my_rewards);
             TextView points = (TextView) findViewById(R.id.total_points);
-            points.setText("" + rewards);
+            points.setText("" + total_rewards);
+            rewards = total_rewards;
             System.out.println(LOG_TAG + " User ID: " + user_id + " Total points: " + rewards);
 
             String name = user.getEmail();

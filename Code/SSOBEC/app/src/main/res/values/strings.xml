@@ -122,6 +122,7 @@
     <string name="title_activity_turn_light_off">TurnLightOffActivity</string>
     <string name="title_activity_turn_appliance_off">TurnApplianceOffActivity</string>
     <string name="title_activity_send_notification">SendNotification</string>
+    <string name="title_activity_get_reports">GetReportsActivity</string>
 
 </resources>
 
