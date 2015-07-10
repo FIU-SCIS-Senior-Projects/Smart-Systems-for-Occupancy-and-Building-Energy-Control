@@ -449,8 +449,9 @@ public class MyZonesActivity extends ActionBarActivity{
     }
 
     public void getReports(View view){
-        //This method is intended to generate reports for a facility manager
-
+        //This method is intended to generate reports
+        Intent intent = new Intent(this,GetReportsActivity.class);
+        startActivity(intent);
     }
 
     public void createZone(View view){
