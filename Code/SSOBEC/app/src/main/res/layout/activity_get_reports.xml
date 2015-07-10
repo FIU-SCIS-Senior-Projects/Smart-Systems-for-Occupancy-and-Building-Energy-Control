@@ -74,7 +74,7 @@
                             android:text="Energy\nConsumption"
                             android:id="@+id/energy_consumed"
                             android:textSize="@dimen/small_standard_font_size"
-                            android:layout_marginLeft="80dp" />
+                            android:layout_marginLeft="120dp" />
                     </LinearLayout>
 
 
@@ -99,14 +99,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"
-                        android:layout_weight="1">
+                        >
+
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:text="Energy Consumption by Zone"
-                            android:id="@+id/textView4" />
+                            android:text="Average Zone Consumption is "
+                            android:id="@+id/average_plugload" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Leyend "
+                            android:textSize="@dimen/small_standard_font_size"
+                            android:id="@+id/leyend1" />
 
                         <com.jjoe64.graphview.GraphView
                             android:layout_width="match_parent"
@@ -114,11 +123,11 @@
                             android:id="@+id/plugload_graph"
                             android:background="@color/light_blue_background" />
 
+
                     </LinearLayout>
-
-
-
                 </LinearLayout>
+
+
 
                 <!--TAB-2-->
 
@@ -133,20 +142,28 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"
-                        android:layout_weight="1">
+                        >
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:text="Energy Saving Rewards by User"
-                            android:id="@+id/textView5" />
+                            android:id="@+id/textView7" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Leyend "
+                            android:textSize="@dimen/small_standard_font_size"
+                            android:id="@+id/leyend2" />
 
                         <com.jjoe64.graphview.GraphView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/user_rewards_graph"
                             android:background="@color/light_blue_background" />
+
 
                     </LinearLayout>
 

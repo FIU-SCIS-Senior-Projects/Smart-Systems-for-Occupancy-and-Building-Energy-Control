@@ -114,9 +114,7 @@ public class WastefulRegionListAdapter implements ListAdapter {
 
         }else{
             mViewHolder.light_description.setText("");
-            int index = mparent.getPlugload().indexOf(".");
-            String plugload = mparent.getPlugload().substring(0,index+3);
-            mViewHolder.plugload.setText("Plugload " + plugload + " kW");
+            mViewHolder.plugload.setText("Plugload " + mparent.getPlugload() + " kW");
             mViewHolder.type = "plugload";
         }
 

@@ -96,10 +96,15 @@ public class MyReportsListAdapter implements ListAdapter {
         mViewHolder.value.setText(mparent.getValue());
 
         int imageResource = 0;
-        if(mparent.getDescription().equalsIgnoreCase("user")){
+        if(mparent.getIcon().equalsIgnoreCase("user")){
             imageResource = mContext.getResources().getIdentifier("@drawable/user", null, mContext.getPackageName());
-        }else if(mparent.getDescription().equalsIgnoreCase("light")){
+
+        }else if(mparent.getIcon().equalsIgnoreCase("light")){
             imageResource = mContext.getResources().getIdentifier("@drawable/lightbulb", null, mContext.getPackageName());
+
+        }else if(mparent.getIcon().equalsIgnoreCase("zone")){
+            imageResource = mContext.getResources().getIdentifier("@drawable/plug", null, mContext.getPackageName());
+
         }else{
             imageResource = mContext.getResources().getIdentifier("@drawable/plug", null, mContext.getPackageName());
         }
