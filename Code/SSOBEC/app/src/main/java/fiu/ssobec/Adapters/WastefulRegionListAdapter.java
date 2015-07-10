@@ -139,8 +139,6 @@ public class WastefulRegionListAdapter implements ListAdapter {
                     Intent intent2 = new Intent(mContext, TurnLightOffActivity.class);
                     mContext.startActivity(intent2);
                 }
-
-
             }
         });
 
@@ -148,8 +146,8 @@ public class WastefulRegionListAdapter implements ListAdapter {
             public void onClick(View v) {
 
                 Intent intent = new Intent(mContext, SendNotificationActivity.class);
+                intent.putExtra(SendNotificationActivity.EXTRA_REGION_NAME, mparent.getName());
                 mContext.startActivity(intent);
-
             }
         });
 
