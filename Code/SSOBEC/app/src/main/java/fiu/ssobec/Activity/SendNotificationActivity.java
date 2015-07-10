@@ -31,6 +31,8 @@ public class SendNotificationActivity extends ActionBarActivity {
     private static DataAccessUser data_access;
     public static final int USER_LOGGEDIN = 1;
 
+    private static final int REWARD_POINTS = 3;
+
     String regionName;
 
     @Override
@@ -40,17 +42,6 @@ public class SendNotificationActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         regionName = intent.getStringExtra(EXTRA_REGION_NAME);
-
-
-        data_access = new DataAccessUser(this);
-
-        //Open the data access to the tables
-        try {
-            data_access.open();
-        } catch (SQLException e) {
-            System.err.println(LOG_TAG + ": " + e.toString());
-            e.printStackTrace();
-        }
 
         Button sendNotificationsButotn = (Button) findViewById(R.id.sendNotications);
         sendNotificationsButotn.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +93,14 @@ public class SendNotificationActivity extends ActionBarActivity {
 
         User user = data_access.getUser(USER_LOGGEDIN); //Get a user that is currently logged in the system
 
+        int id = user.getId();
+        int total = user.getRewards() + REWARD_POINTS;
+        String reward_description = "Send Notifications";
+        String user_id = id + "";
+        String total_rewards = total + "";
+        String reward_points = REWARD_POINTS + "";
+
+
         //If a user that is logged in into the system is not found then start a new LoginActivity
         if (user == null) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -122,10 +121,10 @@ public class SendNotificationActivity extends ActionBarActivity {
             userInfo.add(new BasicNameValuePair("region_name", regionName ));
             userInfo.add(new BasicNameValuePair("login_email", user.getEmail()));
 
-//            userInfo.add(new BasicNameValuePair("user_id", user_id.trim()));
-//            userInfo.add(new BasicNameValuePair("total_rewards", total_rewards.trim()));
-//            userInfo.add(new BasicNameValuePair("reward", reward_points.trim()));
-//            userInfo.add(new BasicNameValuePair("reward_description", reward_description.trim()));
+            userInfo.add(new BasicNameValuePair("user_id", user_id.trim()));
+            userInfo.add(new BasicNameValuePair("total_rewards", total_rewards.trim()));
+            userInfo.add(new BasicNameValuePair("reward", reward_points.trim()));
+            userInfo.add(new BasicNameValuePair("reward_description", reward_description.trim()));
 
             String res = "";
 
