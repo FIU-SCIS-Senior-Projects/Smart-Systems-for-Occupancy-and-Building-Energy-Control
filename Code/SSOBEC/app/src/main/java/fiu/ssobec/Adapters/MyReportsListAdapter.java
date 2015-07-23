@@ -93,7 +93,7 @@ public class MyReportsListAdapter implements ListAdapter {
 
         mViewHolder.name.setText(mparent.getName());
         mViewHolder.description.setText(mparent.getDescription());
-        mViewHolder.value.setText(mparent.getValue());
+        mViewHolder.value.setText(mparent.getValue()+" kW");
 
         int imageResource = 0;
         if(mparent.getIcon().equalsIgnoreCase("user")){

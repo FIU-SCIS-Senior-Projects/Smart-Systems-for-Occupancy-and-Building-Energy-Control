@@ -5,23 +5,41 @@
     android:layout_gravity="center"
     android:orientation="vertical"
     tools:context=".LinearLayout"
-    android:background="@color/background_material_light"
-    android:weightSum="1">
+    android:background="@color/login_button_background"
+    android:weightSum="3">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:text="@string/create_zone"
-        android:textColor="@color/default_font_color"
-        android:textSize="30dp" />
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="left"
+        android:gravity="center_horizontal"
+        android:src="@drawable/smallzone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="15dp"
+            android:gravity="center_horizontal"
+            android:text="@string/create_zone"
+            android:textColor="@color/default_background"
+            android:textSize="30dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
+        android:background="@drawable/lightbluepatternrepeat"
         android:paddingTop="20px">
 
         <!-- Zone Name -->
@@ -32,7 +50,8 @@
             android:paddingTop="20px"
             android:text="Zone Name:"
             android:id="@+id/zone_name"
-            android:textColor="@color/default_font_color" />
+            android:textSize="20dp"
+            android:textColor="@color/default_background" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -41,14 +60,16 @@
             android:layout_marginLeft="40px"
             android:paddingTop="20px"
             android:id="@+id/zone_name_field"
-            android:textColor="@color/default_font_color" />
+            android:hint="Enter Zone Name"
+            android:textColor="@color/default_background" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
+        android:background="@drawable/lightbluepatternrepeat"
         android:paddingTop="20px">
 
         <!-- Zone Location -->
@@ -59,7 +80,8 @@
             android:paddingTop="20px"
             android:text="Zone Location:"
             android:id="@+id/zone_location"
-            android:textColor="@color/default_font_color" />
+            android:textSize="20dp"
+            android:textColor="@color/default_background" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -68,14 +90,16 @@
             android:layout_marginLeft="40px"
             android:paddingTop="20px"
             android:id="@+id/zone_location_field"
-            android:textColor="@color/default_font_color" />
+            android:hint="Enter Zone Location"
+            android:textColor="@color/default_background" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
+        android:background="@drawable/lightbluepatternrepeat"
         android:paddingTop="20px">
 
         <!-- Zone Windows -->
@@ -84,9 +108,10 @@
             android:layout_height="wrap_content"
             android:paddingLeft="10px"
             android:paddingTop="20px"
-            android:text="Number of windows within Zone:"
+            android:text="Windows:"
             android:id="@+id/zone_windows"
-            android:textColor="@color/default_font_color" />
+            android:textSize="20dp"
+            android:textColor="@color/default_background" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -95,16 +120,19 @@
             android:layout_marginLeft="40px"
             android:paddingTop="20px"
             android:id="@+id/zone_windows_field"
-            android:textColor="@color/default_font_color" />
+            android:hint="Enter Number of Windows"
+            android:textColor="@color/default_background" />
 
     </LinearLayout>
 
     <Button
-        android:layout_width="126dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:gravity="center_vertical"
         android:paddingLeft="20px"
-        android:paddingTop="10px"
+        android:paddingRight="20px"
+        android:paddingBottom="10px"
         android:text="@string/create_zone"
         android:id="@+id/create_zone_button"
         android:layout_marginTop="20dp"

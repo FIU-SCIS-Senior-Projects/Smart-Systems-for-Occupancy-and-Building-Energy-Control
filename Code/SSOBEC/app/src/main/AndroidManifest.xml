@@ -25,7 +25,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/smartbuildingicon"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat" >
 
@@ -51,7 +51,7 @@
 
         <activity
             android:name=".Activity.MyZonesActivity"
-            android:label="@string/title_activity_my_zones" >
+            android:label="@string/title_launcher_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

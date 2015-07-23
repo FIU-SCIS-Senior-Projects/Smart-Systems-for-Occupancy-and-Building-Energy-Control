@@ -12,7 +12,8 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:gravity="center"
-        android:text="Manager Reports"
+        android:text="Reports"
+        android:id="@+id/reports_textview1"
         android:textColor="@color/default_background"
         android:drawableLeft="@drawable/smallreports"
         android:background="@color/login_button_background"
@@ -35,6 +36,7 @@
                 android:layout_height="wrap_content">
 
             </TabWidget>
+
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -62,7 +64,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Zone\n Name"
-                            android:id="@+id/zone_name"
+                            android:id="@+id/reports_table_name"
                             android:textSize="@dimen/small_standard_font_size"
                             android:textIsSelectable="false"
                             android:typeface="monospace"
@@ -74,7 +76,7 @@
                             android:text="Energy\nConsumption"
                             android:id="@+id/energy_consumed"
                             android:textSize="@dimen/small_standard_font_size"
-                            android:layout_marginLeft="120dp" />
+                            android:layout_marginLeft="140dp" />
                     </LinearLayout>
 
 
@@ -83,8 +85,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp">
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp">
 
 
                         <ListView
@@ -106,8 +108,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:text="Average Zone Consumption is "
+                            android:text="Average Energy Consumption is "
                             android:id="@+id/average_plugload" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/fbutton_color_sun_flower"
+                            android:text=""
+                            android:id="@+id/my_zones_average_plugload" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -150,6 +160,15 @@
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:text="Energy Saving Rewards by User"
                             android:id="@+id/textView7" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/plugload_green"
+                            android:text=""
+                            android:id="@+id/reports_user_rank" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -164,11 +183,118 @@
                             android:id="@+id/user_rewards_graph"
                             android:background="@color/light_blue_background" />
 
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <!--TAB-3-->
+
+                <LinearLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="20dp"
+                        >
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="20dp"
+                            >
+
+                        <ImageView
+                            android:layout_width="110dp"
+                            android:layout_height="110dp"
+                            android:layout_gravity="center"
+                            android:id="@+id/icon2" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Text1"
+                            android:layout_marginLeft="5dp"
+                            android:id="@+id/suggestions1" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="Text2"
+                            android:textColor="@color/fbutton_color_sun_flower"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/suggestions2" />
+
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:measureWithLargestChild="false">
+
+                            <ImageView
+                                android:layout_width="60dp"
+                                android:layout_height="1dp"
+                                android:id="@+id/icon3" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Zone\nName"
+                                android:id="@+id/suggestions_table_name"
+                                android:textSize="@dimen/small_standard_font_size"
+                                android:textIsSelectable="false"
+                                android:typeface="monospace"
+                                android:layout_marginRight="20dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Percent\nConsumption"
+                                android:id="@+id/suggestions_table_percent"
+                                android:textSize="@dimen/small_standard_font_size"
+                                android:layout_marginLeft="50dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Energy\nConsumption"
+                                android:id="@+id/suggestions_table_energy"
+                                android:textSize="@dimen/small_standard_font_size"
+                                android:layout_marginLeft="20dp" />
+                        </LinearLayout>
+
+
+                        <!-- Zone Table -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="1dp"
+                            android:layout_marginBottom="1dp">
+
+
+                            <ListView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/zone_suggestions_listview" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-
                 </LinearLayout>
+
+
             </FrameLayout>
         </LinearLayout>
     </TabHost>

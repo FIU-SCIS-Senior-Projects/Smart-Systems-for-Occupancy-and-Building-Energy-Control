@@ -66,13 +66,32 @@
             android:layout_height="81dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <info.hoang8f.widget.FButton
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 fbutton:buttonColor="@color/fbutton_color_peter_river"
                 fbutton:shadowColor="@color/fbutton_color_belize_hole"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp"
+                fbutton:cornerRadius="5dp"
+                android:drawableLeft="@drawable/smallreports"
+                android:drawablePadding="0.5dip"
+                android:id="@+id/ReportsButton"
+                android:padding="90dip"
+                android:onClick="getReports"
+                android:text="My Reports"
+                android:textColor="@color/default_background"
+                android:layout_margin="5dip"
+                android:textSize="20sp"
+                android:layout_weight="1" />
+
+            <info.hoang8f.widget.FButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                fbutton:buttonColor="@color/fbutton_color_emerald"
+                fbutton:shadowColor="@color/fbutton_color_green_sea"
                 fbutton:shadowEnabled="true"
                 fbutton:shadowHeight="5dp"
                 fbutton:cornerRadius="5dp"

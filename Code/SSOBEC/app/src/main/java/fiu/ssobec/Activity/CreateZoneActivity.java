@@ -80,64 +80,67 @@ public class CreateZoneActivity extends ActionBarActivity {
         String zone_location = ((EditText) findViewById(R.id.zone_location_field)).getText().toString();
         String zone_windows = ((EditText) findViewById(R.id.zone_windows_field)).getText().toString();
 
-        if(!zone_name.isEmpty())
-        {
-            String zoneName = "";
-            String location = "";
-            String windows = "";
-            try {
-                //zoneName = URLEncoder.encode(zone_name.trim(), "UTF-8");
-                location = URLEncoder.encode(zone_location.trim(), "UTF-8");
-                windows = URLEncoder.encode(zone_windows.trim(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        char quotation = '"';
+        String quotes = quotation + "";
 
-            new_zone_info.add(new BasicNameValuePair("region_name",  zone_name ));
-            new_zone_info.add(new BasicNameValuePair("location", zone_location));
-            new_zone_info.add(new BasicNameValuePair("windows", zone_windows));
+        //Check for invalid characters: quotations and apostrophes
+        if (!zone_name.contains("'")&&!zone_name.contains(quotes)
+                &&!zone_location.contains("'")&&!zone_location.contains(quotes)
+                &&!zone_windows.contains("'")&&!zone_windows.contains(quotes)) {
 
-            String res = "";
-            //Create a new Zone
-            try {
-                res = new ExternalDatabaseController((ArrayList<NameValuePair>) new_zone_info,
-                        CREATEZONE_PHP).send();
+            //Check if zone name is empty
+            if (!zone_name.isEmpty()) {
+                new_zone_info.add(new BasicNameValuePair("region_name", zone_name));
+                new_zone_info.add(new BasicNameValuePair("location", zone_location));
+                new_zone_info.add(new BasicNameValuePair("windows", zone_windows));
 
+                String res = "";
+                //Create a new Zone
+                try {
+                    res = new ExternalDatabaseController((ArrayList<NameValuePair>) new_zone_info,
+                            CREATEZONE_PHP).send();
+
+                    warning_msg = (TextView) findViewById(R.id.warning_message_view);
+                    runOnUiThread(new Runnable() {
+
+                        public void run() {
+                            warning_msg.setText("");
+                        }
+
+                    });
+
+                    Log.i(LOG_TAG, "Insert DB Result: " + res);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (res.equalsIgnoreCase("successful")) {
+                    Intent intent = new Intent(this, MyZonesActivity.class);
+                    startActivity(intent);
+                } else {
+
+                    Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
                 warning_msg = (TextView) findViewById(R.id.warning_message_view);
                 runOnUiThread(new Runnable() {
 
                     public void run() {
-                        warning_msg.setText("");
+                        warning_msg.setText("Zone Name cannot be empty!");
                     }
 
                 });
-
-                Log.i(LOG_TAG, "Insert DB Result: " + res);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
-            if(res.equalsIgnoreCase("successful")){
-                Intent intent = new Intent(this, MyZonesActivity.class);
-                startActivity(intent);
-            }
-            else{
-
-                Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
-            }
-
-        }
-        else
-        {
+        }else{
             warning_msg = (TextView) findViewById(R.id.warning_message_view);
             runOnUiThread(new Runnable() {
 
                 public void run() {
-                    warning_msg.setText("Zone Name cannot be empty!");
+                    warning_msg.setText("Please do not use quotations or apostrophes.");
                 }
 
             });
         }
-
     }
 }

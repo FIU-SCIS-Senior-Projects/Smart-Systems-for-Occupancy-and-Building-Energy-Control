@@ -110,7 +110,7 @@ public class ZoneAppliances extends ActionBarActivity implements NumberPicker.On
     {
 
         d = new Dialog(ZoneAppliances.this);
-        d.setTitle("Number of Windows");
+        d.setTitle("Appliance Description");
         View view = findViewById(R.id.add_appliances_list);
         d.setContentView(R.layout.dialog_add_appliance);
         Button b1 = (Button) d.findViewById(R.id.cancel_btn);
