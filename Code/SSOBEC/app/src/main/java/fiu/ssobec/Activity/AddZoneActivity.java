@@ -22,12 +22,14 @@ import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 
+/**
+ *
+ */
 public class AddZoneActivity extends ActionBarActivity {
 
     // Search EditText
     public static final String GETALLZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/getallzones.php";
     private static DataAccessUser data_access; //data access variable for user
-
 
 
     /**

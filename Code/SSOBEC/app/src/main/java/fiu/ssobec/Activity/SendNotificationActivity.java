@@ -195,6 +195,7 @@ public class SendNotificationActivity extends ActionBarActivity {
             //Send the user info to update the user_rewards table and user table with the added reward points
             try {
                 res = new ExternalDatabaseController((ArrayList<NameValuePair>) userInfo, SEND_NOTIFICATIONS_PHP).send();
+                System.out.println(res);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
