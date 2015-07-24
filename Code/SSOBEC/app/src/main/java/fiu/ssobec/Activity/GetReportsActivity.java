@@ -186,7 +186,7 @@ public class GetReportsActivity extends ActionBarActivity {
 
             }
             else{ //Display general user reports
-                //TODO: Add get personalized reports for general user
+
                 setContentView(R.layout.activity_get_reports);
                 TextView TextView1 = (TextView)findViewById(R.id.reports_textview1);
                 TextView1.setText("My Reports");
@@ -246,7 +246,7 @@ public class GetReportsActivity extends ActionBarActivity {
                 TextView plugload_average = (TextView) findViewById(R.id.average_plugload);
                 plugload_average.setText("All Zones Avg. Consumption is " + avg +" kW");
 
-//TODO: Testing
+
                 String myavg = my_zones_average+ "";
                 if(myavg.contains(".")){
                     int index = myavg.indexOf(".");
@@ -260,9 +260,9 @@ public class GetReportsActivity extends ActionBarActivity {
                 GraphView graph = (GraphView) findViewById(R.id.plugload_graph);
                 GraphView graph2 = (GraphView) findViewById(R.id.user_rewards_graph);
 
-                DataPoint[] points = new DataPoint[my_zones_list.size()];//TODO:
+                DataPoint[] points = new DataPoint[my_zones_list.size()];
 
-                String[] names = new String[my_zones_list.size()];//TODO:
+                String[] names = new String[my_zones_list.size()];
                 String leyend1 ="Legend: ";
                 for (int i = 0; i < my_zones_list.size(); i++) {
                     points[i] = new DataPoint(i, Double.parseDouble(my_zones_list.get(i).getValue()));
@@ -428,11 +428,10 @@ public class GetReportsActivity extends ActionBarActivity {
     }
 
     private ArrayList<ReportListParent> getReportMyZones() {
-        //TODO: check PHP
-
+        
         List<NameValuePair> userId = new ArrayList<>(1);
         String id = user_id + "";
-        userId.add(new BasicNameValuePair("user_id", id.trim()));
+        userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
 
         String res = "";
         ArrayList<ReportListParent> my_zones_report = new ArrayList<ReportListParent>();
@@ -481,7 +480,7 @@ public class GetReportsActivity extends ActionBarActivity {
                     record.setDescription(description);
                     record.setIcon("zone");
                     record.setValue(value);
-                    my_zones_list.add(record); //TODO:
+                    my_zones_list.add(record);
 
                     j++;
                 }
@@ -492,7 +491,7 @@ public class GetReportsActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
         }
-        if (my_zones_list.size()>2) {//TODO:
+        if (my_zones_list.size()>2) {
             ReportListParent recordHigh = my_zones_list.get(0);
             recordHigh.setDescription("High");
             ReportListParent recordMedian = my_zones_list.get(my_zones_list.size() / 2);
@@ -570,7 +569,7 @@ public class GetReportsActivity extends ActionBarActivity {
      * @param zones_list
      */
     private void setSuggestions(ArrayList<ReportListParent> zones_list, double zones_avg){
-        //TODO: Suggestions
+
         ArrayList<ReportListParent> above_average_list = new ArrayList<ReportListParent>();
         double sum = zones_avg * zones_list.size();
 
