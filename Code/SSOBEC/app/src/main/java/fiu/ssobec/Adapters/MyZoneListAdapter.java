@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fiu.ssobec.Activity.EditZone;
+import fiu.ssobec.Activity.EditZoneActivity;
 import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
@@ -136,8 +136,8 @@ public class MyZoneListAdapter implements ListAdapter {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "Edit Zone", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(mContext,EditZone.class);
-                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                Intent i = new Intent(mContext,EditZoneActivity.class);
+                i.putExtra(EditZoneActivity.EXTRA_ZONE_ID, mparent);
                 mContext.startActivity(i);
             }
         });

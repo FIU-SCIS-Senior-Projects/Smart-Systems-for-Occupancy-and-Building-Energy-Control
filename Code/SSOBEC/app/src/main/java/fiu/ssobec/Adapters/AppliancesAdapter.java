@@ -1,22 +1,16 @@
 package fiu.ssobec.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.DataSetObserver;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import fiu.ssobec.Activity.EditZone;
 import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
-import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.R;
 
 /**

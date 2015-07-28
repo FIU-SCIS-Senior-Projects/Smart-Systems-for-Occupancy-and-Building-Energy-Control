@@ -181,7 +181,7 @@
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
         <activity
-            android:name=".Activity.EditZone"
+            android:name=".Activity.EditZoneActivity"
             android:label="@string/title_activity_edit_zone"
             android:parentActivityName=".Activity.AddZoneActivity" >
             <meta-data
@@ -189,7 +189,7 @@
                 android:value="fiu.ssobec.Activity.ZonesDescriptionActivity" />
         </activity>
         <activity
-            android:name=".Activity.ZoneAppliances"
+            android:name=".Activity.ZoneAppliancesActivity"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

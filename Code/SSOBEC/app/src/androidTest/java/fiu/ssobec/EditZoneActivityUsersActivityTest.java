@@ -9,13 +9,13 @@ import fiu.ssobec.Activity.EditZoneUsersActivity;
 /**
  * Created by irvincardenas on 6/26/15.
  */
-public class EditZoneUsersActivityTest extends ActivityInstrumentationTestCase2<EditZoneUsersActivity> {
+public class EditZoneActivityUsersActivityTest extends ActivityInstrumentationTestCase2<EditZoneUsersActivity> {
 
     private EditZoneUsersActivity testActivity;
     private ImageView addUserBtn;
     private ImageView removeUserBtn;
 
-    public EditZoneUsersActivityTest(Class<EditZoneUsersActivity> activityClass) {
+    public EditZoneActivityUsersActivityTest(Class<EditZoneUsersActivity> activityClass) {
         super(activityClass);
     }
 
