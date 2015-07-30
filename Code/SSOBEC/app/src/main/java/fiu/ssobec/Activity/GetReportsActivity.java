@@ -203,15 +203,16 @@ public class GetReportsActivity extends ActionBarActivity {
                 current_user = user.getEmail();
                 this.all_users_list = getReportAllUsers();
                 if(!user_rank.equalsIgnoreCase("NA")){
+                    int myrank = Integer.parseInt(user_rank);
                     if(user_rank.equalsIgnoreCase("1")){
                         TextView rank = (TextView) findViewById(R.id.reports_user_rank);
-                        rank.setText("Congratulations! You Rank #" + user_rank +" with "+ user.getRewards() +" points");
+                        rank.setText("Congratulations! You Rank #" + user_rank +" with "+ all_users_list.get(myrank-1).getValue() +" points");
 
                         TextView highestrank = (TextView) findViewById(R.id.textView7);
                         highestrank.setText("");
                     }else{
                         TextView rank = (TextView) findViewById(R.id.reports_user_rank);
-                        rank.setText("You Rank #" + user_rank +" with "+ user.getRewards() +" points");
+                        rank.setText("You Rank #" + user_rank +" with "+ all_users_list.get(myrank-1).getValue() +" points");
 
                         TextView highestrank = (TextView) findViewById(R.id.textView7);
                         highestrank.setText("Highest Rank is " + all_users_list.get(0).getName() +" with "+ all_users_list.get(0).getValue() +" points");
@@ -428,7 +429,7 @@ public class GetReportsActivity extends ActionBarActivity {
     }
 
     private ArrayList<ReportListParent> getReportMyZones() {
-        
+
         List<NameValuePair> userId = new ArrayList<>(1);
         String id = user_id + "";
         userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
