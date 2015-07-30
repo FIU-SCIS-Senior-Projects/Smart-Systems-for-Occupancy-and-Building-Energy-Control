@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -27,9 +26,9 @@ import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.R;
 
-public class EditZone extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
+public class EditZoneActivity extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
 
-    public static final String LOG_TAG = "fiu.ssobec.EditZone";
+    public static final String LOG_TAG = "fiu.ssobec.EditZoneActivity";
     public static final String EXTRA_ZONE_ID = "fiu.ssobec.Activity.extra_zone_id";
     public static final String EDITZONE_PHP = "http://smartsystems-dev.cs.fiu.edu/editzone.php";
 
@@ -99,7 +98,7 @@ public class EditZone extends ActionBarActivity implements NumberPicker.OnValueC
     public void show()
     {
 
-        final Dialog d = new Dialog(EditZone.this);
+        final Dialog d = new Dialog(EditZoneActivity.this);
         d.setTitle("Number of Windows");
         d.setContentView(R.layout.dialog_edit_zone_windows);
         Button b1 = (Button) d.findViewById(R.id.save_btn);

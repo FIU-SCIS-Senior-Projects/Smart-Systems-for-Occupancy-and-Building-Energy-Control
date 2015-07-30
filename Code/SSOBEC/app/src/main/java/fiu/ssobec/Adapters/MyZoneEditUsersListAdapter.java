@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fiu.ssobec.Activity.AddUserToZoneActivity;
-import fiu.ssobec.Activity.EditZone;
+import fiu.ssobec.Activity.EditZoneActivity;
 import fiu.ssobec.Activity.RemoveUserFromZoneActivity;
 import fiu.ssobec.AdaptersUtil.ZoneListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
@@ -128,7 +127,7 @@ public class MyZoneEditUsersListAdapter implements ListAdapter {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(mContext, AddUserToZoneActivity.class);
-                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                i.putExtra(EditZoneActivity.EXTRA_ZONE_ID, mparent);
                 mContext.startActivity(i);
             }
         });
@@ -137,7 +136,7 @@ public class MyZoneEditUsersListAdapter implements ListAdapter {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(mContext, RemoveUserFromZoneActivity.class);
-                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+                i.putExtra(EditZoneActivity.EXTRA_ZONE_ID, mparent);
                 mContext.startActivity(i);
             }
         });
@@ -146,8 +145,8 @@ public class MyZoneEditUsersListAdapter implements ListAdapter {
 //            @Override
 //            public void onClick(View v) {
 //                Toast.makeText(mContext, "Edit Zone", Toast.LENGTH_SHORT).show();
-//                Intent i = new Intent(mContext,EditZone.class);
-//                i.putExtra(EditZone.EXTRA_ZONE_ID, mparent);
+//                Intent i = new Intent(mContext,EditZoneActivity.class);
+//                i.putExtra(EditZoneActivity.EXTRA_ZONE_ID, mparent);
 //                mContext.startActivity(i);
 //            }
 //        });

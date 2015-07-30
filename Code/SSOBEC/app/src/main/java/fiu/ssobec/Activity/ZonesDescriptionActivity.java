@@ -123,8 +123,8 @@ public class ZonesDescriptionActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             case R.id.action_viewAppliances:
-                Intent i = new Intent(this,ZoneAppliances.class);
-                i.putExtra(ZoneAppliances.EXTRA_ZONE_APPLIANCE_REGION_ID, regionID);
+                Intent i = new Intent(this,ZoneAppliancesActivity.class);
+                i.putExtra(ZoneAppliancesActivity.EXTRA_ZONE_APPLIANCE_REGION_ID, regionID);
                 startActivity(i);
                 return true;
             case R.id.action_logout:

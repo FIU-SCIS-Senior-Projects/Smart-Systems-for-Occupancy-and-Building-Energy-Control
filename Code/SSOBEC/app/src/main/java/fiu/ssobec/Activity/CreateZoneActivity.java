@@ -74,8 +74,6 @@ public class CreateZoneActivity extends ActionBarActivity {
     //onClick Create Zone, create the new Zone with its attributes
     public void createZone(View view){
         List<NameValuePair> new_zone_info = new ArrayList<>(3);
-        System.out.println("Create Zone button works");
-
         String zone_name = ((EditText) findViewById(R.id.zone_name_field)).getText().toString();
         String zone_location = ((EditText) findViewById(R.id.zone_location_field)).getText().toString();
         String zone_windows = ((EditText) findViewById(R.id.zone_windows_field)).getText().toString();

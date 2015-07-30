@@ -8,38 +8,32 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import fiu.ssobec.Adapters.AppliancesAdapter;
-import fiu.ssobec.Adapters.MyZoneListAdapter;
 import fiu.ssobec.AdaptersUtil.PlugLoadListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
-import fiu.ssobec.Model.PlugLoad;
 import fiu.ssobec.R;
 
-public class ZoneAppliances extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
+public class ZoneAppliancesActivity extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
     private DataAccessUser data_access;
     private Dialog d;
     private int zoneID;
-    public static String EXTRA_ZONE_APPLIANCE_REGION_ID = "fiu.ssobec.ZoneAppliances.regionId";
+    public static String EXTRA_ZONE_APPLIANCE_REGION_ID = "fiu.ssobec.ZoneAppliancesActivity.regionId";
     private static String ADDAPPLIANCE_PHP = "http://smartsystems-dev.cs.fiu.edu/addappliance.php";
-    private static String LOG_TAG = "fiu.ssobec.ZoneAppliances";
+    private static String LOG_TAG = "fiu.ssobec.ZoneAppliancesActivity";
 
     ArrayList<PlugLoadListParent> parents;
     ListView mListView;
@@ -109,7 +103,7 @@ public class ZoneAppliances extends ActionBarActivity implements NumberPicker.On
     public void show()
     {
 
-        d = new Dialog(ZoneAppliances.this);
+        d = new Dialog(ZoneAppliancesActivity.this);
         d.setTitle("Appliance Description");
         View view = findViewById(R.id.add_appliances_list);
         d.setContentView(R.layout.dialog_add_appliance);
