@@ -281,7 +281,7 @@ public class GetReportsActivity extends ActionBarActivity {
                 series.setSpacing(25);
                 series.setDrawValuesOnTop(true);
 
-                if(all_regions_list.size() >= 2) {
+                if(my_zones_list.size() >= 2) { //This is the original code: all_regions_list.size() >= 2
                     StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
                     staticLabelsFormatter.setHorizontalLabels(names);
                     graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
