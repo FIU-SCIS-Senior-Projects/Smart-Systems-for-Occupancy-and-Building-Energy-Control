@@ -132,6 +132,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                 //Set the rewards list from the user's rewards
                 ArrayList<RewardListParent> parents = getZones();
+                System.out.println("The number of zones is currently: "+parents.size());
                 ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
                 MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
                 myRewardListAdapter.setParents(parents);
@@ -150,22 +151,25 @@ public class MyZonesActivity extends ActionBarActivity{
             }
 
             if(res != null) {
+                System.out.println("what is res? "+res);
                 JSONObject obj;
                 JSONArray arr;
-                try {
-                    obj = new JSONObject(res);
-                    arr = obj.getJSONArray("zone_obj");
+                if(!res.equals("No Regions Found")) {
+                    try {
+                        obj = new JSONObject(res);
+                        arr = obj.getJSONArray("zone_obj");
 
-                    for (int i = 0; i < arr.length(); i++) {
-                        int region_id = arr.getJSONObject(i).getInt("region_id");
-                        String region_name = arr.getJSONObject(i).getString("region_name");
+                        for (int i = 0; i < arr.length(); i++) {
+                            int region_id = arr.getJSONObject(i).getInt("region_id");
+                            String region_name = arr.getJSONObject(i).getString("region_name");
 
-                        if (!region_name.equalsIgnoreCase("null")&&(data_access.getZone(region_id)==null))
-                            data_access.createZones(region_name, region_id);
+                            if (!region_name.equalsIgnoreCase("null") && (data_access.getZone(region_id) == null))
+                                data_access.createZones(region_name, region_id);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -400,6 +404,16 @@ public class MyZonesActivity extends ActionBarActivity{
         /** Callback invoked with the sync adapter status changes. */
         @Override
         public void onStatusChanged(int which) {
+            // Create a handle to the account that was created by
+            // SyncService.CreateSyncAccount(). This will be used to query the system to
+            // see how the sync status has changed.
+            final Account account = AuthenticatorService.GetAccount();
+            if (account == null) {
+                // GetAccount() returned an invalid value. This shouldn't happen, but
+                // we'll set the status to "not refreshing".
+                setRefreshActionButtonState(false);
+                return;
+            }
             runOnUiThread(new Runnable() {
                 /**
                  * The SyncAdapter runs on a background thread. To update the UI, onStatusChanged()
@@ -407,16 +421,13 @@ public class MyZonesActivity extends ActionBarActivity{
                  */
                 @Override
                 public void run() {
-                    // Create a handle to the account that was created by
-                    // SyncService.CreateSyncAccount(). This will be used to query the system to
-                    // see how the sync status has changed.
-                    Account account = AuthenticatorService.GetAccount();
-                    if (account == null) {
+
+                    /*if (account == null) {
                         // GetAccount() returned an invalid value. This shouldn't happen, but
                         // we'll set the status to "not refreshing".
                         setRefreshActionButtonState(false);
                         return;
-                    }
+                    }*/
                     // Test the ContentResolver to see if the sync adapter is active or pending.
                     // Set the state of the refresh button accordingly.
                     boolean syncActive = ContentResolver.isSyncActive(
