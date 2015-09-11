@@ -53,7 +53,7 @@ public class GetReportsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("GetReportsActivity","We have made it to getReports");
         //Declare the access to the SQLite table for user
         data_access = new DataAccessUser(this);
 
@@ -104,7 +104,7 @@ public class GetReportsActivity extends ActionBarActivity {
                 GraphView graph2 = (GraphView) findViewById(R.id.user_rewards_graph);
 
                 DataPoint[] points = new DataPoint[all_regions_list.size()];
-
+                Log.d(LOG_TAG,"What is the number of points? "+points.length);
                 String[] names = new String[all_regions_list.size()];
                 String leyend1 ="Legend: ";
                 for (int i = 0; i < all_regions_list.size(); i++) {
@@ -190,15 +190,15 @@ public class GetReportsActivity extends ActionBarActivity {
                 setContentView(R.layout.activity_get_reports);
                 TextView TextView1 = (TextView)findViewById(R.id.reports_textview1);
                 TextView1.setText("My Reports");
-
+                Log.d(LOG_TAG,"We have set the contentView");
                 //Get statistics to compare to all zones
                 ArrayList<ReportListParent> all_regions_report = getReportAllRegions();
-
+                Log.d(LOG_TAG, "We have retrieved all reports from all regions");
                 //Get statistics for current user's followed zones
                 user_id = user.getId();
                 System.out.println(LOG_TAG + " User ID: " + user_id);
                 ArrayList<ReportListParent> my_zones_report = getReportMyZones();
-
+                Log.d(LOG_TAG,"We have retrieved MY reports");
                 //Get statistics for all users' reward points
                 current_user = user.getEmail();
                 this.all_users_list = getReportAllUsers();
@@ -280,14 +280,14 @@ public class GetReportsActivity extends ActionBarActivity {
                 series.setColor(getResources().getColor(R.color.fbutton_color_sun_flower));
                 series.setSpacing(25);
                 series.setDrawValuesOnTop(true);
-
+                Log.d(LOG_TAG,"We are just before my bug fix");
                 if(my_zones_list.size() >= 2) { //This is the original code: all_regions_list.size() >= 2
                     StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
                     staticLabelsFormatter.setHorizontalLabels(names);
                     graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
                 }
-
+                Log.d(LOG_TAG,"We have made it after my bug fix");
 
                 String[] u_names = new String[all_users_list.size()];
                 DataPoint[] u_points = new DataPoint[all_users_list.size()];
@@ -307,13 +307,13 @@ public class GetReportsActivity extends ActionBarActivity {
                 u_series.setColor(getResources().getColor(R.color.plugload_green));
                 u_series.setSpacing(25);
                 u_series.setDrawValuesOnTop(true);
-
+                Log.d(LOG_TAG,"Right before possible new problem");
                 if(all_users_list.size() >= 2) {
                     StaticLabelsFormatter staticLabelsFormatter2 = new StaticLabelsFormatter(graph2);
                     staticLabelsFormatter2.setHorizontalLabels(u_names);
                     graph2.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter2);
                 }
-
+                Log.d(LOG_TAG,"Looks like we have a new problem");
                 TextView leyendzones = (TextView) findViewById(R.id.leyend1);
                 TextView leyendusers = (TextView) findViewById(R.id.leyend2);
                 leyendzones.setText(leyend1);
@@ -342,7 +342,7 @@ public class GetReportsActivity extends ActionBarActivity {
                 tabs.addTab(spec);
 
                 setSuggestions(my_zones_list,my_zones_average);
-
+                Log.d(LOG_TAG,"This is the end of the line buddy");
             }
 
         }
@@ -407,7 +407,7 @@ public class GetReportsActivity extends ActionBarActivity {
 
                     j++;
                 }
-
+                Log.d("GetReportsActivity","What is the value of j? "+j);
                 average = average/j;
 
             } catch (JSONException e) {
@@ -485,7 +485,7 @@ public class GetReportsActivity extends ActionBarActivity {
 
                     j++;
                 }
-
+                Log.d("GetReportsActivity2","What is j? "+j);
                 my_zones_average = my_zones_average/j;
 
             } catch (JSONException e) {

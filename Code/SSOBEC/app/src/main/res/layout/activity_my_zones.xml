@@ -79,12 +79,12 @@
                 android:drawableLeft="@drawable/smallreports"
                 android:drawablePadding="0.5dip"
                 android:id="@+id/ReportsButton"
-                android:padding="90dip"
+                android:padding="80dip"
                 android:onClick="getReports"
                 android:text="My Reports"
                 android:textColor="@color/default_background"
                 android:layout_margin="5dip"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:layout_weight="1" />
 
             <info.hoang8f.widget.FButton
@@ -98,12 +98,12 @@
                 android:drawableLeft="@drawable/rewards_icon_50x"
                 android:drawablePadding="0.5dip"
                 android:id="@+id/RewardsButton"
-                android:padding="90dip"
+                android:padding="80dip"
                 android:onClick="getMyRewards"
                 android:text="@string/my_rewards"
                 android:textColor="@color/default_background"
                 android:layout_margin="5dip"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:layout_weight="1" />
 
             <info.hoang8f.widget.FButton
@@ -117,12 +117,12 @@
                 android:drawableLeft="@drawable/smallcoin"
                 android:drawablePadding="0.5dip"
                 android:id="@+id/WastefulRegionsButton"
-                android:padding="90dip"
+                android:padding="80dip"
                 android:onClick="getWastefulRegions"
                 android:text="@string/wasteful_regions"
                 android:textColor="@color/default_background"
                 android:layout_margin="5dip"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:layout_weight="1" />
 
         </LinearLayout>

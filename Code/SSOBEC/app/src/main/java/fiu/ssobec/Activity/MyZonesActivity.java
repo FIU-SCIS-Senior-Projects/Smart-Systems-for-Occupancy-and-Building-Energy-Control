@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -61,7 +62,7 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     public static final String plugload_award_descrp="Reward for little consumption of energy in plugload";
     public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
-
+    zoneLoader loader;
     private static DataAccessUser data_access;
 
     private Object mSyncObserverHandle;
@@ -105,40 +106,26 @@ public class MyZonesActivity extends ActionBarActivity{
         SyncUtils.TriggerRefresh();
     }
 
-    /**
-     * Set the view for the zone activity
+    /*
+        AsyncTask zoneLoader class to run old zone loading code in background thread to stop obstruction of UI thread in android
      */
-    private void setTheContentViewContent()
-    {
-        User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
+    private class zoneLoader extends AsyncTask<String, Void, String> {
 
-        //If a user that is logged in into the system is not found then start a new LoginActivity
-        if(user == null)
-        {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+        MyRewardListAdapter myrewards;
+        ListView listView;
+        ArrayList<RewardListParent> parents;
+        Context context;
+        public zoneLoader( Context context, MyRewardListAdapter myrewards, ListView listView ) {
+            this.myrewards = myrewards;
+            this.listView = listView;
+            this.context = context;
         }
 
-        //User that is currently logged in is found
-        else
-        {
-            if(user.getUsertype().equalsIgnoreCase("admin")){  //Load Facility Manager Layout
-                System.out.println("Loading Facility Manager view.");
-                isFacilityManager = true;
-                setContentView(R.layout.activity_admin_zones);
-            }
-            else{  //Load general user layout
-                setContentView(R.layout.activity_my_zones);
+        @Override
+        protected String doInBackground(String... params) {
 
-                //Set the rewards list from the user's rewards
-                ArrayList<RewardListParent> parents = getZones();
-                System.out.println("The number of zones is currently: "+parents.size());
-                ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
-                MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
-                myRewardListAdapter.setParents(parents);
-                mListView.setAdapter(myRewardListAdapter);
-            }
-            user_id = user.getId(); //Get the ID of the user
+            parents  = getZones();
+            myrewards.setParents(parents);
             List<NameValuePair> userId = new ArrayList<>(1);
             String res = null;
             userId.add(new BasicNameValuePair("user_id", (user_id+"").trim()));
@@ -162,11 +149,9 @@ public class MyZonesActivity extends ActionBarActivity{
                         for (int i = 0; i < arr.length(); i++) {
                             int region_id = arr.getJSONObject(i).getInt("region_id");
                             String region_name = arr.getJSONObject(i).getString("region_name");
-
                             if (!region_name.equalsIgnoreCase("null") && (data_access.getZone(region_id) == null))
                                 data_access.createZones(region_name, region_id);
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -174,15 +159,33 @@ public class MyZonesActivity extends ActionBarActivity{
             }
 
 
+
+            publishProgress();
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            listView.setAdapter(myrewards);
             //Set buttons in a Grid View order
-            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            do{
+                gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+            }
+            while(gridViewButtons==null);
 //            ButtonAdapter m_badapter = new ButtonAdapter(this);
 //            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            gridViewButtons.setAdapter(m_badapter);
-            gridAdapter = new GridViewAdapter(
-                    this, data_access.getAllZoneNames(), data_access.getAllZoneID());
+            gridAdapter = new GridViewAdapter(context, data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridAdapter.setMode(Attributes.Mode.Single);
+            Log.d("MyZonesActivity","What is gridAdapter? "+gridAdapter);
             gridViewButtons.setAdapter(gridAdapter);
             gridViewButtons.setSelected(false);
             gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -221,6 +224,61 @@ public class MyZonesActivity extends ActionBarActivity{
 
                 }
             });
+        }
+    }
+
+    /**
+     * Set the view for the zone activity
+     */
+    private void setTheContentViewContent()
+    {
+        User user = data_access.getUser(USER_LOGGEDIN); //Get me a User that is currently logged in the system
+
+        //If a user that is logged in into the system is not found then start a new LoginActivity
+        if(user == null)
+        {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+
+        //User that is currently logged in is found
+        else
+        {
+            if(user.getUsertype().equalsIgnoreCase("admin")){  //Load Facility Manager Layout
+                System.out.println("Loading Facility Manager view.");
+                isFacilityManager = true;
+                setContentView(R.layout.activity_admin_zones);
+            }
+            else{  //Load general user layout
+                setContentView(R.layout.activity_my_zones);
+
+                //Set the rewards list from the user's rewards
+
+                //ArrayList<RewardListParent> parents = getZones();
+                //System.out.println("The number of zones is currently: "+parents.size());
+                //myRewardListAdapter.setParents(parents);
+                //mListView.setAdapter(myRewardListAdapter);
+            }
+            /*
+                Added a new AsyncTask inner class to offload the network code to a background thread to stop further obstruction of UI thread in android
+             */
+            user_id = user.getId(); //Get the ID of the user
+            ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
+            MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
+            if((loader == null) || (loader != null && loader.getStatus() != AsyncTask.Status.RUNNING) )
+            {
+                loader = new zoneLoader(this,myRewardListAdapter,mListView);
+            }
+            else if(loader.getStatus() != AsyncTask.Status.RUNNING && loader.getStatus() != AsyncTask.Status.FINISHED)
+            {
+                loader.execute();
+            }
+            else
+            {
+                loader.onProgressUpdate();
+            }
+
+
         }
     }
 
