@@ -1,6 +1,7 @@
 package fiu.ssobec.Activity;
 
 import android.accounts.Account;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +17,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -67,6 +71,11 @@ public class MyZonesActivity extends ActionBarActivity{
 
     private Object mSyncObserverHandle;
     public static int user_id;
+    //Dialog variables to get user rating on zone conditions
+    Dialog rankDialog;
+    int [] ratings;
+    TextView Dialogtext;
+
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
     private boolean isFacilityManager = false;
@@ -123,7 +132,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
         @Override
         protected String doInBackground(String... params) {
-
+            Log.d("Background","We are running in the background");
             parents  = getZones();
             myrewards.setParents(parents);
             List<NameValuePair> userId = new ArrayList<>(1);
@@ -159,7 +168,7 @@ public class MyZonesActivity extends ActionBarActivity{
             }
 
 
-
+            Log.d("Background","We are about to publish progress");
             publishProgress();
             return "Executed";
         }
@@ -173,10 +182,12 @@ public class MyZonesActivity extends ActionBarActivity{
 
         @Override
         protected void onProgressUpdate(Void... values) {
+            Log.d("Background","We are publishing background work");
             listView.setAdapter(myrewards);
             //Set buttons in a Grid View order
             do{
                 gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+                Log.d("onProgress","We are not progressing");
             }
             while(gridViewButtons==null);
 //            ButtonAdapter m_badapter = new ButtonAdapter(this);
@@ -185,15 +196,14 @@ public class MyZonesActivity extends ActionBarActivity{
             gridAdapter = new GridViewAdapter(context, data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridAdapter.setMode(Attributes.Mode.Single);
-            Log.d("MyZonesActivity","What is gridAdapter? "+gridAdapter);
+            Log.d("MyZonesActivity", "What is gridAdapter? " + gridAdapter);
             gridViewButtons.setAdapter(gridAdapter);
             gridViewButtons.setSelected(false);
             gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemLongClick","onItemLongClick:" + position);
-                    ((SwipeLayout)(gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition())))
-                            .open(true);
+                    Log.e("onItemLongClick", "onItemLongClick:" + position);
+                    ((SwipeLayout) (gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition()))).open(true);
                     return false;
                 }
             });
@@ -201,13 +211,13 @@ public class MyZonesActivity extends ActionBarActivity{
             gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemClick","onItemClick:" + position);
+                    Log.e("onItemClick", "onItemClick:" + position);
 
                     Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
 
                     //send the region_id or button_id to the ZonesDescriptionActivity
                     Zones zone = (Zones) gridAdapter.getItem(position);
-                    intent.putExtra("button_id",zone.getZone_id());
+                    intent.putExtra("button_id", zone.getZone_id());
                     mContext.startActivity(intent);
                 }
             });
@@ -215,7 +225,7 @@ public class MyZonesActivity extends ActionBarActivity{
             gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemSelected","onItemSelected:" + position);
+                    Log.e("onItemSelected", "onItemSelected:" + position);
                 }
 
                 @Override
@@ -224,6 +234,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                 }
             });
+            Log.d("Background", "We are finished with publishing");
         }
     }
 
@@ -262,21 +273,27 @@ public class MyZonesActivity extends ActionBarActivity{
             /*
                 Added a new AsyncTask inner class to offload the network code to a background thread to stop further obstruction of UI thread in android
              */
+            Log.d("Background","We are about to run the AsyncTask");
             user_id = user.getId(); //Get the ID of the user
             ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
-            if((loader == null) || (loader != null && loader.getStatus() != AsyncTask.Status.RUNNING) )
+            loader = new zoneLoader(this,myRewardListAdapter,mListView);
+            loader.execute();
+            /*if((loader == null) || (loader != null && loader.getStatus() == AsyncTask.Status.FINISHED) )
             {
+                Log.d("Background","We are initializing");
                 loader = new zoneLoader(this,myRewardListAdapter,mListView);
             }
-            else if(loader.getStatus() != AsyncTask.Status.RUNNING && loader.getStatus() != AsyncTask.Status.FINISHED)
+             if(loader.getStatus() != AsyncTask.Status.RUNNING && loader.getStatus() == AsyncTask.Status.FINISHED)
             {
+                Log.d("Background","We are now executing");
                 loader.execute();
-            }
-            else
+            }*/
+            /*else
             {
+                Log.d("Background","We are skipping execution and publishing");
                 loader.onProgressUpdate();
-            }
+            }*/
 
 
         }
@@ -533,6 +550,48 @@ public class MyZonesActivity extends ActionBarActivity{
         //This method is intended to allow users to view wasteful regions
         Intent intent = new Intent(this,WastefulRegionsActivity.class);
         startActivity(intent);
+
+    }
+
+    public void getRatingDialogs(View view){
+
+                ratings = new int[2];
+                rankDialog = new Dialog(MyZonesActivity.this, R.style.FullHeightDialog);
+                rankDialog.setContentView(R.layout.rank_dialog);
+                rankDialog.setCancelable(true);
+                final RatingBar ratingBar = (RatingBar)rankDialog.findViewById(R.id.dialog_ratingbar);
+                ratingBar.setRating(3);
+
+                Dialogtext = (TextView) rankDialog.findViewById(R.id.rank_dialog_text1);
+                Dialogtext.setText("Is the temperature too hot or too cold? (More stars means too hot, three stars means perfect)");
+
+
+                final Button nextButton = (Button) rankDialog.findViewById(R.id.next);
+                final Button updateButton = (Button) rankDialog.findViewById(R.id.rank_dialog_button);
+                nextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ratings[0] = ratingBar.getNumStars();
+                        Dialogtext.setText("Is the light level too high or too low? (More stars means too high, three stars means perfect)");
+                        ratingBar.setRating(3);
+                        nextButton.setVisibility(View.GONE);
+                        updateButton.setVisibility(View.VISIBLE);
+                        //rankDialog.dismiss();
+                    }
+                });
+
+                updateButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ratings[1] = ratingBar.getNumStars();
+                        ratingBar.setRating(3);
+                        nextButton.setVisibility(View.VISIBLE);
+                        updateButton.setVisibility(View.GONE);
+                        rankDialog.dismiss();
+                    }
+                });
+                //now that the dialog is set up, it's time to show it
+                rankDialog.show();
 
     }
 

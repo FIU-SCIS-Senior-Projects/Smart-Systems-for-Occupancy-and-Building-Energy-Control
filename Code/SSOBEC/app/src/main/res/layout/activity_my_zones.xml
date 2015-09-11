@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="125dp"
         android:layout_weight="1"
         android:background="@drawable/lightbluepatternrepeat"
         android:orientation="vertical">
@@ -63,7 +63,7 @@
         android:background="@color/login_button_background">
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="81dp"
+            android:layout_height="80dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
             android:weightSum="3">
@@ -125,10 +125,35 @@
                 android:textSize="14sp"
                 android:layout_weight="1" />
 
+
+
         </LinearLayout>
     </LinearLayout>
-
-
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:background="@color/login_button_background"
+        android:weightSum="1">
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_sun_flower"
+            fbutton:shadowColor="@color/fbutton_color_orange"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawablePadding="0.5dip"
+            android:id="@+id/RatingButton"
+            android:padding="80dip"
+            android:onClick="getRatingDialogs"
+            android:text="@string/rating_regions"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="14sp"
+            android:layout_weight="1" />
+    </LinearLayout>
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="70dp"
         android:layout_weight="1"

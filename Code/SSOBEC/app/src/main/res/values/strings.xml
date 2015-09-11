@@ -23,6 +23,7 @@
     <string name="min_outside_temp_f">Min F</string>
     <string name="n_a">N/A</string>
     <string name="wasteful_regions">Save Energy</string>
+    <string name="rating_regions">Rate current Zone conditions</string>
     <string name="reports">Reports</string>
     <string name="create_zone">Create Zone</string>
     <string name="my_rewards">My Rewards</string>

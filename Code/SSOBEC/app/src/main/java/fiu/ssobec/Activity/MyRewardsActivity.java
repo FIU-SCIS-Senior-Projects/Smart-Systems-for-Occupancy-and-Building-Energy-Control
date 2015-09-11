@@ -8,18 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.daimajia.swipe.SwipeLayout;
-import com.daimajia.swipe.util.Attributes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,13 +21,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fiu.ssobec.Adapters.GridViewAdapter;
 import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
-import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
 import fiu.ssobec.Synchronization.SyncUtils;
 
@@ -125,7 +117,9 @@ public class MyRewardsActivity extends ActionBarActivity {
             }
             */
             setContentView(R.layout.activity_my_rewards);
-            if((loader == null) || (loader != null && loader.getStatus() != AsyncTask.Status.RUNNING) )
+            loader = new rewardLoader(this,user);
+            loader.execute();
+            /*if((loader == null) || (loader != null && loader.getStatus() != AsyncTask.Status.RUNNING) )
             {
                 loader = new rewardLoader(this,user);
             }
@@ -136,7 +130,7 @@ public class MyRewardsActivity extends ActionBarActivity {
             else
             {
                 loader.onProgressUpdate();
-            }
+            }*/
             //loader.execute();
             /*
             TextView points = (TextView) findViewById(R.id.total_points);
