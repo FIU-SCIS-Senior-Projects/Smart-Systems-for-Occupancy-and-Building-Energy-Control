@@ -48,6 +48,7 @@ import fiu.ssobec.DataAccess.ExternalDatabaseController;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
+import fiu.ssobec.Services.IndoorLocationService;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
@@ -354,7 +355,7 @@ public class MyZonesActivity extends ActionBarActivity{
                     Zones zones = data_access.getZone(id);
                     RewardListParent parent = new RewardListParent();
                     parent.setName(rewardNames[j]+" Place");
-                    parent.setDescription(plugload_award_descrp);
+                    parent.setDescription(getResources().getString(R.string.plugload_award_descrp));
                     parent.setZone_name(zones.getZone_name());
                     parent.setPoints("+"+(1000-j*100));
                     parents.add(parent);
@@ -433,6 +434,14 @@ public class MyZonesActivity extends ActionBarActivity{
                 intent = new Intent(this,EditZoneUsersActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_location:
+                if (item.isChecked() == true) {
+                    item.setChecked(false);
+                    stopService(new Intent(this, IndoorLocationService.class));
+                } else {
+                    item.setChecked(true);
+                    startService(new Intent(this, IndoorLocationService.class));
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }

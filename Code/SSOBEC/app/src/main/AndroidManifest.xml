@@ -262,6 +262,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+        <service android:name=".Services.IndoorLocationService" ></service>
     </application>
 
 </manifest>

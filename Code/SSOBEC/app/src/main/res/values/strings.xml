@@ -16,6 +16,7 @@
     <string name="action_addzone">Add Zone</string>
     <string name="action_addAppliance">Add Appliance</string>
     <string name="action_editusers">Edit Users</string>
+    <string name="action_locate_user">Location</string>
     <string name="celsius">Celsius</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="outside_temperature">Temperature Outside the Building:</string>
@@ -123,6 +124,12 @@
     <string name="title_activity_send_notification">SendNotification</string>
     <string name="title_activity_get_reports">GetReportsActivity</string>
 
+    <!-- Application button descriptions -->
+    <string name="plugload_award_descrp">Reward for little consumption of energy in plugload</string>
+
+    <!-- Location Service strings -->
+    <string name="notificaiontitle">Indoor Location</string>
+    <string name="notificationmsg">Using magnetic fields for indoor location</string>
 </resources>
 
 
