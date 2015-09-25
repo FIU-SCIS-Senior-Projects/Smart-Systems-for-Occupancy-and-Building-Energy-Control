@@ -9,8 +9,12 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
     }
     buildTypes {
         release {
@@ -29,6 +33,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/indooratlas-android-sdk-1.4.2-132-beta.jar')
+    compile files('libs/indooratlas-android-sdk-1.4.2-132-beta.arr')
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:21.0.3'
@@ -46,9 +52,9 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
-
     compile 'com.nineoldandroids:library:2.4.0+'
-
     compile 'com.android.support:recyclerview-v7:21.0.0'
-    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
+    compile 'com.android.support:multidex:1.0.1'
+    compile files('src/main/libs/indooratlas-android-sdk-1.4.2-132-beta.jar')
 }

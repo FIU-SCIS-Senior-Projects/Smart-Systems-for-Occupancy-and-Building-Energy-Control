@@ -1,24 +1,46 @@
 package fiu.ssobec.Activity;
 
 import android.accounts.Account;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PointF;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -49,6 +71,7 @@ import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
 import fiu.ssobec.Services.IndoorLocationService;
+import fiu.ssobec.Services.Util;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
@@ -69,13 +92,49 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
     zoneLoader loader;
     private static DataAccessUser data_access;
+    private final Handler handler = new Handler();
+
+    private IndoorLocationService mService;
+    private boolean isBound;
+    private Context context;
+    private mapLoader mapper;
+    private ServiceConnection myConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className,IBinder service) {
+            Log.d("Service","We are re binded");
+            IndoorLocationService.LocalBinder binder = (IndoorLocationService.LocalBinder) service;
+            mService = binder.getService();
+            isBound = true;
+            mapper = new mapLoader(context);
+            mapper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+            mService = null;
+            mapper.cancel(true);
+        }
+    };
+
+    private GestureDetector gesturedetector = null;
+    private FrameLayout flContainer;
+    //private LinearLayout ivLayer1;
+    private ImageView imgLayer2;
 
     private Object mSyncObserverHandle;
     public static int user_id;
+
+
+
+
     //Dialog variables to get user rating on zone conditions
     Dialog rankDialog;
     int [] ratings;
     TextView Dialogtext;
+
+    //Dialog variables to choose indoor location to lock onto
+    Dialog locationDialog;
+    //ArrayList<String> locations = new ArrayList<String>();
 
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
@@ -95,7 +154,7 @@ public class MyZonesActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        context = getApplicationContext();
         //setContentView(R.layout.activity_loading);
 
         //Declare the access to the SQLite table for user
@@ -114,6 +173,101 @@ public class MyZonesActivity extends ActionBarActivity{
         //Synchronize Data
         SyncUtils.CreateSyncAccount(this);
         SyncUtils.TriggerRefresh();
+
+
+    }
+
+    /*
+        Override onDestroy method to stop location service if this application gets destroyed since this application is the only one that will be using the location service
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService();
+        /*Intent stopService = new Intent(this, IndoorLocationService.class);
+        stopService(stopService);*/
+    }
+
+    /*
+        AsyncTask mapLoader class to run old zone loading code in background thread to stop obstruction of UI thread in android
+    */
+    private class mapLoader extends AsyncTask<String, Void, String> {
+
+        Context context;
+        Bitmap map;
+        boolean run;
+        boolean refreshmap;
+        PointF scaledPoint;
+        public mapLoader( Context context ) {
+            this.context = context;
+            run = true;
+            refreshmap = true;
+            scaledPoint = new PointF();
+        }
+        public void setRefresh(boolean refresh)
+        {
+            refreshmap = refresh;
+        }
+
+        @Override
+        protected void onCancelled() {
+            run = false;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.d("mapLoader", "We are running in the background");
+            while(run)
+            {
+                if(mService != null && mService.getMap() != null)
+                {
+                    this.map = mService.getMap();
+
+                    Log.d("mapLoader", "We are about to publish progress");
+                    publishProgress();
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Log.d("Background", "We are publishing background work");
+            ImageView mapview = (ImageView) findViewById(R.id.mapview);
+            mapview.setImageBitmap(map);
+            mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
+            mapview.buildDrawingCache();
+            Bitmap bitmap = mapview.getDrawingCache();
+            if(bitmap != null)
+            {
+                final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
+                final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+                Canvas canvas = new Canvas(bitmapCircle);
+                Paint paint = new Paint();
+                paint.setAntiAlias(true);
+                paint.setColor(Color.BLUE);
+                paint.setStrokeWidth(10+(int)mService.getUncertainty());
+                canvas.drawBitmap(bitmap, new Matrix(), null);
+                canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
+                imageFloor.setImageBitmap(bitmapCircle);
+            }
+            //Toast.makeText(getApplicationContext(), "Map has been updated!",Toast.LENGTH_SHORT).show();
+            Log.d("Background", "We are finished with publishing");
+
+        }
     }
 
     /*
@@ -186,11 +340,11 @@ public class MyZonesActivity extends ActionBarActivity{
             Log.d("Background","We are publishing background work");
             listView.setAdapter(myrewards);
             //Set buttons in a Grid View order
-            do{
-                gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-                Log.d("onProgress","We are not progressing");
-            }
-            while(gridViewButtons==null);
+            //do{
+            gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
+                //Log.d("onProgress","We are not progressing");
+            //}
+            //while(gridViewButtons==null);
 //            ButtonAdapter m_badapter = new ButtonAdapter(this);
 //            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
 //            gridViewButtons.setAdapter(m_badapter);
@@ -198,43 +352,47 @@ public class MyZonesActivity extends ActionBarActivity{
 //            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridAdapter.setMode(Attributes.Mode.Single);
             Log.d("MyZonesActivity", "What is gridAdapter? " + gridAdapter);
-            gridViewButtons.setAdapter(gridAdapter);
-            gridViewButtons.setSelected(false);
-            gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemLongClick", "onItemLongClick:" + position);
-                    ((SwipeLayout) (gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition()))).open(true);
-                    return false;
-                }
-            });
+            if(gridViewButtons != null)
+            {
+                gridViewButtons.setAdapter(gridAdapter);
+                gridViewButtons.setSelected(false);
+                gridViewButtons.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                        Log.e("onItemLongClick", "onItemLongClick:" + position);
+                        ((SwipeLayout) (gridViewButtons.getChildAt(position - gridViewButtons.getFirstVisiblePosition()))).open(true);
+                        return false;
+                    }
+                });
 
-            gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemClick", "onItemClick:" + position);
+                gridViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Log.e("onItemClick", "onItemClick:" + position);
 
-                    Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
+                        Intent intent = new Intent(mContext, ZonesDescriptionActivity.class);
 
-                    //send the region_id or button_id to the ZonesDescriptionActivity
-                    Zones zone = (Zones) gridAdapter.getItem(position);
-                    intent.putExtra("button_id", zone.getZone_id());
-                    mContext.startActivity(intent);
-                }
-            });
+                        //send the region_id or button_id to the ZonesDescriptionActivity
+                        Zones zone = (Zones) gridAdapter.getItem(position);
+                        intent.putExtra("button_id", zone.getZone_id());
+                        mContext.startActivity(intent);
+                    }
+                });
 
-            gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    Log.e("onItemSelected", "onItemSelected:" + position);
-                }
+                gridViewButtons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        Log.e("onItemSelected", "onItemSelected:" + position);
+                    }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
 
 
-                }
-            });
+                    }
+                });
+            }
+
             Log.d("Background", "We are finished with publishing");
         }
     }
@@ -271,6 +429,20 @@ public class MyZonesActivity extends ActionBarActivity{
                 //myRewardListAdapter.setParents(parents);
                 //mListView.setAdapter(myRewardListAdapter);
             }
+            flContainer = (FrameLayout) findViewById(R.id.mainframe);
+            //ivLayer1 = (LinearLayout) findViewById(R.id.zonegrid);
+            imgLayer2 = (ImageView) findViewById(R.id.mapview);
+
+            gesturedetector = new GestureDetector(getApplicationContext(),new MyGestureListener());
+
+            flContainer.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesturedetector.onTouchEvent(event);
+                    return true;
+                }
+            });
             /*
                 Added a new AsyncTask inner class to offload the network code to a background thread to stop further obstruction of UI thread in android
              */
@@ -280,6 +452,7 @@ public class MyZonesActivity extends ActionBarActivity{
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
             loader = new zoneLoader(this,myRewardListAdapter,mListView);
             loader.execute();
+
             /*if((loader == null) || (loader != null && loader.getStatus() == AsyncTask.Status.FINISHED) )
             {
                 Log.d("Background","We are initializing");
@@ -437,10 +610,12 @@ public class MyZonesActivity extends ActionBarActivity{
             case R.id.action_location:
                 if (item.isChecked() == true) {
                     item.setChecked(false);
-                    stopService(new Intent(this, IndoorLocationService.class));
+                    stopService();
+                    //stopService(new Intent(this, IndoorLocationService.class));
                 } else {
                     item.setChecked(true);
-                    startService(new Intent(this, IndoorLocationService.class));
+                    getLocationDialog();
+
                 }
             default:
                 return super.onOptionsItemSelected(item);
@@ -466,6 +641,17 @@ public class MyZonesActivity extends ActionBarActivity{
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
 
         setTheContentViewContent();
+        if(mapper!= null)
+        {
+            mapper.setRefresh(true);
+        }
+
+        /*if(IndoorLocationService.isRunning)
+        {
+            bindService();
+            //mapper = new mapLoader(context);
+            //mapper.execute();
+        }*/
     }
 
     //When an Activity is left, close the
@@ -479,6 +665,10 @@ public class MyZonesActivity extends ActionBarActivity{
             ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
             mSyncObserverHandle = null;
         }
+        /*if(IndoorLocationService.isRunning)
+        {
+            unbindService();
+        }*/
     }
 
     /**
@@ -599,10 +789,136 @@ public class MyZonesActivity extends ActionBarActivity{
                         rankDialog.dismiss();
                     }
                 });
-                //now that the dialog is set up, it's time to show it
-                rankDialog.show();
+        //now that the dialog is set up, it's time to show it
+        rankDialog.show();
 
     }
 
+    public void getLocationDialog() {
+
+
+        final CharSequence[] items = {"ECS, Floor 2"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Pick a location");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                Toast.makeText(getApplicationContext(), items[item] + " was selected", Toast.LENGTH_SHORT).show();
+                startLocationService(item);
+            }
+        });
+        AlertDialog alert = builder.create();
+        //The above line didn't show the dialog i added this line:
+        alert.show();
+
+    }
+
+    public void startLocationService(int index)
+    {
+        String[] keys = new String[3];
+        /*int identify = getResources().getIdentifier("venu_id_"+index, "string", getPackageName());
+        keys[0] = getString(identify);
+        identify = getResources().getIdentifier("floor_id_"+index, "string", getPackageName());
+        keys[1] = getString(identify);
+        identify = getResources().getIdentifier("floorplan_id_"+index, "string", getPackageName());
+        keys[2] = getString(identify);*/
+        keys[0] = "78524923-9fd1-47ca-8da8-1f9d3844f41c";
+        keys[1] = "a55c45c4-07ed-48f5-a3e9-aa3c3f10db85";
+        keys[2] = "b4195361-c401-4147-be70-e040efaf8a0c";
+        Intent location = new Intent(this,IndoorLocationService.class);
+        location.putExtra("apikeys",keys);
+        bindService(location, myConnection, this.BIND_AUTO_CREATE);
+        startService(location);
+    }
+
+    // Start the service
+    public void bindService() {
+        Intent intent = new Intent(this, IndoorLocationService.class);
+        bindService(intent, myConnection, this.BIND_AUTO_CREATE);
+        if(IndoorLocationService.isRunning)
+        {
+            startService(intent);
+        }
+
+    }
+
+    // Stop the service
+    public void stopService() {
+        Intent intent = new Intent(this, IndoorLocationService.class);
+        stopService(intent);
+        unbindService();
+
+    }
+
+    public void unbindService()
+    {
+        if(mService != null)
+        {
+            unbindService(myConnection);
+            mService = null;
+        }
+    }
+
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        super.dispatchTouchEvent(ev);
+        return gesturedetector.onTouchEvent(ev);
+    }
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private static final int SWIPE_MIN_DISTANCE = 20;
+
+        private static final int SWIPE_MAX_OFF_PATH = 100;
+
+        private static final int SWIPE_THRESHOLD_VELOCITY = 100;
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            float dX = e2.getX() - e1.getX();
+            float dY = e1.getY() - e2.getY();
+            if (Math.abs(dY) < SWIPE_MAX_OFF_PATH && Math.abs(velocityX) >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dX) >= SWIPE_MIN_DISTANCE) {
+
+                if (dX > 0) {
+
+                    Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
+                    //Now Set your animation
+
+                    if(imgLayer2.getVisibility()==View.GONE)
+                    {
+                        Animation fadeInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_right_in);
+                        imgLayer2.startAnimation(fadeInAnimation);
+                        imgLayer2.setVisibility(View.VISIBLE);
+                    }
+                } else {
+
+                    Toast.makeText(getApplicationContext(), "Left Swipe",Toast.LENGTH_SHORT).show();
+
+                    if(imgLayer2.getVisibility()==View.VISIBLE)
+                    {
+                        Animation fadeInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_left_out);
+                        imgLayer2.startAnimation(fadeInAnimation);
+                        imgLayer2.setVisibility(View.GONE);
+                    }
+
+                }
+                return true;
+            } else if (Math.abs(dX) < SWIPE_MAX_OFF_PATH && Math.abs(velocityY) >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dY) >= SWIPE_MIN_DISTANCE) {
+                if (dY > 0) {
+                    //Toast.makeText(getApplicationContext(), "Up Swipe",Toast.LENGTH_SHORT).show();
+                } else {
+                    //Toast.makeText(getApplicationContext(), "Down Swipe",Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    //SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+    /*SharedPreferences.Editor editor = this.getSharedPreferences("edu.fiu.cis.visa.systemmonitor", Context.MODE_PRIVATE).edit();
+    editor.putString("edu.fiu.cis.visa.systemmonitor.username", s);
+    editor.apply();*/
 }
 
