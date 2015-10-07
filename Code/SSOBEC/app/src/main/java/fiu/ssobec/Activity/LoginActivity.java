@@ -1,7 +1,9 @@
 package fiu.ssobec.Activity;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -106,6 +108,11 @@ public class LoginActivity extends ActionBarActivity {
         username_pass.add(new BasicNameValuePair("login_email", login_email.trim()));
         username_pass.add(new BasicNameValuePair("password", password.trim()));
 
+        Log.d("SharedPref", "What is the email we have? " + login_email.trim());
+        SharedPreferences.Editor editor = this.getSharedPreferences("fiu.ssobec", Context.MODE_PRIVATE).edit();
+        editor.putString("fiu.ssobec.username", login_email.trim());
+        editor.apply();
+
         //send the username and password to loginpost1.php file
         //save the response from the database in a string
         String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOGIN_PHP).send();
@@ -199,6 +206,7 @@ public class LoginActivity extends ActionBarActivity {
         //If the user exists, declare that the user has logged in, into the system.
         else if (data_access.userExist(id) != null)
             data_access.userLogin(id);
+
 
         return user_flag;
     }

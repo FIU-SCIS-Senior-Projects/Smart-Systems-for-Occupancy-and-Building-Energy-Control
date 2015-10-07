@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PointF;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,11 +22,7 @@ import com.indooratlas.android.ResultCallback;
 import com.indooratlas.android.ServiceState;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
-import fiu.ssobec.Activity.MyZonesActivity;
 import fiu.ssobec.R;
-import fiu.ssobec.Services.Threads.LocationThread;
 
 
 
@@ -37,7 +32,6 @@ import fiu.ssobec.Services.Threads.LocationThread;
 public class IndoorLocationService extends Service implements IndoorAtlasListener{
 
     private final IBinder myBinder = new LocalBinder();
-    private LocationThread location;
     public static boolean isRunning = false;
     private String TAG = "IndoorLocationService";
 
@@ -108,8 +102,6 @@ public class IndoorLocationService extends Service implements IndoorAtlasListene
                 mFloorId = apikeys[1];
                 mFloorPlanId = apikeys[2];
             }
-
-
 
             Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
 
@@ -278,14 +270,20 @@ public class IndoorLocationService extends Service implements IndoorAtlasListene
         return j;
     }
 
+    public float getLatitude()
+    {
+        return (float)latitude;
+    }
+    public float getLongitude()
+    {
+        return (float)longitude;
+    }
+
     public double getUncertainty() { return uncertainty;}
 
     private void startPositioning() {
         if (mIndoorAtlas != null) {
-            Log.d(TAG, String.format("startPositioning, venueId: %s, floorId: %s, floorPlanId: %s",
-                    mVenueId,
-                    mFloorId,
-                    mFloorPlanId));
+            Log.d(TAG, String.format("startPositioning, venueId: %s, floorId: %s, floorPlanId: %s",mVenueId, mFloorId, mFloorPlanId));
             try {
                 mIndoorAtlas.startPositioning(mVenueId, mFloorId, mFloorPlanId);
                 mIsPositioning = true;

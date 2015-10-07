@@ -37,6 +37,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -88,6 +89,7 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
+    public static final String UPDATEUSERLOCATION_PHP = "http://smartsystems-dev.cs.fiu.edu/updateuserlocation.php";
     public static final String plugload_award_descrp="Reward for little consumption of energy in plugload";
     public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
     zoneLoader loader;
@@ -105,7 +107,7 @@ public class MyZonesActivity extends ActionBarActivity{
             IndoorLocationService.LocalBinder binder = (IndoorLocationService.LocalBinder) service;
             mService = binder.getService();
             isBound = true;
-            mapper = new mapLoader(context);
+            mapper = new mapLoader(context, email);
             mapper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -123,6 +125,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     private Object mSyncObserverHandle;
     public static int user_id;
+    private String email;
 
 
 
@@ -160,7 +163,13 @@ public class MyZonesActivity extends ActionBarActivity{
         //Declare the access to the SQLite table for user
 //        data_access = DataAccessUser.getInstance(this);
         data_access = new DataAccessUser(this);
+        //Retrieve the email that we stored when we logged in
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
+        SharedPreferences prefs = this.getSharedPreferences("fiu.ssobec", Context.MODE_PRIVATE);//getPreferences(MODE_PRIVATE);
+        email = prefs.getString("fiu.ssobec.username", null);
+        //email = sharedPref.getString(getString(R.string.emailpref),"");
+        Log.d("SharedPref","What is the email reading? "+email);
         //Open the data access to the tables
         try {
             data_access.open();
@@ -198,11 +207,13 @@ public class MyZonesActivity extends ActionBarActivity{
         boolean run;
         boolean refreshmap;
         PointF scaledPoint;
-        public mapLoader( Context context ) {
+        String email;
+        public mapLoader( Context context, String email ) {
             this.context = context;
             run = true;
             refreshmap = true;
             scaledPoint = new PointF();
+            this.email = email;
         }
         public void setRefresh(boolean refresh)
         {
@@ -222,7 +233,7 @@ public class MyZonesActivity extends ActionBarActivity{
                 if(mService != null && mService.getMap() != null)
                 {
                     this.map = mService.getMap();
-
+                    updateUserLocation((float)mService.getPointX(),(float)mService.getPointY());
                     Log.d("mapLoader", "We are about to publish progress");
                     publishProgress();
                 }
@@ -233,6 +244,51 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             }
             return "Executed";
+        }
+
+        protected void updateUserLocation(float x, float y)
+        {
+            List<NameValuePair> user_location_info = new ArrayList<>(3);
+
+            //int zone_id = zone.getZone_id();
+
+            String login_email = email;
+
+
+            if(!login_email.isEmpty())
+            {
+
+                user_location_info.add(new BasicNameValuePair("login_email", String.valueOf(login_email)));
+                user_location_info.add(new BasicNameValuePair("latitude", String.valueOf(x)));
+                user_location_info.add(new BasicNameValuePair("longitude", String.valueOf(y)));
+                Log.d("updateUserLocation","The pair we are sending is latitude = "+String.valueOf(x)+" with longitude = "+String.valueOf(y));
+                //new_zone_info.add(new BasicNameValuePair("region_id", String.valueOf(zone_id)));
+
+                String res = "";
+                //Create a new Zone
+                try {
+                    res = new ExternalDatabaseController((ArrayList<NameValuePair>) user_location_info,UPDATEUSERLOCATION_PHP).send();
+
+                    Log.i(LOG_TAG, "Insert DB Result: " + res);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(res.equalsIgnoreCase("successful")){
+                    //Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(this, MyZonesActivity.class);
+//                startActivity(intent);
+                    //finish();
+                }
+                else{
+                    Log.d("updateuserlocation",res);
+                    //Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
+                }
+            }
+            else
+            {
+                //Toast.makeText(getApplicationContext(), "The login email was empty", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -248,22 +304,26 @@ public class MyZonesActivity extends ActionBarActivity{
             ImageView mapview = (ImageView) findViewById(R.id.mapview);
             mapview.setImageBitmap(map);
             mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
-            mapview.buildDrawingCache();
-            Bitmap bitmap = mapview.getDrawingCache();
-            if(bitmap != null)
+            if(mService!=null)
             {
-                final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
-                final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-                Canvas canvas = new Canvas(bitmapCircle);
-                Paint paint = new Paint();
-                paint.setAntiAlias(true);
-                paint.setColor(Color.BLUE);
-                paint.setStrokeWidth(10+(int)mService.getUncertainty());
-                canvas.drawBitmap(bitmap, new Matrix(), null);
-                canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
-                imageFloor.setImageBitmap(bitmapCircle);
+                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
+                mapview.buildDrawingCache();
+                Bitmap bitmap = mapview.getDrawingCache();
+                if(bitmap != null)
+                {
+                    final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
+                    final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+                    Canvas canvas = new Canvas(bitmapCircle);
+                    Paint paint = new Paint();
+                    paint.setAntiAlias(true);
+                    paint.setColor(Color.BLUE);
+                    paint.setStrokeWidth(10+(int)mService.getUncertainty());
+                    canvas.drawBitmap(bitmap, new Matrix(), null);
+                    canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
+                    imageFloor.setImageBitmap(bitmapCircle);
+                }
             }
+
             //Toast.makeText(getApplicationContext(), "Map has been updated!",Toast.LENGTH_SHORT).show();
             Log.d("Background", "We are finished with publishing");
 

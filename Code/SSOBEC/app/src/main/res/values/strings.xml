@@ -132,6 +132,7 @@
     <string name="notificationmsg">Using magnetic fields for indoor location</string>
     <string name="notifcationmsgfailed">We failed to recieve the location data to create thread!</string>
     <string name="mapview">Map view</string>
+    <string name="emailpref">fiu.ssobec.email</string>
 </resources>
 
 
