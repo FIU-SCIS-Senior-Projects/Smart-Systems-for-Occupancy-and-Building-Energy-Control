@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Coordinates: "
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:id="@+id/currentCoordinates" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Room Number"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:id="@+id/roomText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/roomInput"
+        android:layout_gravity="center_horizontal" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter shape"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:id="@+id/shapeText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/shapeInput"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Width (in meters)"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:id="@+id/widthText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/widthInput"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Height (in meters)"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:id="@+id/heightText" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/heightInput"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
+
+    <Button android:id="@+id/room_dialog_button"
+        android:layout_height="wrap_content"
+        android:text="Update"
+        android:focusable="false"
+        android:layout_margin="5dip"
+        android:textColor="#FFF8C6"
+        android:textSize="20sp"
+        android:layout_width="fill_parent" />
+
+</LinearLayout>

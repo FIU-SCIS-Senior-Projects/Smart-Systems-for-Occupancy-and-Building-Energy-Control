@@ -8,7 +8,7 @@
     <TextView
         android:text="Rating text"
         android:id="@+id/rank_dialog_text1"
-        android:textSize="24dp"
+        android:textSize="24sp"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -98,9 +98,9 @@ public class IndoorLocationService extends Service implements IndoorAtlasListene
                 {
                     Log.d("Service","we have "+apikeys[i]);
                 }
-                mVenueId = apikeys[0];
+                mFloorPlanId = apikeys[0];
                 mFloorId = apikeys[1];
-                mFloorPlanId = apikeys[2];
+                mVenueId = apikeys[2];
             }
 
             Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();

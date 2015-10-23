@@ -17,7 +17,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.media.Image;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,23 +25,18 @@ import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -59,15 +54,12 @@ import org.json.JSONObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import fiu.ssobec.Adapters.ArraySwipeAdapterSample;
-import fiu.ssobec.Adapters.ButtonAdapter;
 import fiu.ssobec.Adapters.GridViewAdapter;
-import fiu.ssobec.Adapters.ListViewAdapter;
 import fiu.ssobec.Adapters.MyRewardListAdapter;
 import fiu.ssobec.AdaptersUtil.RewardListParent;
 import fiu.ssobec.DataAccess.DataAccessUser;
 import fiu.ssobec.DataAccess.ExternalDatabaseController;
+import fiu.ssobec.Model.Room;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
@@ -90,6 +82,10 @@ public class MyZonesActivity extends ActionBarActivity{
     public static final String LOG_TAG = "MyZonesActivity";
     public static final String GETZONES_PHP = "http://smartsystems-dev.cs.fiu.edu/zonepost.php";
     public static final String UPDATEUSERLOCATION_PHP = "http://smartsystems-dev.cs.fiu.edu/updateuserlocation.php";
+    public static final String UPDATEROOMLOCATION_PHP = "http://smartsystems-dev.cs.fiu.edu/updateroomlocation.php";
+    public static final String LOCATIONS_PHP = "http://smartsystems-dev.cs.fiu.edu/getUserLocations.php";
+    public static final String GETROOMS_PHP = "http://smartsystems-dev.cs.fiu.edu/getfloorrooms.php";
+    public static final String GETBUILDINGS_PHP = "http://smartsystems-dev.cs.fiu.edu/getbuildings.php";
     public static final String plugload_award_descrp="Reward for little consumption of energy in plugload";
     public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
     zoneLoader loader;
@@ -100,6 +96,10 @@ public class MyZonesActivity extends ActionBarActivity{
     private boolean isBound;
     private Context context;
     private mapLoader mapper;
+    String currentFloorPlan;
+    String currentFloor;
+
+    ArrayList<Room> rooms = new ArrayList<Room>();
     private ServiceConnection myConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className,IBinder service) {
@@ -129,7 +129,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
 
 
-
+    Dialog roomDialog;
     //Dialog variables to get user rating on zone conditions
     Dialog rankDialog;
     int [] ratings;
@@ -208,6 +208,8 @@ public class MyZonesActivity extends ActionBarActivity{
         boolean refreshmap;
         PointF scaledPoint;
         String email;
+
+        ArrayList<PointF> adminPoints;
         public mapLoader( Context context, String email ) {
             this.context = context;
             run = true;
@@ -223,26 +225,83 @@ public class MyZonesActivity extends ActionBarActivity{
         @Override
         protected void onCancelled() {
             run = false;
+            updateUserLocation(0,0);
+        }
+
+        public void roomLocations(String response)
+        {
+            String roominfo[] = response.split("/+");
+            //"roomNumber:" . $row["room_number"]. ":x:" . $row["x"]. ":y:" . $row["y"]. ":shape:" .$row["shape"]. ":width:" .$row["width"]. ":height:" .$row["height"]. "";
+            for(int i = 0; i < roominfo.length; i++)
+            {
+                String room[] = roominfo[i].split(":");
+                rooms.add(new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[7]), Double.parseDouble(room[9]) ));
+            }
+        }
+
+        public ArrayList<PointF> userLocations(String response)
+        {
+            ArrayList<PointF> users = new ArrayList<PointF>();
+            String userinfo[] = response.split(":");
+            for(int i = 5; i < userinfo.length; i+=9)
+            {
+                if(Float.parseFloat(userinfo[i]) != 0 || Float.parseFloat(userinfo[i+2]) != 0)
+                {
+                    users.add(new PointF(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2])));
+                }
+
+            }
+
+            return users;
         }
 
         @Override
         protected String doInBackground(String... params) {
             Log.d("mapLoader", "We are running in the background");
+
+            rooms.clear();
+            try {
+                //declare an arraylist that holds email and password
+                ArrayList<NameValuePair> floorplan_post = new ArrayList<NameValuePair>(2);
+                floorplan_post.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
+                floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
+                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
+                if(!res.contains("No rooms found"))
+                {
+                    roomLocations(res);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             while(run)
             {
                 if(mService != null && mService.getMap() != null)
                 {
                     this.map = mService.getMap();
+                    if(isFacilityManager)
+                    {
+                        try {
+                            //declare an arraylist that holds email and password
+                            ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
+                            username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
+                            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
+                            adminPoints = userLocations(res);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     updateUserLocation((float)mService.getPointX(),(float)mService.getPointY());
                     Log.d("mapLoader", "We are about to publish progress");
                     publishProgress();
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+            adminPoints.clear();
             return "Executed";
         }
 
@@ -275,19 +334,11 @@ public class MyZonesActivity extends ActionBarActivity{
                     e.printStackTrace();
                 }
                 if(res.equalsIgnoreCase("successful")){
-                    //Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(this, MyZonesActivity.class);
-//                startActivity(intent);
-                    //finish();
+                    Log.d("updateuserlocation","was successful, result was "+res);
                 }
                 else{
                     Log.d("updateuserlocation",res);
-                    //Toast.makeText(getApplicationContext(), res, Toast.LENGTH_SHORT).show();
                 }
-            }
-            else
-            {
-                //Toast.makeText(getApplicationContext(), "The login email was empty", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -302,27 +353,70 @@ public class MyZonesActivity extends ActionBarActivity{
         protected void onProgressUpdate(Void... values) {
             Log.d("Background", "We are publishing background work");
             ImageView mapview = (ImageView) findViewById(R.id.mapview);
-            mapview.setImageBitmap(map);
-            mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            if(mService!=null)
+            if(mapview != null)
             {
-                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
-                mapview.buildDrawingCache();
-                Bitmap bitmap = mapview.getDrawingCache();
-                if(bitmap != null)
+                mapview.setImageBitmap(map);
+                mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                if(mService!=null)
                 {
-                    final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
-                    final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-                    Canvas canvas = new Canvas(bitmapCircle);
-                    Paint paint = new Paint();
-                    paint.setAntiAlias(true);
-                    paint.setColor(Color.BLUE);
-                    paint.setStrokeWidth(10+(int)mService.getUncertainty());
-                    canvas.drawBitmap(bitmap, new Matrix(), null);
-                    canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
-                    imageFloor.setImageBitmap(bitmapCircle);
+                    Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
+                    if(isFacilityManager && adminPoints!= null && !adminPoints.isEmpty())
+                    {
+                        for(PointF p: adminPoints)
+                        {
+                            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) p.x, (int) p.y, mapview, p);
+                        }
+                    }
+                    if(rooms != null && !rooms.isEmpty())
+                    {
+                        for(int i=0;i<rooms.size();i++)
+                        {
+                            PointF temp = null;
+                            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), rooms.get(i).getX(), rooms.get(i).getY(), mapview, temp);
+                            if(temp != null)
+                            {
+                                rooms.get(i).rescale(temp);
+                            }
+                        }
+                    }
+
+                    mapview.buildDrawingCache();
+                    Bitmap bitmap = mapview.getDrawingCache();
+                    if(bitmap != null)
+                    {
+                        final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
+                        final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+                        Canvas canvas = new Canvas(bitmapCircle);
+                        Paint paint = new Paint();
+                        paint.setAntiAlias(true);
+                        paint.setColor(Color.GREEN);
+                        paint.setStrokeWidth(5 + (int) mService.getUncertainty());
+                        canvas.drawBitmap(bitmap, new Matrix(), null);
+                        if(adminPoints != null && !adminPoints.isEmpty())
+                        {
+                            for(PointF p:adminPoints)
+                            {
+                                canvas.drawCircle(p.x,p.y,7,paint);
+                            }
+                        }
+                        paint.setColor(Color.BLUE);
+                        canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
+                        if(rooms!= null && !rooms.isEmpty())
+                        {
+                            paint.setColor(Color.RED);
+                            paint.setStrokeWidth(10);
+                            paint.setStyle(Paint.Style.STROKE);
+                            for(int i=0;i<rooms.size();i++)
+                            {
+                                canvas.drawRect(rooms.get(i).getRoom(),paint);
+                            }
+                        }
+                        imageFloor.setImageBitmap(bitmapCircle);
+                    }
                 }
             }
+
+
 
             //Toast.makeText(getApplicationContext(), "Map has been updated!",Toast.LENGTH_SHORT).show();
             Log.d("Background", "We are finished with publishing");
@@ -397,8 +491,11 @@ public class MyZonesActivity extends ActionBarActivity{
 
         @Override
         protected void onProgressUpdate(Void... values) {
-            Log.d("Background","We are publishing background work");
-            listView.setAdapter(myrewards);
+            Log.d("Background", "We are publishing background work");
+            if(listView != null)
+            {
+                listView.setAdapter(myrewards);
+            }
             //Set buttons in a Grid View order
             //do{
             gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
@@ -480,6 +577,7 @@ public class MyZonesActivity extends ActionBarActivity{
                 setContentView(R.layout.activity_admin_zones);
             }
             else{  //Load general user layout
+                isFacilityManager = false;
                 setContentView(R.layout.activity_my_zones);
 
                 //Set the rewards list from the user's rewards
@@ -706,12 +804,6 @@ public class MyZonesActivity extends ActionBarActivity{
             mapper.setRefresh(true);
         }
 
-        /*if(IndoorLocationService.isRunning)
-        {
-            bindService();
-            //mapper = new mapLoader(context);
-            //mapper.execute();
-        }*/
     }
 
     //When an Activity is left, close the
@@ -725,10 +817,6 @@ public class MyZonesActivity extends ActionBarActivity{
             ContentResolver.removeStatusChangeListener(mSyncObserverHandle);
             mSyncObserverHandle = null;
         }
-        /*if(IndoorLocationService.isRunning)
-        {
-            unbindService();
-        }*/
     }
 
     /**
@@ -809,7 +897,69 @@ public class MyZonesActivity extends ActionBarActivity{
         //This method is intended to allow users to view wasteful regions
         Intent intent = new Intent(this,WastefulRegionsActivity.class);
         startActivity(intent);
+    }
 
+    public void uploadCurrentRoom(View view)
+    {
+        if(mService != null)
+        {
+            roomDialog = new Dialog(MyZonesActivity.this, R.style.FullHeightDialog);
+            roomDialog.setContentView(R.layout.room_dialog);
+            roomDialog.setCancelable(true);
+
+            TextView location = (TextView) roomDialog.findViewById(R.id.currentCoordinates);
+            location.setText("Current location: "+mService.getPointX()+", "+mService.getPointY());
+            final Button updateButton = (Button) roomDialog.findViewById(R.id.room_dialog_button);
+
+            updateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String roomNum = ((EditText) roomDialog.findViewById(R.id.roomInput)).getText().toString();
+                    String shape = ((EditText) roomDialog.findViewById(R.id.shapeInput)).getText().toString();
+                    String width = ((EditText) roomDialog.findViewById(R.id.widthInput)).getText().toString();
+                    String height = ((EditText) roomDialog.findViewById(R.id.heightInput)).getText().toString();
+                    if (!roomNum.isEmpty() && !shape.isEmpty() && !width.isEmpty() && !height.isEmpty()) {
+                        if (isNumeric(width) && isNumeric(height)) {
+                            List<NameValuePair> room_location_info = new ArrayList<>(8);
+
+                            room_location_info.add(new BasicNameValuePair("room_number", String.valueOf(roomNum)));
+                            room_location_info.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
+                            room_location_info.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
+                            room_location_info.add(new BasicNameValuePair("x", String.valueOf(mService.getPointX())));
+                            room_location_info.add(new BasicNameValuePair("y", String.valueOf(mService.getPointY())));
+                            room_location_info.add(new BasicNameValuePair("shape", String.valueOf(shape)));
+                            room_location_info.add(new BasicNameValuePair("width", String.valueOf(width)));
+                            room_location_info.add(new BasicNameValuePair("height", String.valueOf(height)));
+
+                            String res = "";
+                            //Create a new Zone
+                            try {
+                                res = new ExternalDatabaseController((ArrayList<NameValuePair>) room_location_info, UPDATEROOMLOCATION_PHP).send();
+
+                                Log.i(LOG_TAG, "Insert DB Result: " + res);
+
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            if (res.equalsIgnoreCase("successful")) {
+                                Log.d("updateroomlocation", "was successful, result was " + res);
+                            } else {
+                                Log.d("updateroomlocation", res);
+                            }
+                        }
+                    }
+                    roomDialog.dismiss();
+                }
+            });
+            //now that the dialog is set up, it's time to show it
+            roomDialog.show();
+        }
+
+    }
+
+    public boolean isNumeric(String str)
+    {
+        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
 
     public void getRatingDialogs(View view){
@@ -856,37 +1006,138 @@ public class MyZonesActivity extends ActionBarActivity{
 
     public void getLocationDialog() {
 
-
-        final CharSequence[] items = {"ECS, Floor 2"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Pick a location");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                Toast.makeText(getApplicationContext(), items[item] + " was selected", Toast.LENGTH_SHORT).show();
-                startLocationService(item);
-            }
-        });
-        AlertDialog alert = builder.create();
-        //The above line didn't show the dialog i added this line:
-        alert.show();
+        locationLoader load = new locationLoader(this);
+        load.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
-    public void startLocationService(int index)
+    /*
+        AsyncTask locationLoader class to retrieve buildings from database
+    */
+    private class locationLoader extends AsyncTask<String, Void, String> {
+
+        Context context;
+        ArrayList<String[]> buildingLocations;
+        String[] dialogChoices;
+        String[] apikeys;
+        boolean loading;
+        AlertDialog loadingScreen;
+        AlertDialog DialogScreen;
+        public locationLoader( Context context ) {
+            this.context = context;
+            apikeys = new String[3];
+            loading = true;
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.d("locationLoader", "We are running in the background");
+
+            List<NameValuePair> user_location_info = new ArrayList<>(1);
+            String login_email = email;
+            publishProgress();
+            user_location_info.add(new BasicNameValuePair("login_email", String.valueOf(login_email)));
+            String res = "";
+            try {
+                res = new ExternalDatabaseController((ArrayList<NameValuePair>) user_location_info,GETBUILDINGS_PHP).send();
+                while(res == null)
+                {
+                    Log.d("locationLoader","We are in an infinite loop waiting for response from server");
+                    Thread.sleep(100);
+                    continue;
+                }
+                buildingLocations = buildingLocations(res);
+                dialogChoices = new String[buildingLocations.size()];
+                for(int i = 0; i < dialogChoices.length; i++)
+                {
+                    dialogChoices[i] = buildingLocations.get(i)[1] +", Floor "+ buildingLocations.get(i)[21];
+
+                }
+                loading = false;
+                publishProgress();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "Executed";
+        }
+
+        public ArrayList<String[]> buildingLocations(String response)
+        {
+            ArrayList<String[]> buildings = new ArrayList<String[]>();
+            String buildinginfo[] = response.split("/+");
+            for(int i = 0; i < buildinginfo.length; i++)
+            {
+                buildings.add(buildinginfo[i].split(":"));
+            }
+
+            return buildings;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Log.d("Background", "We are publishing background work");
+            if(loading)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("We are loading locations in background, please wait...");
+                builder.setCancelable(false);
+                loadingScreen = builder.create();
+                //The above line didn't show the dialog i added this line:
+                loadingScreen.show();
+            }
+            else
+            {
+                loadingScreen.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Pick a location");
+                builder.setItems(dialogChoices, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        Toast.makeText(getApplicationContext(), dialogChoices[item] + " was selected", Toast.LENGTH_SHORT).show();
+                        String[] temp = dialogChoices[item].split(", Floor ");
+                        currentFloorPlan = temp[0];
+                        currentFloor = temp[1];
+                        apikeys[0] = buildingLocations.get(item)[15];
+                        apikeys[1] = buildingLocations.get(item)[17];
+                        apikeys[2] = buildingLocations.get(item)[19];
+                        startLocationService(item, apikeys);
+                    }
+                });
+                DialogScreen = builder.create();
+                //The above line didn't show the dialog i added this line:
+                DialogScreen.show();
+            }
+
+            Log.d("Background", "We are finished with publishing");
+        }
+    }
+
+    public void startLocationService(int index, String[] apikeys)
     {
-        String[] keys = new String[3];
+        //String[] keys = new String[3];
         /*int identify = getResources().getIdentifier("venu_id_"+index, "string", getPackageName());
         keys[0] = getString(identify);
         identify = getResources().getIdentifier("floor_id_"+index, "string", getPackageName());
         keys[1] = getString(identify);
         identify = getResources().getIdentifier("floorplan_id_"+index, "string", getPackageName());
         keys[2] = getString(identify);*/
-        keys[0] = "78524923-9fd1-47ca-8da8-1f9d3844f41c";
-        keys[1] = "a55c45c4-07ed-48f5-a3e9-aa3c3f10db85";
-        keys[2] = "b4195361-c401-4147-be70-e040efaf8a0c";
+        //keys[0] = ;
+        //keys[1] = "a55c45c4-07ed-48f5-a3e9-aa3c3f10db85";
+        //keys[2] = "b4195361-c401-4147-be70-e040efaf8a0c";
         Intent location = new Intent(this,IndoorLocationService.class);
-        location.putExtra("apikeys",keys);
+        location.putExtra("apikeys",apikeys);
         bindService(location, myConnection, this.BIND_AUTO_CREATE);
         startService(location);
     }
@@ -974,11 +1225,5 @@ public class MyZonesActivity extends ActionBarActivity{
             return false;
         }
     }
-
-
-    //SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
-    /*SharedPreferences.Editor editor = this.getSharedPreferences("edu.fiu.cis.visa.systemmonitor", Context.MODE_PRIVATE).edit();
-    editor.putString("edu.fiu.cis.visa.systemmonitor.username", s);
-    editor.apply();*/
 }
 
