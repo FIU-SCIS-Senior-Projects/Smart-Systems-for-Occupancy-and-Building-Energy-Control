@@ -291,7 +291,11 @@ public class MyZonesActivity extends ActionBarActivity{
                             e.printStackTrace();
                         }
                     }
-                    updateUserLocation((float)mService.getPointX(),(float)mService.getPointY());
+                    if(mService!=null)
+                    {
+                        updateUserLocation((float)mService.getPointX(),(float)mService.getPointY());
+                    }
+
                     Log.d("mapLoader", "We are about to publish progress");
                     publishProgress();
                 }
