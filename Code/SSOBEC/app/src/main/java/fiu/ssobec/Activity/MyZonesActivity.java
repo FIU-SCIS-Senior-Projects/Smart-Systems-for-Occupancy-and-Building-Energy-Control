@@ -17,7 +17,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -114,7 +113,7 @@ public class MyZonesActivity extends ActionBarActivity{
         public void onServiceDisconnected(ComponentName arg0) {
             isBound = false;
             mService = null;
-            mapper.cancel(true);
+            mapper.cancel(false);
         }
     };
 
@@ -137,7 +136,6 @@ public class MyZonesActivity extends ActionBarActivity{
 
     //Dialog variables to choose indoor location to lock onto
     Dialog locationDialog;
-    //ArrayList<String> locations = new ArrayList<String>();
 
     private String [] rewardNames = {"First", "Second", "Third", "Fourth", "Fifth"};
 
@@ -157,11 +155,7 @@ public class MyZonesActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getApplicationContext();
-        //setContentView(R.layout.activity_loading);
-
-        //Declare the access to the SQLite table for user
-//        data_access = DataAccessUser.getInstance(this);
+        context = this.getApplicationContext();
         data_access = new DataAccessUser(this);
         //Retrieve the email that we stored when we logged in
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
@@ -193,14 +187,12 @@ public class MyZonesActivity extends ActionBarActivity{
     protected void onDestroy() {
         super.onDestroy();
         stopService();
-        /*Intent stopService = new Intent(this, IndoorLocationService.class);
-        stopService(stopService);*/
     }
 
     /*
         AsyncTask mapLoader class to run old zone loading code in background thread to stop obstruction of UI thread in android
     */
-    private class mapLoader extends AsyncTask<String, Void, String> {
+    private class mapLoader extends AsyncTask<String, Integer, String> {
 
         Context context;
         Bitmap map;
@@ -208,6 +200,7 @@ public class MyZonesActivity extends ActionBarActivity{
         boolean refreshmap;
         PointF scaledPoint;
         String email;
+        ImageView mapview;
 
         ArrayList<PointF> adminPoints;
         public mapLoader( Context context, String email ) {
@@ -225,17 +218,200 @@ public class MyZonesActivity extends ActionBarActivity{
         @Override
         protected void onCancelled() {
             run = false;
-            updateUserLocation(0,0);
+
         }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.d("mapLoader", "We are running in the background");
+
+            rooms.clear();
+            try {
+                //Retrives list of rooms available from selected floor plan
+                ArrayList<NameValuePair> floorplan_post = new ArrayList<NameValuePair>(2);
+                floorplan_post.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
+                floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
+                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
+                if(!res.contains("No rooms found"))
+                {
+                    roomLocations(res);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            boolean first = true;
+            while(run)
+            {
+                if(mService != null && mService.getMap() != null)
+                {
+                    if(first)
+                    {
+                        this.map = mService.getMap();
+                        publishProgress(0);
+                        first = false;
+                    }
+
+                    if(isFacilityManager)
+                    {
+                        try {
+                            //declare an arraylist that holds email and password
+                            ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
+                            username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
+                            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
+                            adminPoints = userLocations(res);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    updateUserLocation((float) mService.getPointX(), (float) mService.getPointY());
+                    Log.d("mapLoader", "We are about to publish progress");
+
+                    if(mService.isReady() && mapview != null)
+                    {
+                        Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
+                        if(isFacilityManager && adminPoints!= null && !adminPoints.isEmpty())
+                        {
+                            for(PointF p: adminPoints)
+                            {
+                                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) p.x, (int) p.y, mapview, p);
+                            }
+                        }
+                        if(rooms != null && !rooms.isEmpty())
+                        {
+                            for(int i=0;i<rooms.size();i++)
+                            {
+                                PointF temp = new PointF();
+                                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), rooms.get(i).getX(), rooms.get(i).getY(), mapview, temp);
+                                if(temp != null)
+                                {
+                                    rooms.get(i).rescale(temp);
+                                    if(rooms.get(i).getRoom().contains(scaledPoint.x,scaledPoint.y))
+                                    {
+                                        rooms.get(i).setOccupied(true);
+                                    }
+                                    else
+                                    {
+                                        rooms.get(i).setOccupied(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    publishProgress(1);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            adminPoints.clear();
+            updateUserLocation(0, 0);
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Integer... condition) {
+            Log.d("Background", "We are publishing background work");
+            if(condition[0] == 0)
+            {
+                Log.d("Background", "We are in init");
+                mapview = (ImageView) findViewById(R.id.mapview);
+                if(mapview != null) {
+                    mapview.setImageBitmap(map);
+                    mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                }
+            }
+            else if(condition[0] == 1)
+            {
+                Log.d("Background", "We are not init, init == 0 ");
+                if(mapview != null)
+                {
+                    if(mService!=null)
+                    {
+                        mapview.buildDrawingCache();
+                        Bitmap bitmap = mapview.getDrawingCache();
+                        if(bitmap != null)
+                        {
+                            final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
+                            final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+
+                            Canvas canvas = new Canvas(bitmapCircle);
+
+                            //Paint paint = new Paint();
+                            Paint user = new Paint();
+                            user.setColor(Color.BLUE);
+                            Paint otherUsers = new Paint();
+                            otherUsers.setColor(Color.GREEN);
+                            otherUsers.setStrokeWidth(10);
+                            Paint roomPaint = new Paint();
+
+                            canvas.drawBitmap(bitmap, new Matrix(), null);
+                            if(adminPoints != null && !adminPoints.isEmpty())
+                            {
+                                int count = 0;
+                                for(PointF p:adminPoints)
+                                {
+                                    count++;
+                                    Log.d("Background","We are drawing adminPoints!");
+                                    canvas.drawCircle(p.x,p.y,7,otherUsers);
+                                }
+                                Log.d("Background","There are "+count+" admin points");
+                            }
+
+                            if(rooms!= null && !rooms.isEmpty())
+                            {
+                                for(int i=0;i<rooms.size();i++)
+                                {
+                                    if(rooms.get(i).getOccupied())
+                                    {
+                                        roomPaint.setColor(Color.GREEN);
+                                        roomPaint.setStyle(Paint.Style.FILL);
+                                    }
+                                    else
+                                    {
+                                        roomPaint.setColor(Color.BLACK);
+                                        roomPaint.setStyle(Paint.Style.STROKE);
+                                    }
+                                    roomPaint.setStrokeWidth(10);
+                                    roomPaint.setAlpha(60);
+                                    canvas.drawRect(rooms.get(i).getRoom(), roomPaint);
+                                    Log.d("Background", "We are drawing rooms");
+                                }
+                                Log.d("Background","There are "+rooms.size()+" rooms");
+                            }
+                            Log.d("Background", "We are drawing user location");
+                            canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, user);
+                            imageFloor.setImageBitmap(bitmapCircle);
+                        }
+                    }
+                }
+            }
+
+            Log.d("Background", "We are finished with publishing");
+
+        }
+
 
         public void roomLocations(String response)
         {
             String roominfo[] = response.split("/+");
-            //"roomNumber:" . $row["room_number"]. ":x:" . $row["x"]. ":y:" . $row["y"]. ":shape:" .$row["shape"]. ":width:" .$row["width"]. ":height:" .$row["height"]. "";
+            Log.d("Rooms", response);
             for(int i = 0; i < roominfo.length; i++)
             {
+
                 String room[] = roominfo[i].split(":");
-                rooms.add(new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[7]), Double.parseDouble(room[9]) ));
+                rooms.add(new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[9]), Double.parseDouble(room[11].substring(0,room[11].length()-1)) ));
             }
         }
 
@@ -255,77 +431,17 @@ public class MyZonesActivity extends ActionBarActivity{
             return users;
         }
 
-        @Override
-        protected String doInBackground(String... params) {
-            Log.d("mapLoader", "We are running in the background");
-
-            rooms.clear();
-            try {
-                //declare an arraylist that holds email and password
-                ArrayList<NameValuePair> floorplan_post = new ArrayList<NameValuePair>(2);
-                floorplan_post.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
-                floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
-                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
-                if(!res.contains("No rooms found"))
-                {
-                    roomLocations(res);
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            while(run)
-            {
-                if(mService != null && mService.getMap() != null)
-                {
-                    this.map = mService.getMap();
-                    if(isFacilityManager)
-                    {
-                        try {
-                            //declare an arraylist that holds email and password
-                            ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
-                            username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
-                            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
-                            adminPoints = userLocations(res);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if(mService!=null)
-                    {
-                        updateUserLocation((float)mService.getPointX(),(float)mService.getPointY());
-                    }
-
-                    Log.d("mapLoader", "We are about to publish progress");
-                    publishProgress();
-                }
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            adminPoints.clear();
-            return "Executed";
-        }
-
         protected void updateUserLocation(float x, float y)
         {
             List<NameValuePair> user_location_info = new ArrayList<>(3);
-
-            //int zone_id = zone.getZone_id();
-
             String login_email = email;
-
 
             if(!login_email.isEmpty())
             {
-
                 user_location_info.add(new BasicNameValuePair("login_email", String.valueOf(login_email)));
                 user_location_info.add(new BasicNameValuePair("latitude", String.valueOf(x)));
                 user_location_info.add(new BasicNameValuePair("longitude", String.valueOf(y)));
                 Log.d("updateUserLocation","The pair we are sending is latitude = "+String.valueOf(x)+" with longitude = "+String.valueOf(y));
-                //new_zone_info.add(new BasicNameValuePair("region_id", String.valueOf(zone_id)));
 
                 String res = "";
                 //Create a new Zone
@@ -337,94 +453,13 @@ public class MyZonesActivity extends ActionBarActivity{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(res.equalsIgnoreCase("successful")){
+                if(res!= null && res.equalsIgnoreCase("successful")){
                     Log.d("updateuserlocation","was successful, result was "+res);
                 }
                 else{
-                    Log.d("updateuserlocation",res);
+                    Log.d("updateuserlocation", res);
                 }
             }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
-
-        @Override
-        protected void onPreExecute() {}
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            Log.d("Background", "We are publishing background work");
-            ImageView mapview = (ImageView) findViewById(R.id.mapview);
-            if(mapview != null)
-            {
-                mapview.setImageBitmap(map);
-                mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                if(mService!=null)
-                {
-                    Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
-                    if(isFacilityManager && adminPoints!= null && !adminPoints.isEmpty())
-                    {
-                        for(PointF p: adminPoints)
-                        {
-                            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) p.x, (int) p.y, mapview, p);
-                        }
-                    }
-                    if(rooms != null && !rooms.isEmpty())
-                    {
-                        for(int i=0;i<rooms.size();i++)
-                        {
-                            PointF temp = null;
-                            Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), rooms.get(i).getX(), rooms.get(i).getY(), mapview, temp);
-                            if(temp != null)
-                            {
-                                rooms.get(i).rescale(temp);
-                            }
-                        }
-                    }
-
-                    mapview.buildDrawingCache();
-                    Bitmap bitmap = mapview.getDrawingCache();
-                    if(bitmap != null)
-                    {
-                        final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
-                        final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-                        Canvas canvas = new Canvas(bitmapCircle);
-                        Paint paint = new Paint();
-                        paint.setAntiAlias(true);
-                        paint.setColor(Color.GREEN);
-                        paint.setStrokeWidth(5 + (int) mService.getUncertainty());
-                        canvas.drawBitmap(bitmap, new Matrix(), null);
-                        if(adminPoints != null && !adminPoints.isEmpty())
-                        {
-                            for(PointF p:adminPoints)
-                            {
-                                canvas.drawCircle(p.x,p.y,7,paint);
-                            }
-                        }
-                        paint.setColor(Color.BLUE);
-                        canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, paint);
-                        if(rooms!= null && !rooms.isEmpty())
-                        {
-                            paint.setColor(Color.RED);
-                            paint.setStrokeWidth(10);
-                            paint.setStyle(Paint.Style.STROKE);
-                            for(int i=0;i<rooms.size();i++)
-                            {
-                                canvas.drawRect(rooms.get(i).getRoom(),paint);
-                            }
-                        }
-                        imageFloor.setImageBitmap(bitmapCircle);
-                    }
-                }
-            }
-
-
-
-            //Toast.makeText(getApplicationContext(), "Map has been updated!",Toast.LENGTH_SHORT).show();
-            Log.d("Background", "We are finished with publishing");
-
         }
     }
 
@@ -500,17 +535,8 @@ public class MyZonesActivity extends ActionBarActivity{
             {
                 listView.setAdapter(myrewards);
             }
-            //Set buttons in a Grid View order
-            //do{
             gridViewButtons = (GridView) findViewById(R.id.grid_view_buttons);
-                //Log.d("onProgress","We are not progressing");
-            //}
-            //while(gridViewButtons==null);
-//            ButtonAdapter m_badapter = new ButtonAdapter(this);
-//            m_badapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
-//            gridViewButtons.setAdapter(m_badapter);
             gridAdapter = new GridViewAdapter(context, data_access.getAllZoneNames(), data_access.getAllZoneID());
-//            adapter.setListData(data_access.getAllZoneNames(), data_access.getAllZoneID());
             gridAdapter.setMode(Attributes.Mode.Single);
             Log.d("MyZonesActivity", "What is gridAdapter? " + gridAdapter);
             if(gridViewButtons != null)
@@ -612,26 +638,8 @@ public class MyZonesActivity extends ActionBarActivity{
             user_id = user.getId(); //Get the ID of the user
             ListView mListView = (ListView) findViewById(R.id.list_view_userrewards);
             MyRewardListAdapter myRewardListAdapter = new MyRewardListAdapter(this);
-            loader = new zoneLoader(this,myRewardListAdapter,mListView);
-            loader.execute();
-
-            /*if((loader == null) || (loader != null && loader.getStatus() == AsyncTask.Status.FINISHED) )
-            {
-                Log.d("Background","We are initializing");
-                loader = new zoneLoader(this,myRewardListAdapter,mListView);
-            }
-             if(loader.getStatus() != AsyncTask.Status.RUNNING && loader.getStatus() == AsyncTask.Status.FINISHED)
-            {
-                Log.d("Background","We are now executing");
-                loader.execute();
-            }*/
-            /*else
-            {
-                Log.d("Background","We are skipping execution and publishing");
-                loader.onProgressUpdate();
-            }*/
-
-
+            loader = new zoneLoader(this.getApplicationContext(),myRewardListAdapter,mListView);
+            loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -772,7 +780,10 @@ public class MyZonesActivity extends ActionBarActivity{
             case R.id.action_location:
                 if (item.isChecked() == true) {
                     item.setChecked(false);
+                    mapper.cancel(false);
                     stopService();
+                    ImageView img = (ImageView) findViewById(R.id.mapview);
+                    img.setImageDrawable(context.getResources().getDrawable(R.drawable.good_job_green_ribbon));
                     //stopService(new Intent(this, IndoorLocationService.class));
                 } else {
                     item.setChecked(true);
@@ -928,7 +939,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
                             room_location_info.add(new BasicNameValuePair("room_number", String.valueOf(roomNum)));
                             room_location_info.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
-                            room_location_info.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
+                            room_location_info.add(new BasicNameValuePair("floor", String.valueOf(currentFloor.substring(0,currentFloor.length()-1))));
                             room_location_info.add(new BasicNameValuePair("x", String.valueOf(mService.getPointX())));
                             room_location_info.add(new BasicNameValuePair("y", String.valueOf(mService.getPointY())));
                             room_location_info.add(new BasicNameValuePair("shape", String.valueOf(shape)));
@@ -939,13 +950,12 @@ public class MyZonesActivity extends ActionBarActivity{
                             //Create a new Zone
                             try {
                                 res = new ExternalDatabaseController((ArrayList<NameValuePair>) room_location_info, UPDATEROOMLOCATION_PHP).send();
-
                                 Log.i(LOG_TAG, "Insert DB Result: " + res);
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            if (res.equalsIgnoreCase("successful")) {
+                            if (res != null && res.equalsIgnoreCase("successful")) {
                                 Log.d("updateroomlocation", "was successful, result was " + res);
                             } else {
                                 Log.d("updateroomlocation", res);
@@ -1010,7 +1020,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     public void getLocationDialog() {
 
-        locationLoader load = new locationLoader(this);
+        locationLoader load = new locationLoader(this.getApplicationContext());
         load.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
@@ -1095,7 +1105,7 @@ public class MyZonesActivity extends ActionBarActivity{
             Log.d("Background", "We are publishing background work");
             if(loading)
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MyZonesActivity.this);
                 builder.setTitle("We are loading locations in background, please wait...");
                 builder.setCancelable(false);
                 loadingScreen = builder.create();
@@ -1104,8 +1114,11 @@ public class MyZonesActivity extends ActionBarActivity{
             }
             else
             {
-                loadingScreen.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                if(loadingScreen != null)
+                {
+                    loadingScreen.dismiss();
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MyZonesActivity.this);
                 builder.setTitle("Pick a location");
                 builder.setItems(dialogChoices, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
@@ -1130,17 +1143,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     public void startLocationService(int index, String[] apikeys)
     {
-        //String[] keys = new String[3];
-        /*int identify = getResources().getIdentifier("venu_id_"+index, "string", getPackageName());
-        keys[0] = getString(identify);
-        identify = getResources().getIdentifier("floor_id_"+index, "string", getPackageName());
-        keys[1] = getString(identify);
-        identify = getResources().getIdentifier("floorplan_id_"+index, "string", getPackageName());
-        keys[2] = getString(identify);*/
-        //keys[0] = ;
-        //keys[1] = "a55c45c4-07ed-48f5-a3e9-aa3c3f10db85";
-        //keys[2] = "b4195361-c401-4147-be70-e040efaf8a0c";
-        Intent location = new Intent(this,IndoorLocationService.class);
+        Intent location = new Intent(MyZonesActivity.this,IndoorLocationService.class);
         location.putExtra("apikeys",apikeys);
         bindService(location, myConnection, this.BIND_AUTO_CREATE);
         startService(location);
@@ -1148,7 +1151,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     // Start the service
     public void bindService() {
-        Intent intent = new Intent(this, IndoorLocationService.class);
+        Intent intent = new Intent(MyZonesActivity.this, IndoorLocationService.class);
         bindService(intent, myConnection, this.BIND_AUTO_CREATE);
         if(IndoorLocationService.isRunning)
         {
@@ -1159,6 +1162,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     // Stop the service
     public void stopService() {
+        this.mapper.cancel(false);
         Intent intent = new Intent(this, IndoorLocationService.class);
         stopService(intent);
         unbindService();

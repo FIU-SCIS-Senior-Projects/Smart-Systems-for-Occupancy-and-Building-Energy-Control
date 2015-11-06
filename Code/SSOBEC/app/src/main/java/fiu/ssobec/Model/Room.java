@@ -10,6 +10,7 @@ public class Room {
     private RectF room;
     private String roomNumber;
     private double x,y,width,height;
+    private boolean occupied;
 
     public Room(String roomnum, double x, double y, double width, double height)
     {
@@ -41,6 +42,10 @@ public class Room {
     {
         return roomNumber;
     }
+    public boolean getOccupied()
+    {
+        return occupied;
+    }
     public void rescale(PointF p)
     {
         float left = (float) (p.x-width);
@@ -48,5 +53,9 @@ public class Room {
         float top = (float) (p.y-height);
         float bottom = (float) (p.y+height);
         room = new RectF(left, top, right, bottom);
+    }
+    public void setOccupied(boolean occu)
+    {
+        occupied = occu;
     }
 }

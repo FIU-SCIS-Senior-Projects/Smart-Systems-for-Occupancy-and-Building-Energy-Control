@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <!-- Required to enable our SyncAdapter after it's created. -->
@@ -25,10 +26,18 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+
+    <uses-feature android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.android.hardware.sensor.compass"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.wifi"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -37,14 +46,23 @@
         android:name="android.support.multidex.MultiDexApplication"
         android:theme="@style/Theme.AppCompat" >
 
-        <!-- Login Activity -->
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_KEY"
+            android:value="90f7edc9-1ede-4484-bb87-e73e6d2aad99"/>
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_SECRET"
+            android:value="9FsHifk56VoFhw07iVASCQJBHWVtu(1cKFDFIk%5WmbRdztB8t3s3&amp;6!x2B&amp;%UzWm(&amp;z5oPTZId2gJ(Zvpe)BGx4&amp;O8vaM5pQ(VLVfzC972R&amp;AnTRvxEyzrdBT6UZsCB"/>
 
+        <!-- Login Activity -->
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
             android:screenOrientation="portrait">
         </activity>
 
+        <service android:name="com.indooratlas.android.sdk.IALocationService"
+            android:label="IALocationService"
+            android:exported="false"/>
         <!-- Setting Activity -->
 
         <activity

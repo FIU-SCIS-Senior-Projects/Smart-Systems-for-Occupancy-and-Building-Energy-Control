@@ -9,10 +9,10 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
+        android:layout_weight=".45"
         android:id="@+id/mainframe">
         <LinearLayout android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -71,82 +71,84 @@
             android:contentDescription="@string/mapview" />
     </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="81dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:background="@color/login_button_background"
-            android:weightSum="3">
-
-            <info.hoang8f.widget.FButton
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                fbutton:buttonColor="@color/fbutton_color_peter_river"
-                fbutton:shadowColor="@color/fbutton_color_belize_hole"
-                fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp"
-                fbutton:cornerRadius="5dp"
-                android:drawableLeft="@drawable/smallreports"
-                android:drawablePadding="0.5dip"
-                android:id="@+id/ReportsButton"
-                android:padding="90dip"
-                android:onClick="getReports"
-                android:text="@string/reports"
-                android:textColor="@color/default_background"
-                android:layout_margin="5dip"
-                android:textSize="20sp"
-                android:layout_weight="1" />
-
-            <info.hoang8f.widget.FButton
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                fbutton:buttonColor="@color/fbutton_color_turquoise"
-                fbutton:shadowColor="@color/fbutton_color_green_sea"
-                fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp"
-                fbutton:cornerRadius="5dp"
-                android:drawableLeft="@drawable/smallzone"
-                android:drawablePadding="0.5dip"
-                android:id="@+id/CreateZoneButton"
-                android:padding="90dip"
-                android:onClick="createZone"
-                android:text="@string/create_zone"
-                android:textColor="@color/default_background"
-                android:layout_margin="5dip"
-                android:textSize="20sp"
-                android:layout_weight="1"/>
-
-            <info.hoang8f.widget.FButton
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                fbutton:buttonColor="@color/fbutton_color_alizarin"
-                fbutton:shadowColor="@color/fbutton_color_pomegranate"
-                fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp"
-                fbutton:cornerRadius="5dp"
-                android:drawableLeft="@drawable/smallcoin"
-                android:drawablePadding="0.5dip"
-                android:id="@+id/WastefulRegionsButton"
-                android:padding="90dip"
-                android:onClick="getWastefulRegions"
-                android:text="@string/wasteful_regions"
-                android:textColor="@color/default_background"
-                android:layout_margin="5dip"
-                android:textSize="20sp"
-                android:layout_weight="1" />
-
-        </LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
         android:background="@color/login_button_background"
-        android:weightSum="1">
+        android:layout_weight="1.3"
+        android:weightSum="3">
+
         <info.hoang8f.widget.FButton
             android:layout_width="fill_parent"
-            android:layout_height="75dp"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_peter_river"
+            fbutton:shadowColor="@color/fbutton_color_belize_hole"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallreports"
+            android:drawablePadding="0.5dip"
+            android:id="@+id/ReportsButton"
+            android:padding="90dip"
+            android:onClick="getReports"
+            android:text="@string/reports"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_turquoise"
+            fbutton:shadowColor="@color/fbutton_color_green_sea"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallzone"
+            android:drawablePadding="0.5dip"
+            android:id="@+id/CreateZoneButton"
+            android:padding="90dip"
+            android:onClick="createZone"
+            android:text="@string/create_zone"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1"/>
+
+        <info.hoang8f.widget.FButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            fbutton:buttonColor="@color/fbutton_color_alizarin"
+            fbutton:shadowColor="@color/fbutton_color_pomegranate"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:drawableLeft="@drawable/smallcoin"
+            android:drawablePadding="0.5dip"
+            android:id="@+id/WastefulRegionsButton"
+            android:padding="90dip"
+            android:onClick="getWastefulRegions"
+            android:text="@string/wasteful_regions"
+            android:textColor="@color/default_background"
+            android:layout_margin="5dip"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:background="@color/login_button_background"
+        android:layout_weight="1.25"
+        >
+        <info.hoang8f.widget.FButton
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
             fbutton:buttonColor="@color/fbutton_color_alizarin"
             fbutton:shadowColor="@color/fbutton_color_pomegranate"
             fbutton:shadowEnabled="true"
@@ -159,8 +161,7 @@
             android:text="@string/record_room"
             android:textColor="@color/default_background"
             android:layout_margin="5dip"
-            android:textSize="20sp"
-            android:layout_weight=".5" />
+            android:textSize="20sp" />
         </LinearLayout>
 
 
