@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <permission android:name="fiu.ssobec.gcm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <!-- Required to enable our SyncAdapter after it's created. -->
@@ -33,11 +35,12 @@
     <uses-feature android:name="android.hardware.sensor.accelerometer"
         android:required="false" />
     <uses-feature android:name="android.hardware.sensor.android.hardware.sensor.compass"
-        android:required="false" />
+        android:required="true" />
     <uses-feature android:name="android.hardware.sensor.gyroscope"
         android:required="false" />
     <uses-feature android:name="android.hardware.sensor.wifi"
         android:required="true" />
+
 
     <application
         android:allowBackup="true"
@@ -45,14 +48,19 @@
         android:label="@string/app_name"
         android:name="android.support.multidex.MultiDexApplication"
         android:theme="@style/Theme.AppCompat" >
-
+        <uses-library android:name="com.google.android.maps" />
         <meta-data
             android:name="com.indooratlas.android.sdk.API_KEY"
             android:value="90f7edc9-1ede-4484-bb87-e73e6d2aad99"/>
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="9FsHifk56VoFhw07iVASCQJBHWVtu(1cKFDFIk%5WmbRdztB8t3s3&amp;6!x2B&amp;%UzWm(&amp;z5oPTZId2gJ(Zvpe)BGx4&amp;O8vaM5pQ(VLVfzC972R&amp;AnTRvxEyzrdBT6UZsCB"/>
-
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key"/>
         <!-- Login Activity -->
         <activity
             android:name=".Activity.LoginActivity"
@@ -288,7 +296,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
-        <service android:name=".Services.IndoorLocationService" ></service>
+        <receiver android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="fiu.ssobec"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".Services.IndoorAtlasLocationService"
+            android:enabled="true">
+        </service>
     </application>
 
 </manifest>

@@ -16,12 +16,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -35,7 +41,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -43,6 +48,30 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.indooratlas.android.sdk.resources.IAFloorPlan;
+import com.indooratlas.android.sdk.resources.IALatLng;
+import com.indooratlas.android.sdk.resources.IAResourceManager;
+import com.indooratlas.android.sdk.resources.IAResult;
+import com.indooratlas.android.sdk.resources.IAResultCallback;
+import com.indooratlas.android.sdk.resources.IATask;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
+import com.squareup.picasso.Target;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -50,6 +79,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +92,7 @@ import fiu.ssobec.Model.Room;
 import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
-import fiu.ssobec.Services.IndoorLocationService;
+import fiu.ssobec.Services.IndoorAtlasLocationService;
 import fiu.ssobec.Services.Util;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
@@ -75,7 +105,7 @@ import fiu.ssobec.Synchronization.SyncUtils;
     Our application will only need that the user log in once.
     A column in the UserSQLiteDatabase 'loggedIn'
 * */
-public class MyZonesActivity extends ActionBarActivity{
+public class MyZonesActivity extends AppCompatActivity{
 
     public static final int USER_LOGGEDIN = 1;
     public static final String LOG_TAG = "MyZonesActivity";
@@ -90,37 +120,41 @@ public class MyZonesActivity extends ActionBarActivity{
     zoneLoader loader;
     private static DataAccessUser data_access;
     private final Handler handler = new Handler();
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private IndoorLocationService mService;
+    private IndoorAtlasLocationService mService;
     private boolean isBound;
     private Context context;
     private mapLoader mapper;
     String currentFloorPlan;
     String currentFloor;
+    MapView mapView;
+    private Menu settingMenu;
 
     ArrayList<Room> rooms = new ArrayList<Room>();
     private ServiceConnection myConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className,IBinder service) {
             Log.d("Service","We are re binded");
-            IndoorLocationService.LocalBinder binder = (IndoorLocationService.LocalBinder) service;
+            IndoorAtlasLocationService.LocalBinder binder = (IndoorAtlasLocationService.LocalBinder) service;
+            mapper = new mapLoader(context, email, mapView);
             mService = binder.getService();
+            //mService = binder.getService(mapper);
             isBound = true;
-            mapper = new mapLoader(context, email);
             mapper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         public void onServiceDisconnected(ComponentName arg0) {
             isBound = false;
             mService = null;
-            mapper.cancel(false);
+            //mapper.cancel(false);
         }
     };
 
     private GestureDetector gesturedetector = null;
     private FrameLayout flContainer;
     //private LinearLayout ivLayer1;
-    private ImageView imgLayer2;
+    private MapView imgLayer2;
 
     private Object mSyncObserverHandle;
     public static int user_id;
@@ -147,6 +181,7 @@ public class MyZonesActivity extends ActionBarActivity{
 
     private GridView gridViewButtons;
     private GridViewAdapter gridAdapter;
+    private Bundle saved;
 
     /**
      *  Initialize Activity
@@ -155,7 +190,9 @@ public class MyZonesActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        saved = savedInstanceState;
         context = this.getApplicationContext();
+
         data_access = new DataAccessUser(this);
         //Retrieve the email that we stored when we logged in
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
@@ -192,129 +229,186 @@ public class MyZonesActivity extends ActionBarActivity{
     /*
         AsyncTask mapLoader class to run old zone loading code in background thread to stop obstruction of UI thread in android
     */
-    private class mapLoader extends AsyncTask<String, Integer, String> {
+    public class mapLoader extends AsyncTask<String, Integer, String> {
 
         Context context;
-        Bitmap map;
         boolean run;
-        boolean refreshmap;
-        PointF scaledPoint;
         String email;
-        ImageView mapview;
-
+        String users;
         ArrayList<PointF> adminPoints;
-        public mapLoader( Context context, String email ) {
+        private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+        private Marker mMarker;
+        private ArrayList<Marker> userPoints;
+        private GroundOverlay mGroundOverlay;
+        private IATask<IAFloorPlan> mFetchFloorPlanTask;
+        private Target mLoadTarget;
+        //private boolean mCameraPositionNeedsUpdating;
+        private static final float HUE_IABLUE = 200.0f;
+        IAFloorPlan floorPlan;
+        Bitmap bitmap;
+        LatLng coordinates;
+        /* used to decide when bitmap should be downscaled */
+        private static final int MAX_DIMENSION = 2048;
+        MapView localMapView;
+        boolean init;
+        boolean downloading;
+        boolean override;
+
+        private IAResourceManager mResourceManager;
+        private String TAG = "mapLoader";
+
+        public mapLoader( Context context, String email, MapView map ) {
             this.context = context;
             run = true;
-            refreshmap = true;
-            scaledPoint = new PointF();
+            userPoints = new ArrayList<Marker>();
+            //scaledPoint = new PointF();
             this.email = email;
-        }
-        public void setRefresh(boolean refresh)
-        {
-            refreshmap = refresh;
+            localMapView = map;
+            mMap = localMapView.getMap();
+            init = true;
+            downloading = false;
+            override = false;
         }
 
+        public void override(boolean override)
+        {
+            this.override = override;
+        }
+        public void setRunning(boolean run)
+        {
+            this.run = run;
+        }
+        public GoogleMap getMap()
+        {
+            return mMap;
+        }
+        public Marker getMarker()
+        {
+            return mMarker;
+        }
+        public void addMarker(MarkerOptions options)
+        {
+            mMarker = mMap.addMarker(options);
+        }
+        public void addUserMarker(MarkerOptions options)
+        {
+            userPoints.add(mMap.addMarker(options));
+            Log.d("UserPoints", "The size is now " + userPoints.size());
+        }
+        public void moveMarker(LatLng latLng)
+        {
+            if(!mMarker.isVisible())
+            {
+                mMarker.setVisible(true);
+            }
+            mMarker.setPosition(latLng);
+        }
+        public void moveCamera(CameraUpdate update)
+        {
+            mMap.animateCamera(update);
+        }
         @Override
         protected void onCancelled() {
             run = false;
-
         }
 
         @Override
         protected String doInBackground(String... params) {
             Log.d("mapLoader", "We are running in the background");
 
-            rooms.clear();
-            try {
-                //Retrives list of rooms available from selected floor plan
-                ArrayList<NameValuePair> floorplan_post = new ArrayList<NameValuePair>(2);
-                floorplan_post.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
-                floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(currentFloor)));
-                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
-                if(!res.contains("No rooms found"))
-                {
-                    roomLocations(res);
-                }
+            mResourceManager = IAResourceManager.create(context);
+            publishProgress(0);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            boolean first = true;
             while(run)
             {
-                if(mService != null && mService.getMap() != null)
+                //Check if the service is even running, otherwise this async task is useless so stop it
+                if(mService == null )
                 {
-                    if(first)
-                    {
-                        this.map = mService.getMap();
-                        publishProgress(0);
-                        first = false;
-                    }
-
-                    if(isFacilityManager)
-                    {
-                        try {
-                            //declare an arraylist that holds email and password
-                            ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
-                            username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
-                            String res = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
-                            adminPoints = userLocations(res);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    updateUserLocation((float) mService.getPointX(), (float) mService.getPointY());
-                    Log.d("mapLoader", "We are about to publish progress");
-
-                    if(mService.isReady() && mapview != null)
-                    {
-                        Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) mService.getPointX(), (int) mService.getPointY(), mapview, scaledPoint);
-                        if(isFacilityManager && adminPoints!= null && !adminPoints.isEmpty())
-                        {
-                            for(PointF p: adminPoints)
-                            {
-                                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), (int) p.x, (int) p.y, mapview, p);
-                            }
-                        }
-                        if(rooms != null && !rooms.isEmpty())
-                        {
-                            for(int i=0;i<rooms.size();i++)
-                            {
-                                PointF temp = new PointF();
-                                Util.calculateScaledPoint(mService.getFloorplanX(), mService.getFloorplanY(), rooms.get(i).getX(), rooms.get(i).getY(), mapview, temp);
-                                if(temp != null)
-                                {
-                                    rooms.get(i).rescale(temp);
-                                    if(rooms.get(i).getRoom().contains(scaledPoint.x,scaledPoint.y))
-                                    {
-                                        rooms.get(i).setOccupied(true);
-                                    }
-                                    else
-                                    {
-                                        rooms.get(i).setOccupied(false);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    publishProgress(1);
+                    Log.d(TAG, "The service is null");
+                    publishProgress(7);
+                    updateUserLocation(0, 0);
+                    run = false;
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    continue;
+                }
+                else
+                {
+                    Log.d(TAG,"The service is not null the current mMap is "+mMap+" and the current floorPlan is "+floorPlan);
+                    if(mMap != null && floorPlan != null)
+                    {
+                        Log.d(TAG,"Map is not null and neither is floorPlan");
+                        //If this is the first run of maploader to load the rooms on current floor, wait until floorplan is downloaded and then initialize the rooms
+                        if(init)
+                        {
+                            initRooms();
+                            if(isFacilityManager)
+                            {
+                                Log.d("Admin","We are an admin");
+                                initAdminPoints();
+                            }
+                            init = false;
+                        }
+                        coordinates = new LatLng(mService.getPointY(),mService.getPointX());
+                        updateUserLocation((float) coordinates.latitude,(float) coordinates.longitude);
+                        publishProgress(1);
+                        getAdminPoints();
+                        //Check if the marker that represents the user is null and make one if it's null through publishprogress, else don't make a new marker
+                        if (mMarker == null) {
+                            // first location, add marker
+                            Log.d(TAG, "We are adding a new marker in onLocationChanged");
+                            publishProgress(4);
+                        } else {
+                            // move existing markers position to received location
+                            Log.d(TAG, "We are moving the marker in onLocationChanged");
+                            publishProgress(5);
+                        }
+
+                        // our camera position needs updating if location has significantly changed
+                        if (mService != null && mService.getCameraNeedUpdate()) {
+                            Log.d(TAG, "We are repositioning new camera");
+                            publishProgress(6);
+                        }
+                        //Check the rooms to see if they contain the current user
+                        checkRooms(coordinates.latitude, coordinates.longitude);
+                    }
+                    //Check if we need to download the floorplan for the current location inside the building (like changing floors)
+                    //Log.d(TAG,"What does dofetch say? "+mService.dofetch());
+                    if(mService != null && ((mService.dofetch() && !downloading) || override))
+                    {
+                        Log.d(TAG,"We are doing fetch");
+                        publishProgress(3);
+                        if(override)
+                        {
+                            override = false;
+                        }
+                    }
+                }
+                //Simple Thread.sleep to put background thread to sleep so we don't overload the phone with commands every millisecond which would cause battery loss
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-            adminPoints.clear();
-            updateUserLocation(0, 0);
+            Log.d(TAG, "We are out of the loop and finishing up the publishing");
+            //Clear all user point information upon stopping location service
+            userPoints.clear();
+
+
+
             return "Executed";
         }
 
         @Override
         protected void onPostExecute(String result) {
+            //Reset user location upon stopping the location service
+            Log.d("loadp","We are in onPostExecute");
+            updateUserLocation(0, 0);
+            mMap.clear();
         }
 
         @Override
@@ -323,85 +417,154 @@ public class MyZonesActivity extends ActionBarActivity{
         @Override
         protected void onProgressUpdate(Integer... condition) {
             Log.d("Background", "We are publishing background work");
-            if(condition[0] == 0)
+            if(mService != null)
             {
-                Log.d("Background", "We are in init");
-                mapview = (ImageView) findViewById(R.id.mapview);
-                if(mapview != null) {
-                    mapview.setImageBitmap(map);
-                    mapview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                }
-            }
-            else if(condition[0] == 1)
-            {
-                Log.d("Background", "We are not init, init == 0 ");
-                if(mapview != null)
+                if(condition[0] == 0)
                 {
-                    if(mService!=null)
-                    {
-                        mapview.buildDrawingCache();
-                        Bitmap bitmap = mapview.getDrawingCache();
-                        if(bitmap != null)
-                        {
-                            final ImageView imageFloor = (ImageView) findViewById(R.id.mapview);
-                            final Bitmap bitmapCircle = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-
-                            Canvas canvas = new Canvas(bitmapCircle);
-
-                            //Paint paint = new Paint();
-                            Paint user = new Paint();
-                            user.setColor(Color.BLUE);
-                            Paint otherUsers = new Paint();
-                            otherUsers.setColor(Color.GREEN);
-                            otherUsers.setStrokeWidth(10);
-                            Paint roomPaint = new Paint();
-
-                            canvas.drawBitmap(bitmap, new Matrix(), null);
-                            if(adminPoints != null && !adminPoints.isEmpty())
-                            {
-                                int count = 0;
-                                for(PointF p:adminPoints)
-                                {
-                                    count++;
-                                    Log.d("Background","We are drawing adminPoints!");
-                                    canvas.drawCircle(p.x,p.y,7,otherUsers);
-                                }
-                                Log.d("Background","There are "+count+" admin points");
-                            }
-
-                            if(rooms!= null && !rooms.isEmpty())
-                            {
-                                for(int i=0;i<rooms.size();i++)
-                                {
-                                    if(rooms.get(i).getOccupied())
-                                    {
-                                        roomPaint.setColor(Color.GREEN);
-                                        roomPaint.setStyle(Paint.Style.FILL);
-                                    }
-                                    else
-                                    {
-                                        roomPaint.setColor(Color.BLACK);
-                                        roomPaint.setStyle(Paint.Style.STROKE);
-                                    }
-                                    roomPaint.setStrokeWidth(10);
-                                    roomPaint.setAlpha(60);
-                                    canvas.drawRect(rooms.get(i).getRoom(), roomPaint);
-                                    Log.d("Background", "We are drawing rooms");
-                                }
-                                Log.d("Background","There are "+rooms.size()+" rooms");
-                            }
-                            Log.d("Background", "We are drawing user location");
-                            canvas.drawCircle(scaledPoint.x, scaledPoint.y, 10, user);
-                            imageFloor.setImageBitmap(bitmapCircle);
-                        }
+                    LatLng coordinates = mService.getLatLng();
+                    mMap.addMarker(new MarkerOptions().position(coordinates).visible(false));
+                }
+                else if(condition[0] == 1)
+                {
+                    Log.d(TAG,"We are publishing progress by moving camera");
+                    Log.d(TAG, "The coordinates are "+coordinates.latitude+", "+coordinates.longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 19));
+                }
+                else if(condition[0] == 2)
+                {
+                    Log.d(TAG,"We are doing the groundoverlay on top of the google map");
+                    if (mGroundOverlay != null) {
+                        mGroundOverlay.remove();
+                    }
+                    if (mMap != null) {
+                        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
+                        IALatLng iaLatLng = floorPlan.getCenter();
+                        LatLng center = new LatLng(iaLatLng.latitude, iaLatLng.longitude);
+                        GroundOverlayOptions fpOverlay = new GroundOverlayOptions()
+                                .image(bitmapDescriptor)
+                                .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())
+                                .bearing(floorPlan.getBearing());
+                        mGroundOverlay = mMap.addGroundOverlay(fpOverlay);
                     }
                 }
+                else if(condition[0] == 3)
+                {
+                    fetchFloorPlan(mService.getFloorID());
+                    mService.setFetch(false);
+                }
+                else if(condition[0] == 4)
+                {
+                    addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.defaultMarker(HUE_IABLUE)));
+                }
+                else if(condition[0] == 5)
+                {
+                    moveMarker(coordinates);
+                }
+                else if(condition[0] == 6)
+                {
+                    moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 17.5f));
+                    mService.setCameraUpdate(false);
+                }
+                else if(condition[0] == 7)
+                {
+                    Log.d(TAG, "We are doing map stuff");
+                    mMap.clear();
+                }
+                else if(condition[0] == 8)
+                {
+                    userLocations(users);
+                }
+                else if(condition[0] == 9)
+                {
+                    moveUserLocations(users);
+                }
             }
-
-            Log.d("Background", "We are finished with publishing");
-
         }
 
+        public void initRooms()
+        {
+            rooms.clear();
+            try {
+                //Retrives list of rooms available from selected floor plan
+                ArrayList<NameValuePair> floorplan_post = new ArrayList<NameValuePair>(2);
+                floorplan_post.add(new BasicNameValuePair("floorplan", String.valueOf(floorPlan.getId())));
+                floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(floorPlan.getFloorLevel())));
+                String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
+                Log.d("Rooms",res);
+                //TODO:Fix the rooms no found error by chaning SQL server command for query
+                if(!res.contains("No rooms found"))
+                {
+                    Log.d("Rooms","We found rooms");
+                    roomLocations(res);
+                }
+                else
+                {
+                    Log.d("Rooms","We didn't find rooms");
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void initAdminPoints()
+        {
+            try {
+                //declare an arraylist that holds email and password
+                ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
+                username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
+                users = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
+                publishProgress(8);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void getAdminPoints()
+        {
+            try {
+                //declare an arraylist that holds email and password
+                ArrayList<NameValuePair> username_pass = new ArrayList<NameValuePair>(1);
+                username_pass.add(new BasicNameValuePair("login_email", "getinfo"));
+                users = new ExternalDatabaseController((ArrayList<NameValuePair>) username_pass, LOCATIONS_PHP).send();
+                publishProgress(9);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //check all rooms to see if they are occupied
+        public void checkRooms(double latitude, double longitude)
+        {
+            if(rooms != null && !rooms.isEmpty())
+            {
+                for(int i=0;i<rooms.size();i++)
+                {
+                    if(rooms.get(i).getRoom().contains((float) latitude,(float) longitude) || checkUsersAgainstRoom(rooms.get(i)))
+                    {
+                        rooms.get(i).setOccupied(true);
+                    }
+                    else
+                    {
+                        rooms.get(i).setOccupied(false);
+                    }
+                }
+                publishProgress(8);
+            }
+        }
+
+        //Check all users logged into system against current room to check if it's occupied
+        public boolean checkUsersAgainstRoom(Room room)
+        {
+            for(PointF p: adminPoints)
+            {
+                if(room.getRoom().contains(p.x,p.y))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public void roomLocations(String response)
         {
@@ -409,26 +572,80 @@ public class MyZonesActivity extends ActionBarActivity{
             Log.d("Rooms", response);
             for(int i = 0; i < roominfo.length; i++)
             {
-
+                Log.d("Rooms","We are adding a room");
                 String room[] = roominfo[i].split(":");
-                rooms.add(new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[9]), Double.parseDouble(room[11].substring(0,room[11].length()-1)) ));
+                Room temp = new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[9]), Double.parseDouble(room[11].substring(0,room[11].length()-1)));
+                MarkerOptions options = new MarkerOptions()
+                        .position( new LatLng(temp.getLatitude(), temp.getLongitude()) )
+                        .title("Fence " + temp.getRoomNumber())
+                        .snippet("Radius: " + temp.getRadius());
+                Marker roomMarker = mMap.addMarker(options);//.showInfoWindow();
+                temp.setMarker(roomMarker);
+                //Instantiates a new CircleOptions object +  center/radius
+                CircleOptions circleOptions = new CircleOptions()
+                        .center( new LatLng(temp.getLatitude(), temp.getLongitude()) )
+                        .radius( temp.getRadius() )
+                        .fillColor(0x40ff0000)
+                        .strokeColor(Color.TRANSPARENT)
+                        .strokeWidth(2);
+
+                // Get back the mutable Circle
+                Circle circle = mMap.addCircle(circleOptions);
+                rooms.add(temp);
             }
         }
 
-        public ArrayList<PointF> userLocations(String response)
+        public void userLocations(String response)
         {
-            ArrayList<PointF> users = new ArrayList<PointF>();
+            ArrayList<Marker> users = new ArrayList<Marker>();
+            String userinfo[] = response.split(":");
+            Log.d("Admin",response);
+            for(int i = 5; i < userinfo.length; i+=9)
+            {
+                if(Float.parseFloat(userinfo[i]) != 0 || Float.parseFloat(userinfo[i+2]) != 0)
+                {
+                    LatLng temp = new LatLng(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2]));
+                    if(!temp.equals(new LatLng(0,0)))
+                    {
+                        Log.d("Admin","We are adding user");
+                        addUserMarker(new MarkerOptions().position(temp).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(userinfo[i - 2]));
+                    }
+                }
+            }
+        }
+
+        public void moveUserLocations(String response)
+        {
+            ArrayList<Marker> users = new ArrayList<Marker>();
             String userinfo[] = response.split(":");
             for(int i = 5; i < userinfo.length; i+=9)
             {
                 if(Float.parseFloat(userinfo[i]) != 0 || Float.parseFloat(userinfo[i+2]) != 0)
                 {
-                    users.add(new PointF(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2])));
+                    LatLng temp = new LatLng(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2]));
+                    if(mMarker != null && !temp.equals(mMarker.getPosition()))
+                    {
+                        moveUser(temp, userinfo[i-2]);
+                    }
                 }
+            }
+        }
 
+        private void moveUser(LatLng coordinates, String name)
+        {
+            Log.d("Admin","We are moving user "+name+" to location "+coordinates.latitude+" ,"+coordinates.longitude);
+            if(userPoints != null && !userPoints.isEmpty())
+            {
+                for(Marker mark:userPoints)
+                {
+                    if(mark.getTitle().equals(name))
+                    {
+                        mark.setPosition(coordinates);
+                        return;
+                    }
+                }
             }
 
-            return users;
         }
 
         protected void updateUserLocation(float x, float y)
@@ -461,8 +678,112 @@ public class MyZonesActivity extends ActionBarActivity{
                 }
             }
         }
-    }
 
+        /*
+        IndoorAtlas Helper methods
+     */
+
+        /**
+         * Sets bitmap of floor plan as ground overlay on Google Maps
+         */
+        private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap) {
+            this.floorPlan = floorPlan;
+            this.bitmap = bitmap;
+            this.publishProgress(2);
+        }
+        /**
+         * Download floor plan using Picasso library.
+         */
+        private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan) {
+
+            final String url = floorPlan.getUrl();
+
+            if (mLoadTarget == null) {
+                mLoadTarget = new Target() {
+
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+                        setupGroundOverlay(floorPlan, bitmap);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        // N/A
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable placeHolderDraweble) {
+                        // Toast.makeText(MapsOverlayActivity.this, "Failed to load bitmap",Toast.LENGTH_SHORT).show();
+                    }
+                };
+            }
+
+            RequestCreator request = Picasso.with(context).load(url);
+
+            final int bitmapWidth = floorPlan.getBitmapWidth();
+            final int bitmapHeight = floorPlan.getBitmapHeight();
+
+            if (bitmapHeight > MAX_DIMENSION) {
+                request.resize(0, MAX_DIMENSION);
+            } else if (bitmapWidth > MAX_DIMENSION) {
+                request.resize(MAX_DIMENSION, 0);
+            }
+
+            request.into(mLoadTarget);
+        }
+        /**
+         * Fetches floor plan data from IndoorAtlas server.
+         */
+        public void fetchFloorPlan(String id) {
+
+            downloading = true;
+            // if there is already running task, cancel it
+            cancelPendingNetworkCalls();
+
+            final IATask<IAFloorPlan> task = mResourceManager.fetchFloorPlanWithId(id);
+
+            task.setCallback(new IAResultCallback<IAFloorPlan>() {
+
+                @Override
+                public void onResult(IAResult<IAFloorPlan> result) {
+
+                    if (result.isSuccess() && result.getResult() != null) {
+                        // retrieve bitmap for this floor plan metadata
+                        fetchFloorPlanBitmap(result.getResult());
+                        downloading = false;
+                    } else {
+                        // ignore errors if this task was already canceled
+                        if (!task.isCancelled()) {
+                            // do something with error
+                            //Toast.makeText(MapsOverlayActivity.this,"loading floor plan failed: " + result.getError(), Toast.LENGTH_LONG)
+                            //      .show();
+                            // remove current ground overlay
+                            if (mGroundOverlay != null) {
+                                mGroundOverlay.remove();
+                                mGroundOverlay = null;
+                            }
+                        }
+                        downloading = false;
+                    }
+                }
+            }, Looper.getMainLooper()); // deliver callbacks using main looper
+
+            // keep reference to task so that it can be canceled if needed
+            mFetchFloorPlanTask = task;
+
+        }
+
+        /**
+         * Helper method to cancel current task if any.
+         */
+        private void cancelPendingNetworkCalls() {
+            if (mFetchFloorPlanTask != null && !mFetchFloorPlanTask.isCancelled()) {
+                mFetchFloorPlanTask.cancel();
+            }
+        }
+    }
+    //END OF MAP LOADER CLASS ----------------------------------------------------------------------------------------------------------------------------------------
     /*
         AsyncTask zoneLoader class to run old zone loading code in background thread to stop obstruction of UI thread in android
      */
@@ -597,7 +918,6 @@ public class MyZonesActivity extends ActionBarActivity{
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-
         //User that is currently logged in is found
         else
         {
@@ -617,9 +937,30 @@ public class MyZonesActivity extends ActionBarActivity{
                 //myRewardListAdapter.setParents(parents);
                 //mListView.setAdapter(myRewardListAdapter);
             }
+
+            mapView = (MapView)findViewById(R.id.map);
+            mapView.onCreate(saved);
+            mapView.getMapAsync(new OnMapReadyCallback() {
+
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    /*LatLng coordinates = new LatLng(match.match.LocationLatitude, match.match.LocationLongitude);
+                    googleMap.addMarker(new MarkerOptions().position(coordinates).title(match.match.LocationAddress));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 15));*/
+                    mapView.onResume();
+                }
+            });
+            if(mapper!=null && !mapper.isCancelled())
+            {
+                mapper.setRunning(false);
+                mapper = new mapLoader(context, email, mapView);
+                mapper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                mapper.override(true);
+            }
             flContainer = (FrameLayout) findViewById(R.id.mainframe);
             //ivLayer1 = (LinearLayout) findViewById(R.id.zonegrid);
-            imgLayer2 = (ImageView) findViewById(R.id.mapview);
+            imgLayer2 = ((MapView) findViewById(R.id.map));
+            //(android.app.Fragment) findViewById(R.id.map);
 
             gesturedetector = new GestureDetector(getApplicationContext(),new MyGestureListener());
 
@@ -726,6 +1067,7 @@ public class MyZonesActivity extends ActionBarActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_zones, menu);
+        this.settingMenu = menu;
         return true;
     }
 
@@ -778,21 +1120,18 @@ public class MyZonesActivity extends ActionBarActivity{
                 startActivity(intent);
                 return true;
             case R.id.action_location:
-                if (item.isChecked() == true) {
+                if (item.isChecked()) {
                     item.setChecked(false);
-                    mapper.cancel(false);
                     stopService();
-                    ImageView img = (ImageView) findViewById(R.id.mapview);
-                    img.setImageDrawable(context.getResources().getDrawable(R.drawable.good_job_green_ribbon));
-                    //stopService(new Intent(this, IndoorLocationService.class));
                 } else {
                     item.setChecked(true);
-                    getLocationDialog();
-
+                    //getLocationDialog();
+                    startLocationService();
                 }
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
     //When an Activity is resumed, open the SQLite
@@ -800,6 +1139,7 @@ public class MyZonesActivity extends ActionBarActivity{
     @Override
     protected void onResume() {
         super.onResume();
+
         try {
             data_access.open();
         } catch (SQLException e) {
@@ -813,10 +1153,16 @@ public class MyZonesActivity extends ActionBarActivity{
                 ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
         mSyncObserverHandle = ContentResolver.addStatusChangeListener(mask, mSyncStatusObserver);
 
+
+
         setTheContentViewContent();
-        if(mapper!= null)
+        SharedPreferences prefs = this.getSharedPreferences("fiu.ssobec", Context.MODE_PRIVATE);//getPreferences(MODE_PRIVATE);
+        boolean running = prefs.getBoolean("fiu.ssobec.running", false);
+        if(settingMenu != null && running)
         {
-            mapper.setRefresh(true);
+            Log.d("Menu","We are setting it to checked");
+            MenuItem locationItem = settingMenu.findItem(R.id.action_location);
+            locationItem.setChecked(true);
         }
 
     }
@@ -978,57 +1324,59 @@ public class MyZonesActivity extends ActionBarActivity{
 
     public void getRatingDialogs(View view){
 
-                ratings = new int[2];
-                rankDialog = new Dialog(MyZonesActivity.this, R.style.FullHeightDialog);
-                rankDialog.setContentView(R.layout.rank_dialog);
-                rankDialog.setCancelable(true);
-                final RatingBar ratingBar = (RatingBar)rankDialog.findViewById(R.id.dialog_ratingbar);
+        ratings = new int[2];
+        rankDialog = new Dialog(MyZonesActivity.this, R.style.FullHeightDialog);
+        rankDialog.setContentView(R.layout.rank_dialog);
+        rankDialog.setCancelable(true);
+        final RatingBar ratingBar = (RatingBar)rankDialog.findViewById(R.id.dialog_ratingbar);
+        ratingBar.setRating(3);
+
+        Dialogtext = (TextView) rankDialog.findViewById(R.id.rank_dialog_text1);
+        Dialogtext.setText("Is the temperature too hot or too cold? (More stars means too hot, three stars means perfect)");
+
+
+        final Button nextButton = (Button) rankDialog.findViewById(R.id.next);
+        final Button updateButton = (Button) rankDialog.findViewById(R.id.rank_dialog_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ratings[0] = ratingBar.getNumStars();
+                Dialogtext.setText("Is the light level too high or too low? (More stars means too high, three stars means perfect)");
                 ratingBar.setRating(3);
+                nextButton.setVisibility(View.GONE);
+                updateButton.setVisibility(View.VISIBLE);
+                //rankDialog.dismiss();
+            }
+        });
 
-                Dialogtext = (TextView) rankDialog.findViewById(R.id.rank_dialog_text1);
-                Dialogtext.setText("Is the temperature too hot or too cold? (More stars means too hot, three stars means perfect)");
-
-
-                final Button nextButton = (Button) rankDialog.findViewById(R.id.next);
-                final Button updateButton = (Button) rankDialog.findViewById(R.id.rank_dialog_button);
-                nextButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ratings[0] = ratingBar.getNumStars();
-                        Dialogtext.setText("Is the light level too high or too low? (More stars means too high, three stars means perfect)");
-                        ratingBar.setRating(3);
-                        nextButton.setVisibility(View.GONE);
-                        updateButton.setVisibility(View.VISIBLE);
-                        //rankDialog.dismiss();
-                    }
-                });
-
-                updateButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ratings[1] = ratingBar.getNumStars();
-                        ratingBar.setRating(3);
-                        nextButton.setVisibility(View.VISIBLE);
-                        updateButton.setVisibility(View.GONE);
-                        rankDialog.dismiss();
-                    }
-                });
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ratings[1] = ratingBar.getNumStars();
+                ratingBar.setRating(3);
+                nextButton.setVisibility(View.VISIBLE);
+                updateButton.setVisibility(View.GONE);
+                rankDialog.dismiss();
+            }
+        });
         //now that the dialog is set up, it's time to show it
         rankDialog.show();
 
     }
 
-    public void getLocationDialog() {
+
+
+    /*public void getLocationDialog() {
 
         locationLoader load = new locationLoader(this.getApplicationContext());
         load.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-    }
+    }*/
 
     /*
         AsyncTask locationLoader class to retrieve buildings from database
     */
-    private class locationLoader extends AsyncTask<String, Void, String> {
+    /*private class locationLoader extends AsyncTask<String, Void, String> {
 
         Context context;
         ArrayList<String[]> buildingLocations;
@@ -1139,31 +1487,37 @@ public class MyZonesActivity extends ActionBarActivity{
 
             Log.d("Background", "We are finished with publishing");
         }
-    }
+    }*/
 
-    public void startLocationService(int index, String[] apikeys)
+    /*public void startLocationService(int index, String[] apikeys)
     {
-        Intent location = new Intent(MyZonesActivity.this,IndoorLocationService.class);
+        Intent location = new Intent(MyZonesActivity.this,IndoorAtlasLocationService.class);
         location.putExtra("apikeys",apikeys);
+        bindService(location, myConnection, this.BIND_AUTO_CREATE);
+        startService(location);
+    }*/
+
+    public void startLocationService()
+    {
+        Intent location = new Intent(MyZonesActivity.this,IndoorAtlasLocationService.class);
         bindService(location, myConnection, this.BIND_AUTO_CREATE);
         startService(location);
     }
 
     // Start the service
-    public void bindService() {
-        Intent intent = new Intent(MyZonesActivity.this, IndoorLocationService.class);
+    /*public void bindService() {
+        Intent intent = new Intent(MyZonesActivity.this, IndoorAtlasLocationService.class);
         bindService(intent, myConnection, this.BIND_AUTO_CREATE);
-        if(IndoorLocationService.isRunning)
+        if(IndoorAtlasLocationService.isRunning)
         {
             startService(intent);
         }
-
-    }
+    }*/
 
     // Stop the service
     public void stopService() {
-        this.mapper.cancel(false);
-        Intent intent = new Intent(this, IndoorLocationService.class);
+        //this.mapper.cancel(false);
+        Intent intent = new Intent(this, IndoorAtlasLocationService.class);
         stopService(intent);
         unbindService();
 
@@ -1202,21 +1556,20 @@ public class MyZonesActivity extends ActionBarActivity{
 
                     Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
                     //Now Set your animation
-
                     if(imgLayer2.getVisibility()==View.GONE)
                     {
-                        Animation fadeInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_right_in);
-                        imgLayer2.startAnimation(fadeInAnimation);
+                        Animation slideInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_right_in);
+                        imgLayer2.startAnimation(slideInAnimation);
                         imgLayer2.setVisibility(View.VISIBLE);
+
                     }
                 } else {
 
                     Toast.makeText(getApplicationContext(), "Left Swipe",Toast.LENGTH_SHORT).show();
-
                     if(imgLayer2.getVisibility()==View.VISIBLE)
                     {
-                        Animation fadeInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_left_out);
-                        imgLayer2.startAnimation(fadeInAnimation);
+                        Animation slideInAnimation = AnimationUtils.loadAnimation(MyZonesActivity.this, R.anim.slide_left_out);
+                        imgLayer2.startAnimation(slideInAnimation);
                         imgLayer2.setVisibility(View.GONE);
                     }
 

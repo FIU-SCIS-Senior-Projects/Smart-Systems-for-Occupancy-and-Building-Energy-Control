@@ -11,7 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.indooratlas.android.CalibrationState;
+/*import com.indooratlas.android.CalibrationState;
 import com.indooratlas.android.FloorPlan;
 import com.indooratlas.android.FutureResult;
 import com.indooratlas.android.IndoorAtlas;
@@ -22,16 +22,16 @@ import com.indooratlas.android.ResultCallback;
 import com.indooratlas.android.ServiceState;
 
 import java.io.IOException;
-import fiu.ssobec.R;
+import fiu.ssobec.R;*/
 
 
 
 /**
  *  This background service class will be in charge of keeping track of the user's current indoor location when started
  */
-public class IndoorLocationService extends Service implements IndoorAtlasListener{
+public class IndoorLocationService {//} extends Service implements IndoorAtlasListener{
 
-    private final IBinder myBinder = new LocalBinder();
+    /*private final IBinder myBinder = new LocalBinder();
     public static boolean isRunning = false;
     private String TAG = "IndoorLocationService";
 
@@ -135,6 +135,8 @@ public class IndoorLocationService extends Service implements IndoorAtlasListene
     /*
     `   IndoorAtlas methods
      */
+
+    /*
     private void initIndoorAtlas() {
 
         try {
@@ -373,5 +375,5 @@ public class IndoorLocationService extends Service implements IndoorAtlasListene
     {
         return isReady && mFloorPlan != null;
     }
-
+*/
 }

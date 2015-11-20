@@ -61,14 +61,31 @@
             <!--&lt;!&ndash; Surface View End &ndash;&gt;-->
             <!--</com.daimajia.swipe.SwipeLayout>-->
         </LinearLayout>
-        <ImageView
+        <!--<ImageView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/mapview"
             android:src="@drawable/good_job_green_ribbon"
             android:layout_gravity="center_horizontal"
             android:visibility="gone"
-            android:contentDescription="@string/mapview" />
+            android:contentDescription="@string/mapview" />-->
+        <com.google.android.gms.maps.MapView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/map"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            >
+        </com.google.android.gms.maps.MapView>
+        <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/map"
+            tools:context=".MapsActivity"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>-->
     </FrameLayout>
 
 
