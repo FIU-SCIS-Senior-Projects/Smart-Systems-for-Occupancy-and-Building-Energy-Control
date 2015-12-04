@@ -39,6 +39,7 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
     private final IBinder myBinder = new LocalBinder();
     public static boolean isRunning = false;
     private String floorID;
+    private int currentFooor;
     //private MyZonesActivity.mapLoader mapLoader;
     private String TAG = "IndoorAtlasLocationService";
 
@@ -100,7 +101,6 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
             // entering new region, mark need to move camera
             Log.d(TAG,"New region entered so we are moving the camera");
             mCameraPositionNeedsUpdating = true;
-            final String newId = region.getId();
             fetch = true;
             floorID = region.getId();
 
@@ -155,12 +155,6 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
         mCameraPositionNeedsUpdating = update;
     }
 
-    /*public class LocalBinder extends Binder {
-        public IndoorAtlasLocationService getService(MyZonesActivity.mapLoader loader) {
-            IndoorAtlasLocationService indoorAtlas = new IndoorAtlasLocationService(loader);
-            return indoorAtlas;
-        }
-    }*/
     public class LocalBinder extends Binder {
         public IndoorAtlasLocationService getService() {
             return IndoorAtlasLocationService.this;
@@ -174,6 +168,7 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
 
     @Override
     public void onLocationChanged(IALocation location) {
+        currentFooor = location.getFloorLevel();
         Log.d(TAG, String.format(Locale.US, "%f,%f, accuracy: %.2f", location.getLatitude(), location.getLongitude(), location.getAccuracy()));
     }
 
@@ -227,33 +222,37 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
         SharedPreferences.Editor editor = this.getSharedPreferences("fiu.ssobec", this.MODE_PRIVATE).edit();
         editor.putBoolean("fiu.ssobec.running", false);
         editor.apply();
-
         Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
     }
 
     public void initIndoorAtlas()
     {
-        Log.d(TAG,"We are initializing the indoorAtlas API");
+        Log.d(TAG, "We are initializing the indoorAtlas API");
         // start receiving location updates & monitor region changes
+        //String floorPlanId = "b4195361-c401-4147-be70-e040efaf8a0c";
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
-        //String floorPlanId = "b4195361-c401-4147-be70-e040efaf8a0c";
+
         //mIALocationManager.setLocation(IALocation.from(IARegion.floorPlan(floorPlanId)));
         //fetch = true;
         //Log.d(TAG,"We are getting a "+request+" for requesting location and a "+register+" for registering Region Listener");
     }
 
-    public double getPointX()
+    public double getLongitude()
     {
         return longitude;
     }
-    public double getPointY()
+    public double getLatitude()
     {
         return latitude;
     }
     public LatLng getLatLng()
     {
         return new LatLng(latitude, longitude);
+    }
+    public int getCurrentFooor()
+    {
+        return currentFooor;
     }
 
 }

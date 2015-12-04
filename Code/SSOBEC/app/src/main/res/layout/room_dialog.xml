@@ -40,38 +40,39 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter Width (in meters)"
+        android:text="Current Width:"
         android:textSize="24sp"
         android:layout_gravity="center"
         android:id="@+id/widthText" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <Button android:id="@+id/update_width_button"
         android:layout_height="wrap_content"
-        android:id="@+id/widthInput"
-        android:inputType="number"
-        android:ems="10"
-        android:layout_gravity="center_horizontal" />
-
+        android:text="Choose this width"
+        android:focusable="false"
+        android:layout_margin="5dip"
+        android:textColor="#FFF8C6"
+        android:textSize="20sp"
+        android:layout_width="fill_parent" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter Height (in meters)"
+        android:text="Current Height:"
         android:textSize="24sp"
         android:layout_gravity="center"
         android:id="@+id/heightText" />
 
-    <EditText
-        android:layout_width="match_parent"
+    <Button android:id="@+id/update_height_button"
         android:layout_height="wrap_content"
-        android:id="@+id/heightInput"
-        android:inputType="number"
-        android:ems="10"
-        android:layout_gravity="center_horizontal" />
+        android:text="Choose this height"
+        android:focusable="false"
+        android:layout_margin="5dip"
+        android:textColor="#FFF8C6"
+        android:textSize="20sp"
+        android:layout_width="fill_parent" />
 
     <Button android:id="@+id/room_dialog_button"
         android:layout_height="wrap_content"
-        android:text="Update"
+        android:text="Update Database"
         android:focusable="false"
         android:layout_margin="5dip"
         android:textColor="#FFF8C6"

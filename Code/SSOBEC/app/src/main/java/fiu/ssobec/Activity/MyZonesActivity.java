@@ -63,6 +63,8 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.indooratlas.android.sdk.resources.IAFloorPlan;
 import com.indooratlas.android.sdk.resources.IALatLng;
 import com.indooratlas.android.sdk.resources.IAResourceManager;
@@ -261,7 +263,6 @@ public class MyZonesActivity extends AppCompatActivity{
             this.context = context;
             run = true;
             userPoints = new ArrayList<Marker>();
-            //scaledPoint = new PointF();
             this.email = email;
             localMapView = map;
             mMap = localMapView.getMap();
@@ -342,17 +343,20 @@ public class MyZonesActivity extends AppCompatActivity{
                     {
                         Log.d(TAG,"Map is not null and neither is floorPlan");
                         //If this is the first run of maploader to load the rooms on current floor, wait until floorplan is downloaded and then initialize the rooms
+                        //This code only runs once
                         if(init)
                         {
+                            adminPoints = new ArrayList<PointF>();
                             initRooms();
                             if(isFacilityManager)
                             {
                                 Log.d("Admin","We are an admin");
                                 initAdminPoints();
                             }
+                            publishProgress(10);
                             init = false;
                         }
-                        coordinates = new LatLng(mService.getPointY(),mService.getPointX());
+                        coordinates = new LatLng(mService.getLatitude(),mService.getLongitude());
                         updateUserLocation((float) coordinates.latitude,(float) coordinates.longitude);
                         publishProgress(1);
                         getAdminPoints();
@@ -376,7 +380,7 @@ public class MyZonesActivity extends AppCompatActivity{
                         checkRooms(coordinates.latitude, coordinates.longitude);
                     }
                     //Check if we need to download the floorplan for the current location inside the building (like changing floors)
-                    //Log.d(TAG,"What does dofetch say? "+mService.dofetch());
+                    //Log.d(TAG,"What does dofetch say? "+mService.dofetch()+" what's downloading? "+downloading+" what about override? "+override);
                     if(mService != null && ((mService.dofetch() && !downloading) || override))
                     {
                         Log.d(TAG,"We are doing fetch");
@@ -449,6 +453,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 }
                 else if(condition[0] == 3)
                 {
+                    Log.d("fetch","What is the floorid? "+mService.getFloorID());
                     fetchFloorPlan(mService.getFloorID());
                     mService.setFetch(false);
                 }
@@ -478,6 +483,23 @@ public class MyZonesActivity extends AppCompatActivity{
                 {
                     moveUserLocations(users);
                 }
+                else if(condition[0] == 10)
+                {
+                    Log.d("Rooms","We are about to draw the rooms");
+                    for(Room r:rooms)
+                    {
+                        Log.d("Rooms","The current room's location is "+r.getLatitude()+", "+r.getLongitude());
+                        Polygon poly = mMap.addPolygon(r.getPolyOptions());
+                        r.setPoly(poly);
+                    }
+                }
+                else if(condition[0] == 11)
+                {
+                    for(int i=0;i<rooms.size();i++)
+                    {
+                        rooms.get(i).occupied();
+                    }
+                }
             }
         }
 
@@ -491,7 +513,6 @@ public class MyZonesActivity extends AppCompatActivity{
                 floorplan_post.add(new BasicNameValuePair("floor", String.valueOf(floorPlan.getFloorLevel())));
                 String res = new ExternalDatabaseController((ArrayList<NameValuePair>) floorplan_post, GETROOMS_PHP).send();
                 Log.d("Rooms",res);
-                //TODO:Fix the rooms no found error by chaning SQL server command for query
                 if(!res.contains("No rooms found"))
                 {
                     Log.d("Rooms","We found rooms");
@@ -540,7 +561,7 @@ public class MyZonesActivity extends AppCompatActivity{
             {
                 for(int i=0;i<rooms.size();i++)
                 {
-                    if(rooms.get(i).getRoom().contains((float) latitude,(float) longitude) || checkUsersAgainstRoom(rooms.get(i)))
+                    if(rooms.get(i).contains(new PointF((float) latitude,(float) longitude)) || checkUsersAgainstRoom(rooms.get(i)))
                     {
                         rooms.get(i).setOccupied(true);
                     }
@@ -549,7 +570,7 @@ public class MyZonesActivity extends AppCompatActivity{
                         rooms.get(i).setOccupied(false);
                     }
                 }
-                publishProgress(8);
+                publishProgress(11);
             }
         }
 
@@ -558,7 +579,7 @@ public class MyZonesActivity extends AppCompatActivity{
         {
             for(PointF p: adminPoints)
             {
-                if(room.getRoom().contains(p.x,p.y))
+                if(room.contains(new PointF(p.x,p.y)))
                 {
                     return true;
                 }
@@ -572,25 +593,10 @@ public class MyZonesActivity extends AppCompatActivity{
             Log.d("Rooms", response);
             for(int i = 0; i < roominfo.length; i++)
             {
-                Log.d("Rooms","We are adding a room");
+                Log.d("Rooms", "We are adding a room");
                 String room[] = roominfo[i].split(":");
+                Log.d("Debug",roominfo[i]);
                 Room temp = new Room(room[1],Double.parseDouble(room[3]), Double.parseDouble(room[5]),Double.parseDouble(room[9]), Double.parseDouble(room[11].substring(0,room[11].length()-1)));
-                MarkerOptions options = new MarkerOptions()
-                        .position( new LatLng(temp.getLatitude(), temp.getLongitude()) )
-                        .title("Fence " + temp.getRoomNumber())
-                        .snippet("Radius: " + temp.getRadius());
-                Marker roomMarker = mMap.addMarker(options);//.showInfoWindow();
-                temp.setMarker(roomMarker);
-                //Instantiates a new CircleOptions object +  center/radius
-                CircleOptions circleOptions = new CircleOptions()
-                        .center( new LatLng(temp.getLatitude(), temp.getLongitude()) )
-                        .radius( temp.getRadius() )
-                        .fillColor(0x40ff0000)
-                        .strokeColor(Color.TRANSPARENT)
-                        .strokeWidth(2);
-
-                // Get back the mutable Circle
-                Circle circle = mMap.addCircle(circleOptions);
                 rooms.add(temp);
             }
         }
@@ -605,6 +611,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 if(Float.parseFloat(userinfo[i]) != 0 || Float.parseFloat(userinfo[i+2]) != 0)
                 {
                     LatLng temp = new LatLng(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2]));
+                    adminPoints.add(new PointF(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2])));
                     if(!temp.equals(new LatLng(0,0)))
                     {
                         Log.d("Admin","We are adding user");
@@ -737,41 +744,44 @@ public class MyZonesActivity extends AppCompatActivity{
          */
         public void fetchFloorPlan(String id) {
 
-            downloading = true;
-            // if there is already running task, cancel it
-            cancelPendingNetworkCalls();
+            if(id!=null)
+            {
+                downloading = true;
+                // if there is already running task, cancel it
+                //cancelPendingNetworkCalls();
 
-            final IATask<IAFloorPlan> task = mResourceManager.fetchFloorPlanWithId(id);
+                Log.d("fetch","what is the id? "+id);
+                final IATask<IAFloorPlan> task = mResourceManager.fetchFloorPlanWithId(id);
 
-            task.setCallback(new IAResultCallback<IAFloorPlan>() {
+                task.setCallback(new IAResultCallback<IAFloorPlan>() {
 
-                @Override
-                public void onResult(IAResult<IAFloorPlan> result) {
+                    @Override
+                    public void onResult(IAResult<IAFloorPlan> result) {
 
-                    if (result.isSuccess() && result.getResult() != null) {
-                        // retrieve bitmap for this floor plan metadata
-                        fetchFloorPlanBitmap(result.getResult());
-                        downloading = false;
-                    } else {
-                        // ignore errors if this task was already canceled
-                        if (!task.isCancelled()) {
-                            // do something with error
-                            //Toast.makeText(MapsOverlayActivity.this,"loading floor plan failed: " + result.getError(), Toast.LENGTH_LONG)
-                            //      .show();
-                            // remove current ground overlay
-                            if (mGroundOverlay != null) {
-                                mGroundOverlay.remove();
-                                mGroundOverlay = null;
+                        if (result.isSuccess() && result.getResult() != null) {
+                            // retrieve bitmap for this floor plan metadata
+                            fetchFloorPlanBitmap(result.getResult());
+                            downloading = false;
+                        } else {
+                            // ignore errors if this task was already canceled
+                            if (!task.isCancelled()) {
+                                // do something with error
+                                //Toast.makeText(MapsOverlayActivity.this,"loading floor plan failed: " + result.getError(), Toast.LENGTH_LONG)
+                                //      .show();
+                                // remove current ground overlay
+                                if (mGroundOverlay != null) {
+                                    mGroundOverlay.remove();
+                                    mGroundOverlay = null;
+                                }
                             }
+                            downloading = false;
                         }
-                        downloading = false;
                     }
-                }
-            }, Looper.getMainLooper()); // deliver callbacks using main looper
+                }, Looper.getMainLooper()); // deliver callbacks using main looper
 
-            // keep reference to task so that it can be canceled if needed
-            mFetchFloorPlanTask = task;
-
+                // keep reference to task so that it can be canceled if needed
+                mFetchFloorPlanTask = task;
+            }
         }
 
         /**
@@ -944,14 +954,12 @@ public class MyZonesActivity extends AppCompatActivity{
 
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
-                    /*LatLng coordinates = new LatLng(match.match.LocationLatitude, match.match.LocationLongitude);
-                    googleMap.addMarker(new MarkerOptions().position(coordinates).title(match.match.LocationAddress));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 15));*/
                     mapView.onResume();
                 }
             });
             if(mapper!=null && !mapper.isCancelled())
             {
+                Log.d("maploader","We are re running the mapper");
                 mapper.setRunning(false);
                 mapper = new mapLoader(context, email, mapView);
                 mapper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -1160,7 +1168,7 @@ public class MyZonesActivity extends AppCompatActivity{
         boolean running = prefs.getBoolean("fiu.ssobec.running", false);
         if(settingMenu != null && running)
         {
-            Log.d("Menu","We are setting it to checked");
+            Log.d("Menu", "We are setting it to checked");
             MenuItem locationItem = settingMenu.findItem(R.id.action_location);
             locationItem.setChecked(true);
         }
@@ -1264,35 +1272,59 @@ public class MyZonesActivity extends AppCompatActivity{
     {
         if(mService != null)
         {
+            //lksfdglk
             roomDialog = new Dialog(MyZonesActivity.this, R.style.FullHeightDialog);
             roomDialog.setContentView(R.layout.room_dialog);
             roomDialog.setCancelable(true);
 
             TextView location = (TextView) roomDialog.findViewById(R.id.currentCoordinates);
-            location.setText("Current location: "+mService.getPointX()+", "+mService.getPointY());
-            final Button updateButton = (Button) roomDialog.findViewById(R.id.room_dialog_button);
+            final double lat = mService.getLatitude();
+            final double lng = mService.getLongitude();
+            //final String floorString = currentFloor.substring(0, currentFloor.length() - 1);
+            location.setText("Current location: "+lat+", "+lng);
 
+            final updateDialogLocation asyncLoader = new updateDialogLocation(roomDialog);
+            asyncLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            final Button updateButton = (Button) roomDialog.findViewById(R.id.room_dialog_button);
+            final Button updateHeightButton = (Button) roomDialog.findViewById(R.id.update_height_button);
+            final Button updateWidthButton = (Button) roomDialog.findViewById(R.id.update_width_button);
+            updateHeightButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  asyncLoader.setHeight(false);
+                    Toast.makeText(getApplicationContext(), "Height has been set!", Toast.LENGTH_LONG).show();
+                }
+            });
+            updateWidthButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    asyncLoader.setWidth(false);
+                    Toast.makeText(getApplicationContext(), "Width has been set!", Toast.LENGTH_LONG).show();
+                }
+            });
             updateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String roomNum = ((EditText) roomDialog.findViewById(R.id.roomInput)).getText().toString();
                     String shape = ((EditText) roomDialog.findViewById(R.id.shapeInput)).getText().toString();
-                    String width = ((EditText) roomDialog.findViewById(R.id.widthInput)).getText().toString();
-                    String height = ((EditText) roomDialog.findViewById(R.id.heightInput)).getText().toString();
-                    if (!roomNum.isEmpty() && !shape.isEmpty() && !width.isEmpty() && !height.isEmpty()) {
-                        if (isNumeric(width) && isNumeric(height)) {
+                    //String width = ((EditText) roomDialog.findViewById(R.id.widthInput)).getText().toString();
+                    //String height = ((EditText) roomDialog.findViewById(R.id.heightInput)).getText().toString();
+                    if (!roomNum.isEmpty() && !shape.isEmpty() && !asyncLoader.isEmpty() && mService != null) {
                             List<NameValuePair> room_location_info = new ArrayList<>(8);
 
                             room_location_info.add(new BasicNameValuePair("room_number", String.valueOf(roomNum)));
-                            room_location_info.add(new BasicNameValuePair("floorplan", String.valueOf(currentFloorPlan)));
-                            room_location_info.add(new BasicNameValuePair("floor", String.valueOf(currentFloor.substring(0,currentFloor.length()-1))));
-                            room_location_info.add(new BasicNameValuePair("x", String.valueOf(mService.getPointX())));
-                            room_location_info.add(new BasicNameValuePair("y", String.valueOf(mService.getPointY())));
+                            room_location_info.add(new BasicNameValuePair("floorplan", String.valueOf(mService.getFloorID())));
+                            room_location_info.add(new BasicNameValuePair("floor", String.valueOf(mService.getCurrentFooor())));
+                            room_location_info.add(new BasicNameValuePair("x", String.valueOf(lat)));
+                            room_location_info.add(new BasicNameValuePair("y", String.valueOf(lng)));
                             room_location_info.add(new BasicNameValuePair("shape", String.valueOf(shape)));
+                            double width = Math.abs(lat - asyncLoader.getLat());
+                            double height = Math.abs(lng - asyncLoader.getLng());
                             room_location_info.add(new BasicNameValuePair("width", String.valueOf(width)));
                             room_location_info.add(new BasicNameValuePair("height", String.valueOf(height)));
-
+                            asyncLoader.setRun(false);
                             String res = "";
+                            Log.d("Update","The update button is sending: "+roomNum+", "+currentFloorPlan+", "+mService.getFloorID()+", "+lat+", "+lng+", "+shape+", "+width+", "+height);
                             //Create a new Zone
                             try {
                                 res = new ExternalDatabaseController((ArrayList<NameValuePair>) room_location_info, UPDATEROOMLOCATION_PHP).send();
@@ -1306,15 +1338,110 @@ public class MyZonesActivity extends AppCompatActivity{
                             } else {
                                 Log.d("updateroomlocation", res);
                             }
-                        }
+                        roomDialog.dismiss();
                     }
-                    roomDialog.dismiss();
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "You don't have latitude or longitude selected!", Toast.LENGTH_LONG).show();
+                    }
+
                 }
             });
             //now that the dialog is set up, it's time to show it
             roomDialog.show();
         }
 
+    }
+
+    class updateDialogLocation extends AsyncTask<String, Integer, String> {
+        private boolean run;
+        private boolean width,height;
+        private double lat;
+        private double lng;
+        private Dialog dialog;
+
+        updateDialogLocation(Dialog dialog)
+        {
+            this.dialog = dialog;
+            run = true;
+            height = true;
+            width = true;
+        }
+
+        public boolean isEmpty()
+        {
+            if(lat != 0 && lng != 0 && !width && !height)
+            {
+                return false;
+            }
+            return true;
+        }
+        public void setRun(boolean run)
+        {
+            this.run = run;
+        }
+        public void setWidth(boolean width)
+        {
+            this.width = width;
+        }
+        public void setHeight(boolean height)
+        {
+            this.height = height;
+        }
+        public double getLat()
+        {
+            return lat;
+        }
+        public double getLng()
+        {
+            return lng;
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            while(run)
+            {
+                if(mService != null)
+                {
+                    if(width)
+                    {
+                        lat = mService.getLatitude();
+                        publishProgress(0);
+                    }
+                    if(height)
+                    {
+                        lng = mService.getLongitude();
+                        publishProgress(1);
+                    }
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            TextView heightText = (TextView) roomDialog.findViewById(R.id.heightText);
+            TextView widthText = (TextView) roomDialog.findViewById(R.id.widthText);
+            if(values[0] == 0)
+            {
+                widthText.setText("Current width is "+lat);
+            }
+            else if(values[0] == 1)
+            {
+                heightText.setText("Current height is"+lng);
+            }
+        }
     }
 
     public boolean isNumeric(String str)
