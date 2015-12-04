@@ -1292,14 +1292,14 @@ public class MyZonesActivity extends AppCompatActivity{
                 @Override
                 public void onClick(View v) {
                   asyncLoader.setHeight(false);
-                    Toast.makeText(getApplicationContext(), "Height has been set!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Height has been set!", Toast.LENGTH_SHORT).show();
                 }
             });
             updateWidthButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     asyncLoader.setWidth(false);
-                    Toast.makeText(getApplicationContext(), "Width has been set!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Width has been set!", Toast.LENGTH_SHORT).show();
                 }
             });
             updateButton.setOnClickListener(new View.OnClickListener() {
