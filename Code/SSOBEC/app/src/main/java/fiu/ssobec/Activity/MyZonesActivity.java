@@ -1,22 +1,15 @@
 package fiu.ssobec.Activity;
 
 import android.accounts.Account;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -24,10 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -53,18 +44,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.indooratlas.android.sdk.resources.IAFloorPlan;
 import com.indooratlas.android.sdk.resources.IALatLng;
 import com.indooratlas.android.sdk.resources.IAResourceManager;
@@ -95,7 +82,6 @@ import fiu.ssobec.Model.User;
 import fiu.ssobec.Model.Zones;
 import fiu.ssobec.R;
 import fiu.ssobec.Services.IndoorAtlasLocationService;
-import fiu.ssobec.Services.Util;
 import fiu.ssobec.Synchronization.DataSync.AuthenticatorService;
 import fiu.ssobec.Synchronization.SyncConstants;
 import fiu.ssobec.Synchronization.SyncUtils;
@@ -116,7 +102,7 @@ public class MyZonesActivity extends AppCompatActivity{
     public static final String UPDATEROOMLOCATION_PHP = "http://smartsystems-dev.cs.fiu.edu/updateroomlocation.php";
     public static final String LOCATIONS_PHP = "http://smartsystems-dev.cs.fiu.edu/getUserLocations.php";
     public static final String GETROOMS_PHP = "http://smartsystems-dev.cs.fiu.edu/getfloorrooms.php";
-    public static final String GETBUILDINGS_PHP = "http://smartsystems-dev.cs.fiu.edu/getbuildings.php";
+    //public static final String GETBUILDINGS_PHP = "http://smartsystems-dev.cs.fiu.edu/getbuildings.php";
     public static final String plugload_award_descrp="Reward for little consumption of energy in plugload";
     public static final String lighting_award_descrp="Reward for turning off the lights before leaving the room";
     zoneLoader loader;
@@ -255,6 +241,9 @@ public class MyZonesActivity extends AppCompatActivity{
         boolean init;
         boolean downloading;
         boolean override;
+        boolean retry;
+        long wait;
+        long startWait;
 
         private IAResourceManager mResourceManager;
         private String TAG = "mapLoader";
@@ -269,6 +258,9 @@ public class MyZonesActivity extends AppCompatActivity{
             init = true;
             downloading = false;
             override = false;
+            retry = false;
+            startWait = 200;
+            wait = 200;
         }
 
         public void override(boolean override)
@@ -341,6 +333,7 @@ public class MyZonesActivity extends AppCompatActivity{
                     Log.d(TAG,"The service is not null the current mMap is "+mMap+" and the current floorPlan is "+floorPlan);
                     if(mMap != null && floorPlan != null)
                     {
+                        retry = false;
                         Log.d(TAG,"Map is not null and neither is floorPlan");
                         //If this is the first run of maploader to load the rooms on current floor, wait until floorplan is downloaded and then initialize the rooms
                         //This code only runs once
@@ -379,8 +372,13 @@ public class MyZonesActivity extends AppCompatActivity{
                         //Check the rooms to see if they contain the current user
                         checkRooms(coordinates.latitude, coordinates.longitude);
                     }
+                    else
+                    {
+                        retry = true;
+                    }
                     //Check if we need to download the floorplan for the current location inside the building (like changing floors)
                     //Log.d(TAG,"What does dofetch say? "+mService.dofetch()+" what's downloading? "+downloading+" what about override? "+override);
+                    //Disabled currently for showcase, enable this code to download floorplan from indoorAtlas website, otherwise leave it to use default google map rendering
                     if(mService != null && ((mService.dofetch() && !downloading) || override))
                     {
                         Log.d(TAG,"We are doing fetch");
@@ -393,7 +391,11 @@ public class MyZonesActivity extends AppCompatActivity{
                 }
                 //Simple Thread.sleep to put background thread to sleep so we don't overload the phone with commands every millisecond which would cause battery loss
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(wait);
+                    if(retry)
+                        wait*=2;
+                    else
+                        wait=startWait;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -453,7 +455,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 }
                 else if(condition[0] == 3)
                 {
-                    Log.d("fetch","What is the floorid? "+mService.getFloorID());
+                    //Log.d("fetch","What is the floorid? "+mService.getFloorID());
                     fetchFloorPlan(mService.getFloorID());
                     mService.setFetch(false);
                 }
@@ -472,7 +474,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 }
                 else if(condition[0] == 7)
                 {
-                    Log.d(TAG, "We are doing map stuff");
+                    //Log.d(TAG, "We are doing map stuff");
                     mMap.clear();
                 }
                 else if(condition[0] == 8)
@@ -485,10 +487,10 @@ public class MyZonesActivity extends AppCompatActivity{
                 }
                 else if(condition[0] == 10)
                 {
-                    Log.d("Rooms","We are about to draw the rooms");
+                    //Log.d("Rooms","We are about to draw the rooms");
                     for(Room r:rooms)
                     {
-                        Log.d("Rooms","The current room's location is "+r.getLatitude()+", "+r.getLongitude());
+                        //Log.d("Rooms","The current room's location is "+r.getLatitude()+", "+r.getLongitude());
                         Polygon poly = mMap.addPolygon(r.getPolyOptions());
                         r.setPoly(poly);
                     }
@@ -736,7 +738,6 @@ public class MyZonesActivity extends AppCompatActivity{
             } else if (bitmapWidth > MAX_DIMENSION) {
                 request.resize(MAX_DIMENSION, 0);
             }
-
             request.into(mLoadTarget);
         }
         /**
@@ -1444,11 +1445,6 @@ public class MyZonesActivity extends AppCompatActivity{
         }
     }
 
-    public boolean isNumeric(String str)
-    {
-        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
-    }
-
     public void getRatingDialogs(View view){
 
         ratings = new int[2];
@@ -1677,7 +1673,12 @@ public class MyZonesActivity extends AppCompatActivity{
 
             float dX = e2.getX() - e1.getX();
             float dY = e1.getY() - e2.getY();
-            if (Math.abs(dY) < SWIPE_MAX_OFF_PATH && Math.abs(velocityX) >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dX) >= SWIPE_MIN_DISTANCE) {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            float height = (float)displaymetrics.heightPixels;
+            float width = (float) displaymetrics.widthPixels;
+
+            if (Math.abs(dY) < SWIPE_MAX_OFF_PATH && Math.abs(velocityX) >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dX) >= SWIPE_MIN_DISTANCE && (e1.getY() > (height-(height/4)))) {
 
                 if (dX > 0) {
 
