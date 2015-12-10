@@ -16,7 +16,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.android.support.test.deps.guava.base.Preconditions.checkNotNull;
+//import static com.android.support.test.deps.guava.base.Preconditions.checkNotNull;
 import static org.hamcrest.EasyMock2Matchers.equalTo;
 import static org.hamcrest.Matchers.allOf;
 
@@ -101,7 +101,7 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     }
 
     public static Matcher<Object> withChildName(String name) {
-        checkNotNull(name);
+        //checkNotNull(name);
         return withChildName(equalTo(name));
     }
 

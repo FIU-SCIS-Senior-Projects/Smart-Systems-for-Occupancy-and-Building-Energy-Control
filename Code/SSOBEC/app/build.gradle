@@ -44,14 +44,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    //IndoorAtlas Imports
-
-    //compile files('libs/indooratlas-android-sdk-1.4.2-132-beta.jar') //old
-    //compile files('libs/indooratlas-android-sdk-1.4.2-132-beta.arr') //old
-    //compile files('src/main/libs/indooratlas-android-sdk-1.4.2-132-beta.jar') //old
-    //compile files('libs/indooratlas-android-sdk-2.0.0-beta.jar')//new
-    //compile files('libs/indooratlas-android-sdk-2.0.0-beta.arr')//new
-    //compile files('src/main/libs/indooratlas-android-sdk-2.0.0-beta.jar')//new
     compile 'com.indooratlas.android:indooratlas-android-sdk:2.0.0-beta@aar'
     compile 'com.google.maps.android:android-maps-utils:0.3.+'
     compile 'com.squareup.picasso:picasso:2.5.2'

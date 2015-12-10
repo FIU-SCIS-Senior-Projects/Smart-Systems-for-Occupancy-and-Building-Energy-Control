@@ -13,7 +13,7 @@ import fiu.ssobec.Activity.MyZonesActivity;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.android.support.test.deps.guava.base.Preconditions.checkNotNull;
+//import static com.android.support.test.deps.guava.base.Preconditions.checkNotNull;
 import static org.hamcrest.EasyMock2Matchers.equalTo;
 
 
@@ -54,7 +54,7 @@ public class UnfollowZoneActivityTest extends ActivityInstrumentationTestCase2<M
     }
 
     public static Matcher<Object> withChildName(String name) {
-        checkNotNull(name);
+        //checkNotNull(name);
         return withChildName(equalTo(name));
     }
 
