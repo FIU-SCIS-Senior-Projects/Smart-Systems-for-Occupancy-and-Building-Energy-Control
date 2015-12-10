@@ -73,6 +73,8 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
 
             Log.d(TAG, "new location received with coordinates: " + location.getLatitude() + "," + location.getLongitude());
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            //latitude = 25.758878;
+            //longitude = -80.373637;//-80.373557
             latitude = latLng.latitude;
             longitude = latLng.longitude;
             Log.d(TAG,"What are the new latitude and longitude? "+latitude+", "+longitude);
@@ -109,6 +111,7 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
         @Override
         public void onExitRegion(IARegion region) {
             removeMark = true;
+            //Need to implement later
             /*if(mapLoader != null)
             {
                 if (mapLoader.getMarker() != null) {
@@ -229,11 +232,21 @@ public class IndoorAtlasLocationService extends Service implements IALocationLis
     {
         Log.d(TAG, "We are initializing the indoorAtlas API");
         // start receiving location updates & monitor region changes
-        //String floorPlanId = "b4195361-c401-4147-be70-e040efaf8a0c";
+
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
 
+        //Debug statements
+        //String floorPlanId = "b4195361-c401-4147-be70-e040efaf8a0c";
         //mIALocationManager.setLocation(IALocation.from(IARegion.floorPlan(floorPlanId)));
+        /*IALocation location = new IALocation.Builder()
+                .withLatitude(25.758878)
+                .withLongitude(-80.373557)
+                .withAccuracy(5f)
+                .build();
+        mIALocationManager.setLocation(location);*/
+
+
         //fetch = true;
         //Log.d(TAG,"We are getting a "+request+" for requesting location and a "+register+" for registering Region Listener");
     }

@@ -392,7 +392,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 //Simple Thread.sleep to put background thread to sleep so we don't overload the phone with commands every millisecond which would cause battery loss
                 try {
                     Thread.sleep(wait);
-                    if(retry)
+                    if(retry && wait < 5000)
                         wait*=2;
                     else
                         wait=startWait;
@@ -591,7 +591,7 @@ public class MyZonesActivity extends AppCompatActivity{
 
         public void roomLocations(String response)
         {
-            String roominfo[] = response.split("/+");
+            String roominfo[] = response.split("\\+");
             Log.d("Rooms", response);
             for(int i = 0; i < roominfo.length; i++)
             {
@@ -614,7 +614,7 @@ public class MyZonesActivity extends AppCompatActivity{
                 {
                     LatLng temp = new LatLng(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2]));
                     adminPoints.add(new PointF(Float.parseFloat(userinfo[i]),Float.parseFloat(userinfo[i+2])));
-                    if(!temp.equals(new LatLng(0,0)))
+                    if(!temp.equals(new LatLng(0,0)) && !temp.equals(mService.getLatLng()))
                     {
                         Log.d("Admin","We are adding user");
                         addUserMarker(new MarkerOptions().position(temp).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).title(userinfo[i - 2]));
