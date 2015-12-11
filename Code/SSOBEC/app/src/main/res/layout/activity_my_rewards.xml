@@ -9,7 +9,7 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_height="85dp"
         android:layout_gravity="center"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
@@ -18,7 +18,7 @@
         android:text="My Rewards"
         android:textColor="@color/default_background"
         android:drawableLeft="@drawable/rewards_icon_50x"
-        android:textSize="30dp" />
+        android:textSize="25sp" />
 
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="60dp"

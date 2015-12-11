@@ -7,8 +7,18 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <permission android:name="fiu.ssobec.gcm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <!-- Required to enable our SyncAdapter after it's created. -->
@@ -18,29 +28,55 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+
+    <uses-feature android:name="android.hardware.sensor.accelerometer"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.android.hardware.sensor.compass"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.wifi"
+        android:required="true" />
+
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/smartbuildingicon"
         android:label="@string/app_name"
+        android:name="android.support.multidex.MultiDexApplication"
         android:theme="@style/Theme.AppCompat" >
-
+        <uses-library android:name="com.google.android.maps" />
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_KEY"
+            android:value="90f7edc9-1ede-4484-bb87-e73e6d2aad99"/>
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_SECRET"
+            android:value="9FsHifk56VoFhw07iVASCQJBHWVtu(1cKFDFIk%5WmbRdztB8t3s3&amp;6!x2B&amp;%UzWm(&amp;z5oPTZId2gJ(Zvpe)BGx4&amp;O8vaM5pQ(VLVfzC972R&amp;AnTRvxEyzrdBT6UZsCB"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key"/>
         <!-- Login Activity -->
-
         <activity
             android:name=".Activity.LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait">
         </activity>
 
+        <service android:name="com.indooratlas.android.sdk.IALocationService"
+            android:label="IALocationService"
+            android:exported="false"/>
         <!-- Setting Activity -->
 
         <activity
             android:name=".Activity.SettingActivity"
             android:label="@string/title_activity_setting"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.LoginActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -51,7 +87,8 @@
 
         <activity
             android:name=".Activity.MyZonesActivity"
-            android:label="@string/title_launcher_name" >
+            android:label="@string/title_launcher_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -68,6 +105,7 @@
         <activity
             android:name=".Activity.ZonesDescriptionActivity"
             android:label="@string/title_activity_zones_description"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -78,6 +116,7 @@
         <activity
             android:name=".Activity.EnergyActivity"
             android:label="@string/title_activity_temperature"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -119,6 +158,7 @@
         <activity
             android:name=".Activity.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.LoginActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -127,6 +167,7 @@
         <activity
             android:name=".Activity.ConsumptionAppliances"
             android:label="@string/title_activity_consumption_appliances"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -135,6 +176,7 @@
         <activity
             android:name=".Activity.ACConsumptionPrediction"
             android:label="@string/title_activity_acconsumption_prediction"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -143,6 +185,7 @@
         <activity
             android:name=".Activity.AddZoneActivity"
             android:label="@string/title_activity_add_zone"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -151,6 +194,7 @@
         <activity
             android:name=".Activity.EditZoneUsersActivity"
             android:label="@string/title_activity_edit_zone_users"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -159,6 +203,7 @@
         <activity
             android:name=".Activity.CreateZoneActivity"
             android:label="@string/title_activity_create_zone"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -167,6 +212,7 @@
         <activity
             android:name=".Activity.MyRewardsActivity"
             android:label="@string/title_activity_my_rewards"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -175,6 +221,7 @@
         <activity
             android:name=".Activity.WastefulRegionsActivity"
             android:label="@string/title_activity_wasteful_regions"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -183,6 +230,7 @@
         <activity
             android:name=".Activity.EditZoneActivity"
             android:label="@string/title_activity_edit_zone"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.AddZoneActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -190,6 +238,7 @@
         </activity>
         <activity
             android:name=".Activity.ZoneAppliancesActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.ZonesDescriptionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -197,6 +246,7 @@
         </activity>
         <activity
             android:name=".Activity.AddUserToZoneActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_add_user_to_zone" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -204,6 +254,7 @@
         </activity>
         <activity
             android:name=".Activity.RemoveUserFromZoneActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_remove_user_from_zone" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -212,6 +263,7 @@
         <activity
             android:name=".Activity.TurnLightOffActivity"
             android:label="@string/title_activity_turn_light_off"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.WastefulRegionsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -220,6 +272,7 @@
         <activity
             android:name=".Activity.TurnApplianceOffActivity"
             android:label="@string/title_activity_turn_appliance_off"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.WastefulRegionsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -228,6 +281,7 @@
         <activity
             android:name=".Activity.SendNotificationActivity"
             android:label="@string/title_activity_send_notification"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.WastefulRegionsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -236,11 +290,22 @@
         <activity
             android:name=".Activity.GetReportsActivity"
             android:label="@string/title_activity_get_reports"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activity.MyZonesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fiu.ssobec.Activity.MyZonesActivity" />
         </activity>
+        <receiver android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="fiu.ssobec"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".Services.IndoorAtlasLocationService"
+            android:enabled="true">
+        </service>
     </application>
 
 </manifest>

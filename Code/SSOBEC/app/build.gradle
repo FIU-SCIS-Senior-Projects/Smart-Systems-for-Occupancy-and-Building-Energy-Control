@@ -3,14 +3,27 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
+
+    // note: use gradle.properties in project root level to set your api credentials
+    def apiKey = project.properties['indoorAtlasApiKey'] ?: "api-key-not-set";
+    def apiSecret = project.properties['indoorAtlasApiSecret'] ?: "api-secret-not-set";
+
     defaultConfig {
         applicationId "fiu.ssobec"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //Copied from indooratlas example
+        resValue "string", "indooratlas_api_key", apiKey
+        // avoid getting errors from malformed string resources if secret contains '%' chars
+        resValue "string", "indooratlas_api_secret", apiSecret.replaceAll("%", "\\\\u0025")
+    }
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
     }
     buildTypes {
         release {
@@ -27,17 +40,25 @@ android {
     }
 }
 
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.indooratlas.android:indooratlas-android-sdk:2.0.0-beta@aar'
+    compile 'com.google.maps.android:android-maps-utils:0.3.+'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
+
+    //Original SSOBEC Imports
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.google.android.gms:play-services:8.3.0'
     compile 'net.aksingh:owm-japis:2.5.0.3'
     compile 'org.apache.commons:commons-math3:3.4.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'joda-time:joda-time:2.7'
-    compile 'com.jjoe64:graphview:4.0.0'
+    compile 'com.jjoe64:graphview:4.0.1'
     compile 'com.androidplot:androidplot:0.6.1'
     compile 'com.androidplot:androidplot-core:0.6.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
@@ -46,9 +67,9 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
-
     compile 'com.nineoldandroids:library:2.4.0+'
-
-    compile 'com.android.support:recyclerview-v7:21.0.0'
-    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.android.support:recyclerview-v7:21.0.0' //21.0.0
+    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
+    compile 'com.android.support:multidex:1.0.1'
 }
+

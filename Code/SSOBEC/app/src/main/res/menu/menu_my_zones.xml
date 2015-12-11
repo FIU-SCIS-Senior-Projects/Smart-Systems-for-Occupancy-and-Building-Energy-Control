@@ -25,4 +25,9 @@
         android:orderInCategory="1"
         app:showAsAction="ifRoom" />
 
+    <item android:id="@+id/action_location"
+        android:title="@string/action_locate_user"
+        android:checkable="true"
+        android:orderInCategory="1"
+        app:showAsAction="never" />
 </menu>

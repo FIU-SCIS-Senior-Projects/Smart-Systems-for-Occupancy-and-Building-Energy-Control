@@ -1,6 +1,9 @@
 
     <resources>
 
+        <style name="FullHeightDialog" parent="android:style/Theme.Dialog">
+            <item name="android:windowNoTitle">true</item>
+        </style>
         <!--
             Base application theme, dependent on API level. This theme is replaced
             by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
